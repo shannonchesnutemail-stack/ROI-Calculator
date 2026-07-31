@@ -1,400 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Murray Digital Marketing ROI Calculator</title>
-<style>
-  :root{
-    --navy:#0B2545; --navy2:#13315C; --gold:#C9A227; --gold-light:#F4E9C9;
-    --ink:#1B2430; --muted:#5B6472; --line:#DDE2E8; --bg:#F6F7F9; --card:#FFFFFF;
-    --good:#1F7A4C; --bad:#B3401F;
-  }
-  *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Helvetica,Arial,sans-serif;}
-  header{background:var(--navy);color:#fff;padding:20px 32px;display:flex;align-items:center;gap:20px;}
-  header img{max-height:60px;width:auto;}
-  header .header-text h1{margin:0 0 4px;font-size:22px;font-weight:600;letter-spacing:.2px;}
-  header .header-text p{margin:0;color:#C9D3E4;font-size:13px;line-height:1.5;}
-  .wrap{max-width:1180px;margin:0 auto;padding:24px 24px 60px;}
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin-bottom:20px;}
-  .panel h2{font-size:15px;margin:0 0 14px;color:var(--navy);text-transform:uppercase;letter-spacing:.6px;border-bottom:2px solid var(--gold);padding-bottom:8px;}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;}
-  label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:4px;font-weight:600;}
-  input[type=text],input[type=number],select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font-size:14px;background:#fff;}
-  .field{margin-bottom:0;}
-  .hint{font-size:11.5px;color:var(--muted);margin-top:3px;}
-  .channel-benchmark{background:#F3F5F8;border-left:3px solid var(--gold);padding:10px 14px;border-radius:0 6px 6px 0;margin-top:8px;font-size:12px;color:var(--muted);}
-  .market-controls{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
-  .market-controls button{padding:8px 16px;background:var(--navy);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;}
-  .market-controls button:hover{background:var(--navy2);}
-  .market-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-  .market-card-header button{padding:4px 10px;font-size:11px;background:#B3401F;color:#fff;border:none;border-radius:4px;cursor:pointer;}
-  .markets{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
-  .mcard{border:1px solid var(--line);border-radius:10px;padding:16px;background:#fff;}
-  .mcard h3{margin:0 0 10px;font-size:15px;color:var(--navy);}
-  .mrow{display:flex;gap:10px;margin-bottom:10px;}
-  .mrow .field{flex:1;}
-  .stat{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line);}
-  .stat b{color:var(--navy);}
-  .stat.total{border-bottom:none;border-top:1px solid var(--line);margin-top:4px;padding-top:8px;font-size:14px;}
-  .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;}
-  .badge.good{background:#E4F4EA;color:var(--good);}
-  .badge.bad{background:#FBEAE3;color:var(--bad);}
-  table{width:100%;border-collapse:collapse;font-size:13.5px;}
-  th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line);}
-  th:first-child,td:first-child{text-align:left;}
-  thead th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.3px;}
-  tbody tr:hover{background:#FAFBFC;}
-  .note{font-size:12.5px;color:var(--muted);line-height:1.6;background:#F3F5F8;border-left:3px solid var(--gold);padding:10px 14px;border-radius:0 6px 6px 0;}
-  .rt-compare{font-size:12.5px;color:var(--muted);margin-top:10px;}
-  footer{background:var(--navy);color:#fff;padding:20px 32px;text-align:center;font-size:12px;line-height:1.6;margin-top:40px;}
-  footer strong{display:block;margin-bottom:8px;font-weight:600;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Murray Digital Marketing ROI Calculator</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Century Gothic', 'Helvetica Neue', sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        
+        /* Header */
+        .header { background: #3d3d3d; color: white; padding: 30px; display: flex; align-items: center; gap: 15px; border-radius: 8px 8px 0 0; }
+        .logo-img { width: 50px; height: 50px; background: #b69d5e; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+        .header h1 { font-size: 28px; font-weight: bold; color: #b69d5e; }
+        
+        .content { padding: 40px; }
+        .section { margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid #e0e0e0; }
+        .section:last-child { border-bottom: none; }
+        
+        .section-title { font-size: 18px; font-weight: bold; color: #3d3d3d; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Grid Layout */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .grid.full { grid-template-columns: 1fr; }
+        
+        /* Form Elements */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; font-weight: bold; color: #3d3d3d; margin-bottom: 6px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #d0d0d0; border-radius: 4px; font-size: 14px; font-family: inherit; }
+        input:focus, select:focus { outline: none; border-color: #b69d5e; box-shadow: 0 0 0 3px rgba(182, 157, 94, 0.1); }
+        
+        .input-group { display: flex; gap: 10px; align-items: flex-end; }
+        .input-group input { flex: 1; }
+        button.add-market { padding: 10px 20px; background: #438148; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button.add-market:hover { background: #357039; }
+        button.remove { padding: 6px 12px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        
+        /* Results */
+        .results { background: #f9f9f9; padding: 20px; border-radius: 6px; border-left: 4px solid #b69d5e; }
+        .result-row { display: flex; justify-content: space-between; padding: 10px 0; font-size: 15px; }
+        .result-label { color: #666; }
+        .result-value { font-weight: bold; color: #3d3d3d; }
+        .result-value.highlight { color: #b69d5e; font-size: 18px; }
+        
+        .market-card { background: #f9f9f9; padding: 15px; border-radius: 6px; border-left: 4px solid #438148; margin-bottom: 15px; }
+        .market-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .market-title { font-weight: bold; color: #3d3d3d; }
+        
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; font-size: 13px; }
+        th { background: #f0f0f0; font-weight: bold; color: #3d3d3d; }
+        tr:hover { background: #f9f9f9; }
+        
+        /* Footer */
+        .footer { background: #f5f5f5; padding: 20px; font-size: 11px; color: #999; border-radius: 0 0 8px 8px; text-align: center; }
+        .footer strong { color: #666; display: block; margin-bottom: 5px; }
+        
+        /* Badge */
+        .badge { display: inline-block; background: #438148; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: bold; margin-left: 8px; }
+    </style>
 </head>
 <body>
-<header>
-  <img id="murrayLogo" src="data:image/png;base64,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
-" alt="Murray Enterprises">
-  <div class="header-text">
-    <h1>Murray Digital Marketing ROI Calculator</h1>
-    <p>Model ad-spend → lead → approval → closed job for re-roofs & new construction roofing only. State-specific benchmarks & CPL.</p>
-  </div>
-</header>
-<div class="wrap">
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-img">M</div>
+            <div>
+                <h1>MURRAY ROI CALCULATOR</h1>
+                <div style="font-size: 12px; color: #ccc;">Digital Marketing Performance Analysis</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Input Section -->
+            <div class="section">
+                <div class="section-title">Campaign Setup</div>
+                
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Channel</label>
+                        <select id="channel" onchange="updateChannelDefaults()">
+                            <option value="google-search">Google Search (3.17%)</option>
+                            <option value="google-display">Google Display (0.46%)</option>
+                            <option value="facebook-instagram">Facebook/Instagram (2.19%)</option>
+                            <option value="tiktok">TikTok (1.5%)</option>
+                            <option value="google-lsa">Google LSA (4.2%)</option>
+                            <option value="youtube">YouTube (0.65%)</option>
+                            <option value="linkedin">LinkedIn (0.55%)</option>
+                            <option value="custom">Custom (4.5%)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <select id="location" onchange="updateLocationDefaults()">
+                            <option value="lincoln-omaha">Lincoln/Omaha, NE ($225 CPL, 3.1% CTR)</option>
+                            <option value="houston">Houston, TX ($275 CPL, 2.9% CTR)</option>
+                            <option value="neworleans">New Orleans, LA ($275 CPL, 3.0% CTR)</option>
+                        </select>
+                    </div>
+                </div>
 
-  <div class="panel">
-    <h2>Channel / Campaign Configuration</h2>
-    <div class="grid">
-      <div class="field">
-        <label>Channel Type</label>
-        <select id="channelType">
-          <option value="googleSearch">Google Search Ads</option>
-          <option value="googleDisplay">Google Display Ads</option>
-          <option value="facebook">Facebook/Instagram Ads</option>
-          <option value="tiktok">TikTok Ads</option>
-          <option value="googleLSA">Google Local Services Ads</option>
-          <option value="youtube">YouTube Ads</option>
-          <option value="linkedin">LinkedIn Ads</option>
-          <option value="custom">Custom Channel</option>
-        </select>
-        <div class="channel-benchmark" id="benchmarkNote">Google Search benchmark: 3.17% CTR</div>
-      </div>
-      <div class="field">
-        <label>Campaign Name</label>
-        <input type="text" id="channelName" value="Google Ads - Roofing" placeholder="e.g., Google Ads - Roofing">
-      </div>
-      <div class="field">
-        <label>Monthly Ad Spend ($)</label>
-        <input type="number" id="adSpend" value="4500" step="100">
-        <div class="hint">Total monthly budget for this campaign</div>
-      </div>
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Monthly Ad Spend</label>
+                        <input type="number" id="adSpend" value="1000" min="0" step="100">
+                    </div>
+                    <div class="form-group">
+                        <label>Cost Per Lead (CPL)</label>
+                        <input type="number" id="cpl" value="225" min="0" step="10">
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Click-Through Rate (CTR)</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="number" id="ctr" value="3.1" min="0" step="0.1" style="flex: 1;">
+                            <span style="padding: 10px; color: #999;">%</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Average Ticket</label>
+                        <div style="display: flex; gap: 8px;">
+                            <span style="padding: 10px; color: #999;">$</span>
+                            <input type="number" id="ticket" value="10000" min="0" step="500" style="flex: 1;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Economics -->
+            <div class="section">
+                <div class="section-title">Business Economics <span class="badge">Real Data (Acculynx)</span></div>
+                
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Gross Margin %</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="number" id="margin" value="30" min="0" max="100" step="1" style="flex: 1;">
+                            <span style="padding: 10px; color: #999;">%</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Lead → Approval Rate ✓</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="number" id="approvalRate" value="33" min="0" max="100" step="1" style="flex: 1;" readonly style="background: #f0f0f0;">
+                            <span style="padding: 10px; color: #999;">%</span>
+                        </div>
+                        <div style="font-size: 11px; color: #999; margin-top: 4px;">Source: Acculynx CRM (3,096 leads analyzed)</div>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Approval → Close Rate ✓</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="number" id="closeRate" value="83" min="0" max="100" step="1" style="flex: 1;" readonly style="background: #f0f0f0;">
+                            <span style="padding: 10px; color: #999;">%</span>
+                        </div>
+                        <div style="font-size: 11px; color: #999; margin-top: 4px;">Source: Acculynx CRM (645 closed deals)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="section">
+                <div class="section-title">ROI Analysis</div>
+                
+                <div class="results">
+                    <div class="result-row">
+                        <span class="result-label">Monthly Ad Spend</span>
+                        <span class="result-value">$<span id="resultSpend">1,000</span></span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Leads Generated (from spend)</span>
+                        <span class="result-value"><span id="resultLeads">4</span> leads</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Leads Approved</span>
+                        <span class="result-value"><span id="resultApproved">1</span> deals</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Deals Closed</span>
+                        <span class="result-value"><span id="resultClosed">1</span> contracts</span>
+                    </div>
+                    <hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
+                    <div class="result-row">
+                        <span class="result-label">Revenue (from closures)</span>
+                        <span class="result-value highlight">$<span id="resultRevenue">10,000</span></span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Gross Profit</span>
+                        <span class="result-value highlight">$<span id="resultProfit">3,000</span></span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">ROI</span>
+                        <span class="result-value highlight"><span id="resultROI">200%</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disclaimer -->
+            <div style="background: #fff3cd; padding: 15px; border-radius: 6px; margin-top: 20px;">
+                <strong style="color: #856404;">⚠ Disclaimer</strong>
+                <p style="color: #856404; font-size: 12px; margin-top: 5px;">This calculator is for Murray Enterprises internal use only. Results include a 15–25% margin of error due to variability in lead quality, seasonal factors, and market conditions. First-time leads (re-roofs/new construction) only. All ratios sourced from Acculynx CRM historical data (Lincoln/Omaha).</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <strong>Murray ROI Calculator v2.1 — Real Data Integration</strong>
+            Updated: July 30, 2026 | Acculynx Ratios: 33% Approval, 83% Close | Data refresh quarterly
+        </div>
     </div>
-  </div>
 
-  <div class="panel">
-    <h2>Your Business Economics</h2>
-    <div class="grid">
-      <div class="field">
-        <label>Average Ticket ($)</label>
-        <input type="number" id="ticket" value="10000" step="100">
-      </div>
-      <div class="field">
-        <label>Gross Margin (%)</label>
-        <input type="number" id="margin" value="30" step="1">
-      </div>
-      <div class="field">
-        <label>Lead → Approval Rate (%)</label>
-        <input type="number" id="leadApproval" value="55" step="1">
-        <div class="hint">% of leads becoming inspections</div>
-      </div>
-      <div class="field">
-        <label>Approval → Close Rate (%)</label>
-        <input type="number" id="approvalClose" value="36" step="1">
-        <div class="hint">% of approved opportunities closing</div>
-      </div>
-    </div>
-  </div>
+    <script>
+        function formatCurrency(num) {
+            return Math.round(num).toLocaleString('en-US');
+        }
 
-  <div class="panel">
-    <h2>Markets (State-Specific Benchmarks)</h2>
-    <div class="market-controls">
-      <select id="marketState" style="flex:1;">
-        <option value="">-- Select Market (Auto-Fill CPL) --</option>
-        <option value="nebraska">Nebraska (Lincoln/Omaha)</option>
-        <option value="texas">Texas (Houston Metro)</option>
-        <option value="louisiana">Louisiana (New Orleans)</option>
-        <option value="custom">Custom Market</option>
-      </select>
-      <input type="text" id="newMarketName" placeholder="Market name" style="flex:1;">
-      <button onclick="addMarket()">+ Add Market</button>
-      <button onclick="clearAllMarkets()" style="background:#B3401F;">Clear All</button>
-    </div>
-    <div class="markets" id="marketCards"></div>
-  </div>
+        function calculate() {
+            const adSpend = parseFloat(document.getElementById('adSpend').value) || 0;
+            const cpl = parseFloat(document.getElementById('cpl').value) || 0;
+            const ticket = parseFloat(document.getElementById('ticket').value) || 0;
+            const margin = parseFloat(document.getElementById('margin').value) / 100 || 0;
+            const approvalRate = parseFloat(document.getElementById('approvalRate').value) / 100 || 0;
+            const closeRate = parseFloat(document.getElementById('closeRate').value) / 100 || 0;
 
-  <div class="panel">
-    <h2>Side-by-Side Comparison</h2>
-    <div style="overflow-x:auto;">
-    <table id="compareTable">
-      <thead>
-        <tr>
-          <th>Market</th><th>Adj. CPL</th><th>First-Time Leads/mo</th><th>Approved/mo</th><th>Closed/mo</th>
-          <th>Monthly rev.</th><th>Annual rev.</th><th>Annual profit</th><th>Break-even CPL</th><th>Headroom</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    </div>
-    <div class="rt-compare"><strong>How to interpret:</strong> Headroom is the cushion between your CPL and break-even. Positive = profitable, negative = unprofitable. "First-Time Leads" = new roof leads only (re-roofs & new construction); does not include repairs or referrals.</div>
-  </div>
+            const leads = cpl > 0 ? adSpend / cpl : 0;
+            const approved = leads * approvalRate;
+            const closed = approved * closeRate;
+            const revenue = closed * ticket;
+            const profit = revenue * margin;
+            const roi = adSpend > 0 ? ((profit - adSpend) / adSpend) * 100 : 0;
 
-  <div class="panel">
-    <h2>Methodology</h2>
-    <div class="note">
-      <strong>Adjusted CPL</strong> = Your CPL × (Channel Benchmark CTR ÷ Your CTR)<br><br>
-      <strong>First-Time Leads/Month</strong> = Monthly Ad Spend ÷ Adjusted CPL (new roof projects only)<br>
-      <strong>Closed Jobs</strong> = Leads × Lead Approval Rate × Approval Close Rate<br>
-      <strong>Break-even CPL</strong> = Ticket × Margin × Overall Close Rate<br>
-      <strong>Headroom</strong> = Break-even CPL − Adjusted CPL
-    </div>
-  </div>
+            document.getElementById('resultSpend').textContent = formatCurrency(adSpend);
+            document.getElementById('resultLeads').textContent = Math.round(leads);
+            document.getElementById('resultApproved').textContent = Math.round(approved);
+            document.getElementById('resultClosed').textContent = Math.round(closed);
+            document.getElementById('resultRevenue').textContent = formatCurrency(revenue);
+            document.getElementById('resultProfit').textContent = formatCurrency(profit);
+            document.getElementById('resultROI').textContent = Math.round(roi) + '%';
+        }
 
-</div>
+        function updateLocationDefaults() {
+            const location = document.getElementById('location').value;
+            const defaults = {
+                'lincoln-omaha': { cpl: 225, ctr: 3.1 },
+                'houston': { cpl: 275, ctr: 2.9 },
+                'neworleans': { cpl: 275, ctr: 3.0 }
+            };
+            const loc = defaults[location];
+            document.getElementById('cpl').value = loc.cpl;
+            document.getElementById('ctr').value = loc.ctr;
+            calculate();
+        }
 
-<footer>
-  <strong>⚠️ DISCLAIMER</strong>
-  <div>This calculator is for Murray Enterprises employees only. Confidential and proprietary.</div>
-  <div style="margin-top:10px;">This model represents estimated performance based on industry benchmarks and state-level data. This is NOT an exact science. Actual results will vary based on market conditions, campaign quality, creative execution, and external factors. Apply a 15-25% margin of error to all projections. CPL and conversion rates listed are based on 2025-2026 state-level benchmarks and may not reflect your specific performance.</div>
-</footer>
+        function updateChannelDefaults() {
+            // Channel info is just for reference; CPL varies by location
+            calculate();
+        }
 
-<script>
-// City-level benchmark data (CPL + CTR by channel)
-const cityData = {
-  lincoln: { name: 'Lincoln, NE', cpl: 225, ctr: 2.8, note: 'Full roof CPL midpoint' },
-  omaha: { name: 'Omaha, NE', cpl: 225, ctr: 3.4, note: 'Full roof CPL midpoint' },
-  houston: { name: 'Houston, TX', cpl: 275, ctr: 2.9, note: 'Full roof CPL midpoint' },
-  neworleans: { name: 'New Orleans, LA', cpl: 275, ctr: 3.0, note: 'Full roof CPL midpoint' }
-};
-
-const stateData = {
-  nebraska: { name: 'Nebraska (Lincoln/Omaha)', cpl: 225, benchmarkNote: 'NE: Full roof CPL $225 (Lincoln/Omaha blend)' },
-  texas: { name: 'Texas (Houston Metro)', cpl: 275, benchmarkNote: 'TX: Full roof CPL $275 (Houston Metro)' },
-  louisiana: { name: 'Louisiana (New Orleans)', cpl: 275, benchmarkNote: 'LA: Full roof CPL $275 (New Orleans)' }
-};
-
-// Predefined market combinations with blended benchmarks
-const marketPresets = {
-  lincolnomaha: {
-    name: 'Lincoln/Omaha, NE',
-    cities: ['lincoln', 'omaha'],
-    state: 'nebraska',
-    cpl: Math.round((225 + 225) / 2),
-    ctr: ((2.8 + 3.4) / 2).toFixed(2)
-  },
-  houston: {
-    name: 'Houston Metro, TX',
-    cities: ['houston'],
-    state: 'texas',
-    cpl: 275,
-    ctr: 2.9
-  },
-  neworleans: {
-    name: 'New Orleans, LA',
-    cities: ['neworleans'],
-    state: 'louisiana',
-    cpl: 275,
-    ctr: 3.0
-  }
-};
-
-// Function to calculate blended CPL/CTR from city names
-function getBlendedBenchmarks(marketName) {
-  // Try to match predefined preset first
-  for (const [key, preset] of Object.entries(marketPresets)) {
-    if (marketName.toLowerCase().includes(key.replace(/omaha|houston|neworleans|lincoln/gi, m => m))) {
-      return { cpl: preset.cpl, ctr: preset.ctr, note: `Blended: ${preset.cities.map(c => cityData[c]?.name || c).join(' + ')}` };
-    }
-  }
-  
-  // Parse city names (separated by /)
-  const cityNames = marketName.split('/').map(c => c.trim().toLowerCase());
-  const cities = cityNames
-    .map(name => Object.entries(cityData).find(([key, data]) => data.name.toLowerCase().includes(name)))
-    .filter(match => match);
-  
-  if (cities.length === 0) return null;
-  
-  const avgCPL = Math.round(cities.reduce((sum, [_, data]) => sum + data.cpl, 0) / cities.length);
-  const avgCTR = (cities.reduce((sum, [_, data]) => sum + data.ctr, 0) / cities.length).toFixed(2);
-  const cityList = cities.map(([_, data]) => data.name).join(' + ');
-  
-  return { cpl: avgCPL, ctr: avgCTR, note: `Blended: ${cityList}` };
-}
-
-const channelBenchmarks = {
-  googleSearch: { name: 'Google Search Ads', ctr: 3.17, note: 'Cross-industry: 3.17% | Home Services: 2.87-5.71%' },
-  googleDisplay: { name: 'Google Display Ads', ctr: 0.46, note: 'Display: 0.46% (10x lower than Search)' },
-  facebook: { name: 'Facebook/Instagram', ctr: 2.19, note: 'Meta median: 2.19% | Home Services: 0.96-1.79%' },
-  tiktok: { name: 'TikTok Ads', ctr: 1.5, note: 'TikTok: 1.5% (emerging channel)' },
-  googleLSA: { name: 'Google Local Services Ads', ctr: 4.2, note: 'LSA: 4.2% (high-intent local)' },
-  youtube: { name: 'YouTube Ads', ctr: 0.65, note: 'YouTube: 0.65% (similar to Display)' },
-  linkedin: { name: 'LinkedIn Ads', ctr: 0.55, note: 'LinkedIn: 0.55% (B2B professional audience)' },
-  custom: { name: 'Custom Channel', ctr: 4.5, note: 'Custom: 4.5% (adjust as needed)' }
-};
-
-let markets = [
-  {key:'lincolnomaha', name:'Lincoln/Omaha, NE', state:'nebraska', cpl:225, ctr:3.1},
-  {key:'houston', name:'Houston Metro, TX', state:'texas', cpl:275, ctr:2.9},
-  {key:'neworleans', name:'New Orleans, LA', state:'louisiana', cpl:275, ctr:3.0}
-];
-
-let benchmarkCTR = 3.17;
-
-function fmt$(n){ return '$' + Math.round(n).toLocaleString(); }
-function fmt1(n){ return (Math.round(n*10)/10).toLocaleString(); }
-
-document.getElementById('marketState').addEventListener('change', function(){
-  if(this.value && this.value !== 'custom') {
-    const state = stateData[this.value];
-    document.getElementById('newMarketName').value = state.name;
-  }
-});
-
-document.getElementById('channelType').addEventListener('change', function(){
-  const channel = channelBenchmarks[this.value];
-  benchmarkCTR = channel.ctr;
-  document.getElementById('benchmarkNote').textContent = channel.name + ' — ' + channel.note;
-  recalc();
-});
-
-function addMarket(){
-  const name = document.getElementById('newMarketName').value.trim();
-  const stateVal = document.getElementById('marketState').value;
-  
-  if(!name) { alert('Enter market name'); return; }
-  
-  let cpl = null;
-  let ctr = null;
-  let state = stateVal;
-  
-  if(stateVal && stateVal !== 'custom') {
-    // Get blended benchmarks from city names
-    const blended = getBlendedBenchmarks(name);
-    if (blended) {
-      cpl = blended.cpl;
-      ctr = parseFloat(blended.ctr);
-    } else {
-      // Fallback to state-level if no city match
-      cpl = stateData[stateVal].cpl;
-      ctr = benchmarkCTR;
-    }
-  } else {
-    alert('Please select a state');
-    return;
-  }
-  
-  const key = 'market_' + Date.now();
-  markets.push({key, name, state, cpl, ctr});
-  document.getElementById('newMarketName').value = '';
-  document.getElementById('marketState').value = '';
-  renderMarketCards();
-  recalc();
-}
-
-function removeMarket(key){
-  markets = markets.filter(m => m.key !== key);
-  renderMarketCards();
-  recalc();
-}
-
-function clearAllMarkets(){
-  if(confirm('Clear all markets?')) { markets = []; renderMarketCards(); recalc(); }
-}
-
-function renderMarketCards(){
-  const wrap = document.getElementById('marketCards');
-  if(markets.length === 0) { wrap.innerHTML = '<p style="color:var(--muted);">No markets added. Use the form above to add markets.</p>'; return; }
-  wrap.innerHTML = markets.map(m => `
-    <div class="mcard" id="card-${m.key}">
-      <div class="market-card-header">
-        <h3>${m.name}</h3>
-        <button onclick="removeMarket('${m.key}')">Remove</button>
-      </div>
-      <div class="mrow">
-        <div class="field"><label>Cost per Lead ($)</label><input type="number" id="cpl-${m.key}" value="${m.cpl}" step="1" onchange="recalc()"></div>
-        <div class="field"><label>Your CTR (%)</label><input type="number" id="ctr-${m.key}" value="${(m.ctr || benchmarkCTR).toFixed(2)}" step="0.1" onchange="recalc()"></div>
-      </div>
-      <div id="stats-${m.key}"></div>
-    </div>`).join('');
-}
-
-function computeMarket(m){
-  const adSpend = parseFloat(document.getElementById('adSpend').value) || 0;
-  const cpl = parseFloat(document.getElementById('cpl-'+m.key).value) || 0;
-  const ctr = parseFloat(document.getElementById('ctr-'+m.key).value) || 0.01;
-  const ticket = parseFloat(document.getElementById('ticket').value) || 0;
-  const margin = (parseFloat(document.getElementById('margin').value) || 0) / 100;
-  const leadApproval = (parseFloat(document.getElementById('leadApproval').value) || 0) / 100;
-  const approvalClose = (parseFloat(document.getElementById('approvalClose').value) || 0) / 100;
-  
-  const adjustedCPL = cpl * (benchmarkCTR / ctr);
-  const leads = adSpend / adjustedCPL;
-  const approved = leads * leadApproval;
-  const closed = approved * approvalClose;
-  const overallClose = leadApproval * approvalClose;
-  const monthlyRev = closed * ticket;
-  const annualRev = monthlyRev * 12;
-  const annualGrossProfit = annualRev * margin;
-  const breakevenCPL = ticket * margin * overallClose;
-  const headroom = breakevenCPL - adjustedCPL;
-  
-  return {adjustedCPL, leads, approved, closed, overallClose, monthlyRev, annualRev, annualGrossProfit, breakevenCPL, headroom, name:m.name};
-}
-
-function recalc(){
-  const rows = [];
-  markets.forEach(m => {
-    const r = computeMarket(m);
-    const okBadge = r.headroom >= 0
-      ? `<span class="badge good">${fmt$(r.headroom)} headroom</span>`
-      : `<span class="badge bad">${fmt$(-r.headroom)} over budget</span>`;
-    document.getElementById('stats-'+m.key).innerHTML = `
-      <div class="stat"><span>Adjusted CPL</span><b>${fmt$(r.adjustedCPL)}</b></div>
-      <div class="stat"><span>First-Time Leads / mo</span><b>${fmt1(r.leads)}</b></div>
-      <div class="stat"><span>Approved / month</span><b>${fmt1(r.approved)}</b></div>
-      <div class="stat"><span>Closed jobs / month</span><b>${fmt1(r.closed)}</b></div>
-      <div class="stat"><span>Annual revenue</span><b>${fmt$(r.annualRev)}</b></div>
-      <div class="stat total"><span>Break-even CPL</span><b>${fmt$(r.breakevenCPL)} ${okBadge}</b></div>
-    `;
-    rows.push(r);
-  });
-  
-  const tbody = document.querySelector('#compareTable tbody');
-  tbody.innerHTML = rows.map(r => `
-    <tr>
-      <td>${r.name}</td>
-      <td>${fmt$(r.adjustedCPL)}</td>
-      <td>${fmt1(r.leads)}</td>
-      <td>${fmt1(r.approved)}</td>
-      <td>${fmt1(r.closed)}</td>
-      <td>${fmt$(r.monthlyRev)}</td>
-      <td>${fmt$(r.annualRev)}</td>
-      <td>${fmt$(r.annualGrossProfit)}</td>
-      <td>${fmt$(r.breakevenCPL)}</td>
-      <td style="color:${r.headroom>=0?'var(--good)':'var(--bad)'};font-weight:700;">${fmt$(r.headroom)}</td>
-    </tr>`).join('');
-}
-
-document.getElementById('channelType').addEventListener('change', recalc);
-document.getElementById('channelName').addEventListener('input', recalc);
-document.getElementById('adSpend').addEventListener('input', recalc);
-document.getElementById('ticket').addEventListener('input', recalc);
-document.getElementById('margin').addEventListener('input', recalc);
-document.getElementById('leadApproval').addEventListener('input', recalc);
-document.getElementById('approvalClose').addEventListener('input', recalc);
-
-renderMarketCards();
-recalc();
-</script>
+        // Initialize
+        calculate();
+        document.getElementById('adSpend').addEventListener('input', calculate);
+        document.getElementById('cpl').addEventListener('input', calculate);
+        document.getElementById('ticket').addEventListener('input', calculate);
+        document.getElementById('margin').addEventListener('input', calculate);
+    </script>
 </body>
 </html>
