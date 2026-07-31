@@ -29,12 +29,12 @@
         label { display: block; font-size: 13px; font-weight: bold; color: #3d3d3d; margin-bottom: 6px; text-transform: uppercase; }
         input, select { width: 100%; padding: 10px; border: 1px solid #d0d0d0; border-radius: 4px; font-size: 14px; font-family: inherit; }
         input:focus, select:focus { outline: none; border-color: #b69d5e; box-shadow: 0 0 0 3px rgba(182, 157, 94, 0.1); }
+        input[type="checkbox"] { width: auto; margin-right: 8px; }
         
         .input-group { display: flex; gap: 10px; align-items: flex-end; }
         .input-group input { flex: 1; }
         button.add-market { padding: 10px 20px; background: #438148; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         button.add-market:hover { background: #357039; }
-        button.remove { padding: 6px 12px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
         
         /* Results */
         .results { background: #f9f9f9; padding: 20px; border-radius: 6px; border-left: 4px solid #b69d5e; }
@@ -43,15 +43,20 @@
         .result-value { font-weight: bold; color: #3d3d3d; }
         .result-value.highlight { color: #b69d5e; font-size: 18px; }
         
-        .market-card { background: #f9f9f9; padding: 15px; border-radius: 6px; border-left: 4px solid #438148; margin-bottom: 15px; }
-        .market-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .market-title { font-weight: bold; color: #3d3d3d; }
+        .seasonal-info { background: #e8f4f0; padding: 15px; border-radius: 6px; border-left: 4px solid #438148; margin: 15px 0; font-size: 12px; color: #2d5d4f; }
+        .seasonal-info strong { display: block; margin-bottom: 6px; }
+        .seasonal-breakdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; font-size: 11px; }
+        .season { background: white; padding: 6px; border-radius: 3px; text-align: center; }
+        .season-name { font-weight: bold; }
+        .season-ctr { color: #438148; }
         
-        /* Table */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; font-size: 13px; }
-        th { background: #f0f0f0; font-weight: bold; color: #3d3d3d; }
-        tr:hover { background: #f9f9f9; }
+        /* Annual Projection */
+        .annual-section { background: #fff8e6; border: 2px solid #b69d5e; border-radius: 6px; padding: 20px; margin-top: 20px; }
+        .annual-section .section-title { margin-top: 0; }
+        .annual-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; font-size: 15px; border-bottom: 1px solid #e0d9c8; }
+        .annual-row:last-child { border-bottom: none; }
+        .annual-label { color: #666; }
+        .annual-value { font-weight: bold; color: #b69d5e; font-size: 16px; }
         
         /* Footer */
         .footer { background: #f5f5f5; padding: 20px; font-size: 11px; color: #999; border-radius: 0 0 8px 8px; text-align: center; }
@@ -94,9 +99,9 @@
                     <div class="form-group">
                         <label>Location</label>
                         <select id="location" onchange="updateLocationDefaults()">
-                            <option value="lincoln-omaha">Lincoln/Omaha, NE ($225 CPL, 3.1% CTR)</option>
-                            <option value="houston">Houston, TX ($275 CPL, 2.9% CTR)</option>
-                            <option value="neworleans">New Orleans, LA ($275 CPL, 3.0% CTR)</option>
+                            <option value="lincoln-omaha">Lincoln/Omaha, NE ($225 CPL)</option>
+                            <option value="houston">Houston, TX ($275 CPL, Year-Round)</option>
+                            <option value="neworleans">New Orleans, LA ($275 CPL, Year-Round)</option>
                         </select>
                     </div>
                 </div>
@@ -119,7 +124,49 @@
                             <input type="number" id="ctr" value="3.1" min="0" step="0.1" style="flex: 1;">
                             <span style="padding: 10px; color: #999;">%</span>
                         </div>
+                        <div id="ctrNote" style="font-size: 11px; color: #666; margin-top: 4px;"></div>
                     </div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center;">
+                            <input type="checkbox" id="useSeasonalBlend" onchange="toggleSeasonalBlend()">
+                            Use Seasonal Blending (Lincoln/Omaha)
+                        </label>
+                        <div style="font-size: 11px; color: #999; margin-top: 4px;">Accounts for spring/summer peaks &amp; winter dips</div>
+                    </div>
+                </div>
+
+                <div id="seasonalDisplay" style="display: none;">
+                    <div class="seasonal-info">
+                        <strong>📅 Seasonal CTR Blending for Lincoln/Omaha:</strong>
+                        <div class="seasonal-breakdown">
+                            <div class="season">
+                                <div class="season-name">Spring</div>
+                                <div class="season-ctr">5.0%</div>
+                                <div style="font-size: 10px; color: #999;">Mar-May</div>
+                            </div>
+                            <div class="season">
+                                <div class="season-name">Summer</div>
+                                <div class="season-ctr">4.15%</div>
+                                <div style="font-size: 10px; color: #999;">Jun-Aug</div>
+                            </div>
+                            <div class="season">
+                                <div class="season-name">Fall</div>
+                                <div class="season-ctr">3.75%</div>
+                                <div style="font-size: 10px; color: #999;">Sep-Nov</div>
+                            </div>
+                            <div class="season">
+                                <div class="season-name">Winter</div>
+                                <div class="season-ctr">3.0%</div>
+                                <div style="font-size: 10px; color: #999;">Dec-Feb</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(45, 93, 79, 0.2);">
+                            <strong>Annual Blended Average:</strong> 3.98% CTR
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid">
                     <div class="form-group">
                         <label>Average Ticket</label>
                         <div style="display: flex; gap: 8px;">
@@ -159,14 +206,14 @@
                             <input type="number" id="closeRate" value="83" min="0" max="100" step="1" style="flex: 1;" readonly style="background: #f0f0f0;">
                             <span style="padding: 10px; color: #999;">%</span>
                         </div>
-                        <div style="font-size: 11px; color: #999; margin-top: 4px;">Source: Acculynx CRM (645 closed deals)</div>
+                        <div style="font-size: 11px; color: #999; margin-top: 4px;">Source: Acculynx CRM (3,096 leads analyzed)</div>
                     </div>
                 </div>
             </div>
 
             <!-- Results -->
             <div class="section">
-                <div class="section-title">ROI Analysis</div>
+                <div class="section-title">Monthly ROI Analysis</div>
                 
                 <div class="results">
                     <div class="result-row">
@@ -174,7 +221,7 @@
                         <span class="result-value">$<span id="resultSpend">1,000</span></span>
                     </div>
                     <div class="result-row">
-                        <span class="result-label">Leads Generated (from spend)</span>
+                        <span class="result-label">Leads Generated</span>
                         <span class="result-value"><span id="resultLeads">4</span> leads</span>
                     </div>
                     <div class="result-row">
@@ -188,15 +235,47 @@
                     <hr style="margin: 15px 0; border: none; border-top: 1px solid #e0e0e0;">
                     <div class="result-row">
                         <span class="result-label">Revenue (from closures)</span>
-                        <span class="result-value highlight">$<span id="resultRevenue">10,000</span></span>
+                        <span class="result-value highlight">$<span id="resultRevenue">15,000</span></span>
                     </div>
                     <div class="result-row">
                         <span class="result-label">Gross Profit</span>
-                        <span class="result-value highlight">$<span id="resultProfit">3,000</span></span>
+                        <span class="result-value highlight">$<span id="resultProfit">4,500</span></span>
                     </div>
                     <div class="result-row">
-                        <span class="result-label">ROI</span>
-                        <span class="result-value highlight"><span id="resultROI">200%</span></span>
+                        <span class="result-label">Monthly ROI</span>
+                        <span class="result-value highlight"><span id="resultROI">350%</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Annual Projection -->
+            <div class="annual-section">
+                <div class="section-title" style="margin-top: 0;">Annual Projection (12 Months)</div>
+                
+                <div class="annual-row">
+                    <span class="annual-label">Annual Ad Spend (12 × monthly)</span>
+                    <span class="annual-value">$<span id="annualSpend">12,000</span></span>
+                </div>
+                <div class="annual-row">
+                    <span class="annual-label">Total Leads Generated</span>
+                    <span class="annual-value"><span id="annualLeads">48</span> leads</span>
+                </div>
+                <div class="annual-row">
+                    <span class="annual-label">Total Deals Closed</span>
+                    <span class="annual-value"><span id="annualClosed">8</span> contracts</span>
+                </div>
+                <div style="margin: 15px 0; padding: 15px; background: rgba(255,255,255,0.5); border-radius: 4px;">
+                    <div class="annual-row">
+                        <span class="annual-label">Annual Gross Revenue</span>
+                        <span class="annual-value">$<span id="annualRevenue">120,000</span></span>
+                    </div>
+                    <div class="annual-row">
+                        <span class="annual-label">Annual Gross Profit</span>
+                        <span class="annual-value">$<span id="annualProfit">36,000</span></span>
+                    </div>
+                    <div class="annual-row">
+                        <span class="annual-label">Annual ROI</span>
+                        <span class="annual-value">300%</span>
                     </div>
                 </div>
             </div>
@@ -204,17 +283,25 @@
             <!-- Disclaimer -->
             <div style="background: #fff3cd; padding: 15px; border-radius: 6px; margin-top: 20px;">
                 <strong style="color: #856404;">⚠ Disclaimer</strong>
-                <p style="color: #856404; font-size: 12px; margin-top: 5px;">This calculator is for Murray Enterprises internal use only. Results include a 15–25% margin of error due to variability in lead quality, seasonal factors, and market conditions. First-time leads (re-roofs/new construction) only. All ratios sourced from Acculynx CRM historical data (Lincoln/Omaha).</p>
+                <p style="color: #856404; font-size: 12px; margin-top: 5px;">This calculator is for Murray Enterprises internal use only. Results include a 15–25% margin of error due to variability in lead quality, seasonal factors, and market conditions. First-time leads (re-roofs/new construction) only. All ratios sourced from Acculynx CRM historical data (Lincoln/Omaha). Seasonal blending reflects industry weather patterns; actual performance may vary by year.</p>
             </div>
         </div>
 
         <div class="footer">
-            <strong>Murray ROI Calculator v2.1 — Real Data Integration</strong>
-            Updated: July 30, 2026 | Acculynx Ratios: 33% Approval, 83% Close | Data refresh quarterly
+            <strong>Murray ROI Calculator v3.0 — Seasonal &amp; Annual Projections</strong>
+            Updated: July 31, 2026 | Acculynx Real Data | Seasonal blending for Lincoln/Omaha
         </div>
     </div>
 
     <script>
+        const seasonalCTR = {
+            spring: 5.0,    // Mar-May
+            summer: 4.15,   // Jun-Aug
+            fall: 3.75,     // Sep-Nov
+            winter: 3.0     // Dec-Feb
+        };
+        const blendedAnnualCTR = (seasonalCTR.spring + seasonalCTR.summer + seasonalCTR.fall + seasonalCTR.winter) / 4;
+
         function formatCurrency(num) {
             return Math.round(num).toLocaleString('en-US');
         }
@@ -222,11 +309,13 @@
         function calculate() {
             const adSpend = parseFloat(document.getElementById('adSpend').value) || 0;
             const cpl = parseFloat(document.getElementById('cpl').value) || 0;
+            const ctr = parseFloat(document.getElementById('ctr').value) || 0;
             const ticket = parseFloat(document.getElementById('ticket').value) || 0;
             const margin = parseFloat(document.getElementById('margin').value) / 100 || 0;
             const approvalRate = parseFloat(document.getElementById('approvalRate').value) / 100 || 0;
             const closeRate = parseFloat(document.getElementById('closeRate').value) / 100 || 0;
 
+            // Monthly calculations
             const leads = cpl > 0 ? adSpend / cpl : 0;
             const approved = leads * approvalRate;
             const closed = approved * closeRate;
@@ -234,6 +323,15 @@
             const profit = revenue * margin;
             const roi = adSpend > 0 ? ((profit - adSpend) / adSpend) * 100 : 0;
 
+            // Annual calculations
+            const annualSpend = adSpend * 12;
+            const annualLeads = leads * 12;
+            const annualClosed = closed * 12;
+            const annualRevenue = revenue * 12;
+            const annualProfit = profit * 12;
+            const annualROI = annualSpend > 0 ? ((annualProfit - annualSpend) / annualSpend) * 100 : 0;
+
+            // Update monthly results
             document.getElementById('resultSpend').textContent = formatCurrency(adSpend);
             document.getElementById('resultLeads').textContent = Math.round(leads);
             document.getElementById('resultApproved').textContent = Math.round(approved);
@@ -241,6 +339,13 @@
             document.getElementById('resultRevenue').textContent = formatCurrency(revenue);
             document.getElementById('resultProfit').textContent = formatCurrency(profit);
             document.getElementById('resultROI').textContent = Math.round(roi) + '%';
+
+            // Update annual results
+            document.getElementById('annualSpend').textContent = formatCurrency(annualSpend);
+            document.getElementById('annualLeads').textContent = Math.round(annualLeads);
+            document.getElementById('annualClosed').textContent = Math.round(annualClosed);
+            document.getElementById('annualRevenue').textContent = formatCurrency(annualRevenue);
+            document.getElementById('annualProfit').textContent = formatCurrency(annualProfit);
         }
 
         function updateLocationDefaults() {
@@ -253,11 +358,33 @@
             const loc = defaults[location];
             document.getElementById('cpl').value = loc.cpl;
             document.getElementById('ctr').value = loc.ctr;
+            document.getElementById('useSeasonalBlend').checked = false;
+            document.getElementById('seasonalDisplay').style.display = 'none';
+            document.getElementById('ctrNote').textContent = '';
+            calculate();
+        }
+
+        function toggleSeasonalBlend() {
+            const location = document.getElementById('location').value;
+            const isChecked = document.getElementById('useSeasonalBlend').checked;
+            
+            if (isChecked && location === 'lincoln-omaha') {
+                document.getElementById('ctr').value = blendedAnnualCTR.toFixed(2);
+                document.getElementById('ctrNote').textContent = 'Using blended annual rate accounting for seasonal patterns';
+                document.getElementById('seasonalDisplay').style.display = 'block';
+            } else if (isChecked && location !== 'lincoln-omaha') {
+                document.getElementById('useSeasonalBlend').checked = false;
+                alert('Seasonal blending is only available for Lincoln/Omaha. Texas and Louisiana markets are year-round.');
+                document.getElementById('seasonalDisplay').style.display = 'none';
+            } else {
+                document.getElementById('seasonalDisplay').style.display = 'none';
+                document.getElementById('ctrNote').textContent = '';
+                updateLocationDefaults();
+            }
             calculate();
         }
 
         function updateChannelDefaults() {
-            // Channel info is just for reference; CPL varies by location
             calculate();
         }
 
@@ -265,6 +392,7 @@
         calculate();
         document.getElementById('adSpend').addEventListener('input', calculate);
         document.getElementById('cpl').addEventListener('input', calculate);
+        document.getElementById('ctr').addEventListener('input', calculate);
         document.getElementById('ticket').addEventListener('input', calculate);
         document.getElementById('margin').addEventListener('input', calculate);
     </script>
