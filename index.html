@@ -253,7 +253,7 @@
                             <span class="result-label">Deals Closed (83%)</span>
                             <span class="result-value"><span id="resultClosed">0</span></span>
                         </div>
-                        <div class="result-row" style="padding-top: 15px;">
+                        <div class="result-row" style="padding-top: 15px; border-top: 2px solid #e0e0e0;">
                             <span class="result-label"><strong>Monthly Revenue</strong></span>
                             <span class="result-value highlight">$<span id="resultRevenue">0</span></span>
                         </div>
@@ -265,9 +265,23 @@
                             <span class="result-label"><strong>Monthly ROI</strong></span>
                             <span class="result-value highlight"><span id="resultROI">0%</span></span>
                         </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Annual Projections (12 Months)</div>
+                    <div class="results">
                         <div class="result-row">
-                            <span class="result-label"><strong>Annual Projection (12 mo)</strong></span>
-                            <span class="result-value highlight">$<span id="resultAnnual">0</span></span>
+                            <span class="result-label"><strong>Annual Revenue</strong></span>
+                            <span class="result-value highlight">$<span id="resultAnnualRevenue">0</span></span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label"><strong>Annual Gross Profit</strong></span>
+                            <span class="result-value highlight">$<span id="resultAnnualProfit">0</span></span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label"><strong>Annual ROI</strong></span>
+                            <span class="result-value highlight"><span id="resultAnnualROI">0%</span></span>
                         </div>
                     </div>
 
@@ -406,14 +420,21 @@
             const ticket = parseFloat(document.getElementById('ticket').value) || 0;
             const margin = parseFloat(document.getElementById('margin').value) / 100 || 0;
 
+            // Monthly calculations
             const leads = cpl > 0 ? adSpend / cpl : 0;
             const approved = leads * ACCULYNX_DATA.approvalRate;
             const closed = approved * ACCULYNX_DATA.closeRate;
             const revenue = closed * ticket;
             const profit = revenue * margin;
             const roi = adSpend > 0 ? ((profit - adSpend) / adSpend) * 100 : 0;
-            const annualProfit = profit * 12;
 
+            // Annual calculations (12 months)
+            const annualSpend = adSpend * 12;
+            const annualRevenue = revenue * 12;
+            const annualProfit = profit * 12;
+            const annualROI = annualSpend > 0 ? ((annualProfit - annualSpend) / annualSpend) * 100 : 0;
+
+            // Update monthly results
             document.getElementById('resultSpend').textContent = Math.round(adSpend).toLocaleString();
             document.getElementById('resultLeads').textContent = Math.round(leads);
             document.getElementById('resultApproved').textContent = Math.round(approved);
@@ -421,7 +442,11 @@
             document.getElementById('resultRevenue').textContent = Math.round(revenue).toLocaleString();
             document.getElementById('resultProfit').textContent = Math.round(profit).toLocaleString();
             document.getElementById('resultROI').textContent = Math.round(roi) + '%';
-            document.getElementById('resultAnnual').textContent = Math.round(annualProfit).toLocaleString();
+
+            // Update annual results
+            document.getElementById('resultAnnualRevenue').textContent = Math.round(annualRevenue).toLocaleString();
+            document.getElementById('resultAnnualProfit').textContent = Math.round(annualProfit).toLocaleString();
+            document.getElementById('resultAnnualROI').textContent = Math.round(annualROI) + '%';
         }
 
         function saveScenario() {
@@ -453,7 +478,9 @@
                     revenue: document.getElementById('resultRevenue').textContent,
                     profit: document.getElementById('resultProfit').textContent,
                     roi: document.getElementById('resultROI').textContent,
-                    annual: document.getElementById('resultAnnual').textContent
+                    annualRevenue: document.getElementById('resultAnnualRevenue').textContent,
+                    annualProfit: document.getElementById('resultAnnualProfit').textContent,
+                    annualROI: document.getElementById('resultAnnualROI').textContent
                 },
                 active: false
             };
@@ -487,8 +514,9 @@
                     <div class="scenario-info">
                         <div class="scenario-name">${s.name}</div>
                         <div class="scenario-meta">
-                            ${TERRITORIES_DB[s.territory]?.name || s.territory} | $${s.cpl} CPL | $${Math.round(s.adSpend).toLocaleString()}/mo spend<br>
-                            ROI: <strong>${s.results.roi}</strong> | Saved: ${s.timestamp}
+                            ${TERRITORIES_DB[s.territory]?.name || s.territory} | $${s.cpl} CPL | $${Math.round(s.adSpend).toLocaleString()}/mo<br>
+                            Monthly ROI: <strong>${s.results.roi}</strong> | Annual ROI: <strong>${s.results.annualROI || '0%'}</strong><br>
+                            <span style="font-size: 11px; color: #bbb;">Saved: ${s.timestamp}</span>
                         </div>
                     </div>
                     <div class="scenario-actions">
@@ -609,15 +637,19 @@
                         <div><strong>Monthly Spend:</strong> $${Math.round(s.adSpend).toLocaleString()}</div>
                         <div><strong>CPL:</strong> $${s.cpl}</div>
                         <div style="border-top: 1px solid #ddd; margin: 10px 0; padding-top: 10px;">
-                            <div><strong>Leads/mo:</strong> ${s.results.leads}</div>
+                            <div><strong>Monthly Leads:</strong> ${s.results.leads}</div>
                             <div><strong>Approved:</strong> ${s.results.approved}</div>
                             <div><strong>Closed:</strong> ${s.results.closed}</div>
                         </div>
                         <div style="border-top: 1px solid #ddd; margin: 10px 0; padding-top: 10px; color: #b69d5e; font-weight: bold;">
+                            <div style="font-size: 12px; margin-bottom: 8px; color: #999;">Monthly:</div>
                             <div>Revenue: $${s.results.revenue}</div>
                             <div>Profit: $${s.results.profit}</div>
                             <div>ROI: ${s.results.roi}</div>
-                            <div style="font-size: 12px; margin-top: 10px;">Annual: $${s.results.annual}</div>
+                            <div style="border-top: 1px solid rgba(182,157,94,0.3); margin: 8px 0; padding-top: 8px; font-size: 12px; color: #999;">Annual:</div>
+                            <div>Revenue: $${s.results.annualRevenue || '0'}</div>
+                            <div>Profit: $${s.results.annualProfit || '0'}</div>
+                            <div>ROI: ${s.results.annualROI || '0%'}</div>
                         </div>
                     </div>
                 </div>
