@@ -551,17 +551,17 @@
             const annualROI = annualSpend > 0 ? ((annualProfit - annualSpend) / annualSpend) * 100 : 0;
 
             // Update monthly results
-            document.getElementById('resultSpend').textContent = Math.round(adSpend).toLocaleString();
+            document.getElementById('resultSpend').textContent = Math.round(adSpend).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
             document.getElementById('resultLeads').textContent = Math.round(leads);
             document.getElementById('resultApproved').textContent = Math.round(approved);
             document.getElementById('resultClosed').textContent = Math.round(closed);
-            document.getElementById('resultRevenue').textContent = Math.round(revenue).toLocaleString();
-            document.getElementById('resultProfit').textContent = Math.round(profit).toLocaleString();
+            document.getElementById('resultRevenue').textContent = Math.round(revenue).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('resultProfit').textContent = Math.round(profit).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
             document.getElementById('resultROI').textContent = Math.round(roi) + '%';
 
             // Update annual results
-            document.getElementById('resultAnnualRevenue').textContent = Math.round(annualRevenue).toLocaleString();
-            document.getElementById('resultAnnualProfit').textContent = Math.round(annualProfit).toLocaleString();
+            document.getElementById('resultAnnualRevenue').textContent = Math.round(annualRevenue).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('resultAnnualProfit').textContent = Math.round(annualProfit).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
             document.getElementById('resultAnnualROI').textContent = Math.round(annualROI) + '%';
         }
 
@@ -635,7 +635,7 @@
                     <div class="scenario-info">
                         <div class="scenario-name">${s.name}</div>
                         <div class="scenario-meta">
-                            ${TERRITORIES_DB[s.territory]?.name || s.territory} | $${s.cpl} CPL | ${s.ctrType === 'blended' ? 'Blended' : 'Flat'} CTR (${s.ctr}%) | $${Math.round(s.adSpend).toLocaleString()}/mo<br>
+                            ${TERRITORIES_DB[s.territory]?.name || s.territory} | $${s.cpl} CPL | ${s.ctrType === 'blended' ? 'Blended' : 'Flat'} CTR (${s.ctr}%) | $${Math.round(s.adSpend).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}/mo<br>
                             Monthly ROI: <strong>${s.results.roi}</strong> | Annual ROI: <strong>${s.results.annualROI || '0%'}</strong><br>
                             <span style="font-size: 11px; color: #bbb;">Saved: ${s.timestamp}</span>
                         </div>
@@ -783,7 +783,7 @@
                     <div class="comparison-title">${s.name}</div>
                     <div style="font-size: 12px; color: #999; margin-bottom: 15px;">${TERRITORIES_DB[s.territory]?.name || s.territory}</div>
                     <div style="font-size: 13px; line-height: 1.8;">
-                        <div><strong>Monthly Spend:</strong> $${Math.round(s.adSpend).toLocaleString()}</div>
+                        <div><strong>Monthly Spend:</strong> $${Math.round(s.adSpend).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
                         <div><strong>CPL:</strong> $${s.cpl}</div>
                         <div style="border-top: 1px solid #ddd; margin: 10px 0; padding-top: 10px;">
                             <div><strong>Monthly Leads:</strong> ${s.results.leads}</div>
