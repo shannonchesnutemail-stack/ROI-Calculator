@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Murray ROI Calculator v4.1.1 - Scenario Manager</title>
+    <title>Murray ROI Calculator v4.2.0 - Scenario Manager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Century Gothic', 'Helvetica Neue', sans-serif; background: #f5f5f5; padding: 20px; }
@@ -101,7 +101,7 @@
             <div class="logo-img">M</div>
             <div>
                 <h1>MURRAY ROI CALCULATOR</h1>
-                <div class="header-subtitle">Scenario Manager & Territory Comparison | v4.1.1</div>
+                <div class="header-subtitle">Scenario Manager & Territory Comparison | v4.2.0</div>
             </div>
         </div>
 
@@ -117,16 +117,17 @@
             <!-- TAB 1: Scenario Builder -->
             <div id="builder" class="tab-content active">
                 <div class="section">
-                    <div class="section-title">Calculator v4.1.1 Features & Data Accuracy</div>
+                    <div class="section-title">Calculator v4.2.0 Features & Data Accuracy</div>
                     
                     <div style="background: #e8f5e9; border: 2px solid #438148; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                        <div style="font-size: 14px; font-weight: bold; color: #438148; margin-bottom: 12px;">✨ Latest Updates (v4.1.1)</div>
+                        <div style="font-size: 14px; font-weight: bold; color: #438148; margin-bottom: 12px;">✨ Latest Updates (v4.2.0)</div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 13px; color: #2d5d4f;">
                             <div>✅ <strong>CTR Type Selector:</strong> Choose Flat or Blended annual rates</div>
                             <div>✅ <strong>Seasonal Blending:</strong> Enter Spring/Summer/Fall/Winter CTR rates</div>
                             <div>✅ <strong>Auto Blended Avg:</strong> System calculates annual average CTR</div>
                             <div>✅ <strong>Whole Dollar Display:</strong> All $ amounts show as whole numbers</div>
                             <div>✅ <strong>Scenario Manager:</strong> Save unlimited ROI plans with timestamps</div>
+                            <div>✅ <strong>Seasonal CPL:</strong> Lincoln/Omaha now auto-detects Spring/Summer/Fall/Winter CPL from today's date instead of a blended rate</div>
                             <div>✅ <strong>Territory Database:</strong> Add/manage CPL and CTR type by city/state</div>
                             <div>✅ <strong>Compare 3 Scenarios:</strong> View side-by-side ROI projections</div>
                             <div>✅ <strong>Export All:</strong> Download scenarios as JSON backup</div>
@@ -148,7 +149,7 @@
                             </div>
                             <div class="accuracy-item">
                                 <span class="accuracy-label">CPL by Territory</span>
-                                <span class="accuracy-value">✅ Territory database (auto-lookup)</span>
+                                <span class="accuracy-value">✅ Lincoln/Omaha: Seasonal (auto-detected) | Others: Flat</span>
                                 <span class="data-status status-real">VALIDATED</span>
                             </div>
                             <div class="accuracy-item">
@@ -197,7 +198,7 @@
                                 <span style="padding: 10px; color: #999;">$</span>
                                 <input type="number" id="cpl" readonly style="background: #f0f0f0;">
                             </div>
-                            <div class="form-note">Based on territory database. Edit Territory Database to update.</div>
+                            <div class="form-note">Using: <span id="cplDisplay" style="color: #b69d5e; font-weight: bold;">-- (select a territory)</span></div>
                         </div>
                     </div>
 
@@ -323,8 +324,58 @@
                                     <span style="padding: 10px; color: #999;">$</span>
                                     <input type="number" id="newTerrCpl" min="0" step="10" style="flex: 1;">
                                 </div>
+                                <div class="form-note">Used when CPL Type is "Flat", or as fallback</div>
                             </div>
                         </div>
+                        <div class="grid">
+                            <div class="form-group">
+                                <label>CPL Type</label>
+                                <select id="newTerrCplType" onchange="toggleSeasonalCplInputs()">
+                                    <option value="flat">Flat CPL (single rate year-round)</option>
+                                    <option value="seasonal">Seasonal (actual CPL per season, auto-detected)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="seasonalCplInputs" style="display: none;">
+                            <div class="form-note" style="margin-bottom: 15px; padding: 12px; background: #e8f4f0; border-radius: 4px;">
+                                Enter actual seasonal CPL ($/lead) from your ad platform reports. The calculator auto-detects today's season and uses that exact rate instead of a blended average.
+                            </div>
+                            <div class="grid three-col">
+                                <div class="form-group">
+                                    <label>Spring CPL (Mar-May)</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="padding: 10px; color: #999;">$</span>
+                                        <input type="number" id="newTerrCplSpring" value="225" min="0" step="5" style="flex: 1;" onchange="calculateBlendedCpl()">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Summer CPL (Jun-Aug)</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="padding: 10px; color: #999;">$</span>
+                                        <input type="number" id="newTerrCplSummer" value="225" min="0" step="5" style="flex: 1;" onchange="calculateBlendedCpl()">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Fall CPL (Sep-Nov)</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="padding: 10px; color: #999;">$</span>
+                                        <input type="number" id="newTerrCplFall" value="225" min="0" step="5" style="flex: 1;" onchange="calculateBlendedCpl()">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Winter CPL (Dec-Feb)</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="padding: 10px; color: #999;">$</span>
+                                        <input type="number" id="newTerrCplWinter" value="225" min="0" step="5" style="flex: 1;" onchange="calculateBlendedCpl()">
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="padding: 12px; background: #f9f9f9; border-radius: 4px; margin-top: 10px;">
+                                <div style="font-size: 12px; font-weight: bold; color: #666;">Blended Annual Average (reference only, not used when Seasonal is active): <span id="blendedCplCalc" style="color: #b69d5e;">$225</span></div>
+                            </div>
+                        </div>
+
                         <div class="grid">
                             <div class="form-group">
                                 <label>CTR Type</label>
@@ -445,7 +496,7 @@
         </div>
 
         <div class="footer">
-            <strong>Murray ROI Calculator v4.1.1 — Scenario Manager</strong><br>
+            <strong>Murray ROI Calculator v4.2.0 — Scenario Manager</strong><br>
             Save & compare ROI plans | Territory CPL database | Real Acculynx data | August 3, 2026 test launch
         </div>
     </div>
@@ -455,6 +506,12 @@
             'lincoln-omaha': { 
                 name: 'Lincoln/Omaha, NE', 
                 cpl: 225, 
+                cplType: 'seasonal',
+                cplSpring: 225,
+                cplSummer: 225,
+                cplFall: 225,
+                cplWinter: 225,
+                blendedCpl: 225,
                 ctrType: 'blended',
                 ctr: 3.1,
                 spring: 5.0,
@@ -462,11 +519,17 @@
                 fall: 3.75,
                 winter: 3.0,
                 blendedCtr: 3.98,
-                notes: 'Baseline territory - seasonal blending available'
+                notes: '⚠️ Seasonal CPL enabled - Spring/Summer/Fall/Winter values are PLACEHOLDERS at $225. Update in Territory Database with actual Acculynx $/lead by season.'
             },
             'houston': { 
                 name: 'Houston, TX', 
                 cpl: 275, 
+                cplType: 'flat',
+                cplSpring: 275,
+                cplSummer: 275,
+                cplFall: 275,
+                cplWinter: 275,
+                blendedCpl: 275,
                 ctrType: 'flat',
                 ctr: 2.9, 
                 spring: 2.9,
@@ -479,6 +542,12 @@
             'neworleans': { 
                 name: 'New Orleans, LA', 
                 cpl: 275, 
+                cplType: 'flat',
+                cplSpring: 275,
+                cplSummer: 275,
+                cplFall: 275,
+                cplWinter: 275,
+                blendedCpl: 275,
                 ctrType: 'flat',
                 ctr: 3.0,
                 spring: 3.0,
@@ -502,17 +571,42 @@
             event.target.classList.add('active');
         }
 
+        // Meteorological seasons: Spring Mar-May, Summer Jun-Aug, Fall Sep-Nov, Winter Dec-Feb
+        function getCurrentSeason(d) {
+            d = d || new Date();
+            const m = d.getMonth() + 1;
+            if (m >= 3 && m <= 5) return 'Spring';
+            if (m >= 6 && m <= 8) return 'Summer';
+            if (m >= 9 && m <= 11) return 'Fall';
+            return 'Winter';
+        }
+
         function updateTerritoryData() {
             const terrId = document.getElementById('territory').value;
             if (terrId && TERRITORIES_DB[terrId]) {
                 const terr = TERRITORIES_DB[terrId];
-                document.getElementById('cpl').value = terr.cpl;
+                const cplType = terr.cplType || 'flat'; // fallback for old territories
+                const season = getCurrentSeason();
+
+                // Use the actual seasonal CPL for the current season, not a blended rate
+                let effectiveCpl = terr.cpl;
+                if (cplType === 'seasonal') {
+                    effectiveCpl = terr['cpl' + season];
+                }
+                document.getElementById('cpl').value = effectiveCpl;
+
+                if (cplType === 'seasonal') {
+                    document.getElementById('cplDisplay').textContent = `$${effectiveCpl} (${season} CPL, auto-detected) — Spring: $${terr.cplSpring} | Summer: $${terr.cplSummer} | Fall: $${terr.cplFall} | Winter: $${terr.cplWinter}`;
+                } else {
+                    document.getElementById('cplDisplay').textContent = `$${terr.cpl} (flat year-round)`;
+                }
+
                 const ctrType = terr.ctrType || 'flat'; // fallback for old territories
-                
+
                 // Use blended CTR if available, otherwise use flat CTR
                 const ctrValue = ctrType === 'blended' ? terr.blendedCtr : terr.ctr;
                 document.getElementById('ctr').value = ctrValue;
-                
+
                 // Update CTR display based on type
                 if (ctrType === 'blended') {
                     document.getElementById('ctrDisplay').textContent = `${terr.blendedCtr}% (blended annual) - Spring: ${terr.spring}%, Summer: ${terr.summer}%, Fall: ${terr.fall}%, Winter: ${terr.winter}%`;
@@ -540,6 +634,26 @@
             const winter = parseFloat(document.getElementById('newTerrWinter').value) || 0;
             const blended = (spring + summer + fall + winter) / 4;
             document.getElementById('blendedCalc').textContent = blended.toFixed(2) + '%';
+        }
+
+        function toggleSeasonalCplInputs() {
+            const cplType = document.getElementById('newTerrCplType').value;
+            const seasonalDiv = document.getElementById('seasonalCplInputs');
+            if (cplType === 'seasonal') {
+                seasonalDiv.style.display = 'block';
+                calculateBlendedCpl();
+            } else {
+                seasonalDiv.style.display = 'none';
+            }
+        }
+
+        function calculateBlendedCpl() {
+            const spring = parseFloat(document.getElementById('newTerrCplSpring').value) || 0;
+            const summer = parseFloat(document.getElementById('newTerrCplSummer').value) || 0;
+            const fall = parseFloat(document.getElementById('newTerrCplFall').value) || 0;
+            const winter = parseFloat(document.getElementById('newTerrCplWinter').value) || 0;
+            const blended = (spring + summer + fall + winter) / 4;
+            document.getElementById('blendedCplCalc').textContent = '$' + blended.toFixed(0);
         }
 
         function calculateROI() {
@@ -697,6 +811,7 @@
         function addTerritory() {
             const name = document.getElementById('newTerrName').value.trim();
             const cpl = parseFloat(document.getElementById('newTerrCpl').value);
+            const cplType = document.getElementById('newTerrCplType').value;
             const ctrType = document.getElementById('newTerrCtrType').value;
             const ctr = parseFloat(document.getElementById('newTerrCtr').value) || 3.0;
             const notes = document.getElementById('newTerrNotes').value.trim();
@@ -707,22 +822,39 @@
             }
 
             const id = 'custom-' + Date.now();
-            
+
+            let cplFields;
+            if (cplType === 'seasonal') {
+                const cplSpring = parseFloat(document.getElementById('newTerrCplSpring').value) || cpl;
+                const cplSummer = parseFloat(document.getElementById('newTerrCplSummer').value) || cpl;
+                const cplFall = parseFloat(document.getElementById('newTerrCplFall').value) || cpl;
+                const cplWinter = parseFloat(document.getElementById('newTerrCplWinter').value) || cpl;
+                const blendedCpl = (cplSpring + cplSummer + cplFall + cplWinter) / 4;
+                cplFields = { cplType, cplSpring, cplSummer, cplFall, cplWinter, blendedCpl };
+            } else {
+                cplFields = { cplType, cplSpring: cpl, cplSummer: cpl, cplFall: cpl, cplWinter: cpl, blendedCpl: cpl };
+            }
+
             if (ctrType === 'blended') {
                 const spring = parseFloat(document.getElementById('newTerrSpring').value) || 3.0;
                 const summer = parseFloat(document.getElementById('newTerrSummer').value) || 3.0;
                 const fall = parseFloat(document.getElementById('newTerrFall').value) || 3.0;
                 const winter = parseFloat(document.getElementById('newTerrWinter').value) || 3.0;
                 const blendedCtr = (spring + summer + fall + winter) / 4;
-                TERRITORIES_DB[id] = { name, cpl, ctrType, ctr, spring, summer, fall, winter, blendedCtr, notes };
+                TERRITORIES_DB[id] = { name, cpl, ...cplFields, ctrType, ctr, spring, summer, fall, winter, blendedCtr, notes };
             } else {
-                TERRITORIES_DB[id] = { name, cpl, ctrType, ctr, spring: ctr, summer: ctr, fall: ctr, winter: ctr, blendedCtr: ctr, notes };
+                TERRITORIES_DB[id] = { name, cpl, ...cplFields, ctrType, ctr, spring: ctr, summer: ctr, fall: ctr, winter: ctr, blendedCtr: ctr, notes };
             }
             
             localStorage.setItem('murrayTerritories', JSON.stringify(TERRITORIES_DB));
 
             document.getElementById('newTerrName').value = '';
             document.getElementById('newTerrCpl').value = '';
+            document.getElementById('newTerrCplType').value = 'flat';
+            document.getElementById('newTerrCplSpring').value = '225';
+            document.getElementById('newTerrCplSummer').value = '225';
+            document.getElementById('newTerrCplFall').value = '225';
+            document.getElementById('newTerrCplWinter').value = '225';
             document.getElementById('newTerrCtrType').value = 'flat';
             document.getElementById('newTerrCtr').value = '3.0';
             document.getElementById('newTerrSpring').value = '5.0';
@@ -731,9 +863,10 @@
             document.getElementById('newTerrWinter').value = '3.0';
             document.getElementById('newTerrNotes').value = '';
             document.getElementById('seasonalInputs').style.display = 'none';
+            document.getElementById('seasonalCplInputs').style.display = 'none';
 
             loadTerritories();
-            alert(`✅ Territory added: ${name} (${ctrType === 'blended' ? 'Blended' : 'Flat'} CTR)`);
+            alert(`✅ Territory added: ${name} (${cplType === 'seasonal' ? 'Seasonal' : 'Flat'} CPL, ${ctrType === 'blended' ? 'Blended' : 'Flat'} CTR)`);
         }
 
         function deleteTerritory(id) {
@@ -751,7 +884,16 @@
             list.innerHTML = Object.entries(TERRITORIES_DB).map(([id, t]) => `
                 <div class="territory-card">
                     <div class="territory-name">${t.name}</div>
-                    <div class="territory-cpl">CPL: $${t.cpl}</div>
+                    <div class="territory-cpl">
+                        ${t.cplType === 'seasonal' ? 
+                            `Seasonal CPL (auto-detected): $${t['cpl' + getCurrentSeason()]} (${getCurrentSeason()})` : 
+                            `Flat CPL: $${t.cpl}`}
+                    </div>
+                    ${t.cplType === 'seasonal' ? `
+                        <div class="territory-cpl" style="font-size: 11px; color: #999;">
+                            Spring: $${t.cplSpring} | Summer: $${t.cplSummer} | Fall: $${t.cplFall} | Winter: $${t.cplWinter}
+                        </div>
+                    ` : ''}
                     <div class="territory-cpl">
                         ${t.ctrType === 'blended' ? 
                             `Blended CTR: ${t.blendedCtr}% (annual avg)` : 
