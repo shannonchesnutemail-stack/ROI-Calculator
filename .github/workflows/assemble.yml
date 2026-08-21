@@ -1,0 +1,21 @@
+name: Assemble index.html
+on:
+  push:
+    paths:
+      - 'parts/**'
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Concatenate and decode parts
+        run: |
+          cat parts/part*.b64 | tr -d '\n' | base64 -d > index.html
+          rm -rf parts .github/workflows/assemble.yml
+      - name: Commit result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Assemble index.html from parts" || echo "no changes"
+          git push
