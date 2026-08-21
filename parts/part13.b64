@@ -107,4 +107,6 @@
 
             let cplFields;
             if (cplType === 'seasonal') {
-                const cplSpring = parseFloat(document.getElementById('newTerrCplSpring').value
+                const cplSpring = parseFloat(document.getElementById('newTerrCplSpring').value) || cpl;
+                const cplSummer = parseFloat(document.getElementById('newTerrCplSummer').value) || cpl;
+                const cplFall = parseFloat(document.getElementById('newTerrCplFall').value
