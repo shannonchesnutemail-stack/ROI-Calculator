@@ -1,0 +1,99 @@
+e-between; padding: 10px 0; font-size: 15px; border-bottom: 1px solid #e0e0e0; }
+        .result-row:last-child { border-bottom: none; }
+        .result-label { color: #666; }
+        .result-value { font-weight: bold; color: #3d3d3d; }
+        .result-value.highlight { color: #b69d5e; font-size: 18px; }
+        
+        /* Comparison View */
+        .comparison-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .comparison-card { background: #f9f9f9; padding: 20px; border-radius: 6px; border-top: 4px solid #b69d5e; }
+        .comparison-title { font-weight: bold; font-size: 16px; color: #3d3d3d; margin-bottom: 15px; }
+        
+        /* Footer */
+        .footer { background: #f5f5f5; padding: 20px; font-size: 11px; color: #999; border-radius: 0 0 8px 8px; text-align: center; }
+        
+        .form-note { font-size: 11px; color: #999; margin-top: 4px; font-style: italic; }
+
+        /* Suggestions Panel */
+        .suggestions-box { background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 18px 20px; margin-top: 20px; }
+        .suggestions-title { font-size: 13px; font-weight: bold; color: #3d3d3d; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .suggestion-item { display: flex; gap: 10px; font-size: 13px; line-height: 1.5; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-icon { flex-shrink: 0; }
+        .suggestion-ok { color: #2d5d4f; }
+        .suggestion-warn { color: #a13d3d; }
+        .suggestion-info { color: #555; }
+
+        /* Disclaimer Banner */
+        .disclaimer-banner { background: #fff8e6; border: 2px solid #b69d5e; border-radius: 6px; color: #3d3d3d; font-size: 12px; line-height: 1.6; padding: 16px 20px; margin: 20px 30px 0; }
+        .disclaimer-banner strong { color: #a13d3d; }
+
+        /* Print / PDF Export */
+        #printArea { display: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { display: block; position: absolute; top: 0; left: 0; width: 100%; padding: 10px 20px; }
+            .print-disclaimer { background: #fff8e6; border: 2px solid #b69d5e; border-radius: 6px; padding: 14px 18px; font-size: 11px; line-height: 1.5; margin-bottom: 20px; color: #3d3d3d; }
+            .print-title { font-size: 20px; font-weight: bold; color: #3d3d3d; margin-bottom: 4px; }
+            .print-subtitle { font-size: 12px; color: #999; margin-bottom: 20px; }
+            .print-card { border: 1px solid #ccc; border-radius: 6px; padding: 15px; margin-bottom: 15px; break-inside: avoid; }
+            .print-card h3 { color: #b69d5e; margin-bottom: 8px; }
+            .print-card div { font-size: 12px; line-height: 1.6; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-img">M</div>
+            <div>
+                <h1>MURRAY ROI CALCULATOR</h1>
+                <div class="header-subtitle">Scenario Manager & Territory Comparison | v4.9.0</div>
+            </div>
+            <div class="header-utility">
+                <button class="header-util-btn" id="hdrBtnTerritories" onclick="switchTab('territories')">📍 Territory Database</button>
+                <button class="header-util-btn" id="hdrBtnInfo" onclick="switchTab('info')">ℹ️ Disclaimer & Updates</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Tab Navigation -->
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('builder')">📊 Scenario Builder</button>
+                <button class="tab-button" onclick="switchTab('scenarios')">💾 Saved Scenarios</button>
+                <button class="tab-button" onclick="switchTab('comparison')">🔄 Compare Scenarios</button>
+                <button class="tab-button" onclick="switchTab('blueprints')">📌 Advertising Blueprints</button>
+            </div>
+
+            <!-- TAB 1: Scenario Builder -->
+            <div id="builder" class="tab-content active">
+
+                <div class="section">
+                    <div class="section-title">Build Your Scenario</div>
+                    
+                    <div class="grid full">
+                        <div class="form-group">
+                            <label>Scenario Name</label>
+                            <input type="text" id="scenarioName" placeholder="e.g., Lincoln Q3 Plan, All Territories Aggressive" value="">
+                            <div class="form-note">Give this scenario a meaningful name for future reference</div>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label>Territory</label>
+                            <select id="territory" onchange="updateTerritoryData()">
+                                <option value="">-- Select Territory --</option>
+                                <option value="lincoln-omaha">Lincoln/Omaha, NE</option>
+                                <option value="houston">Houston, TX</option>
+                                <option value="neworleans">New Orleans, LA</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Territory CPL (editable)</label>
+                            <div style="display: flex; gap: 8px;">
+                                <span style="padding: 10px; color: #999;">$</span>
+                                <input type="number" id="cpl" step="1" oninput="updateImpliedCpcFromCplAndConvRate(); calculateROI();">
+                            </div>
+                            <div class="form-note">Territory default: <span id="cplDisplay" style="color: #b69d5e; font-weight: bold;">-- (select 
