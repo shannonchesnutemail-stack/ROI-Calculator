@@ -1,0 +1,37 @@
+ you will hit the exact lead/revenue numbers shown. Even with a verified 3% landing page conversion benchmark and real Acculynx funnel rates, expect a margin of swing of roughly ±20% due to market-to-market variance and inconsistent closing ratios (especially in newer markets like Houston and New Orleans). Use this calculator as a planning indicator, not a guarantee. KPIs (CPL, conversion rate, funnel rates) are refreshed every 30 days as real campaign data comes in.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Calculator v4.9.0 Features & Data Accuracy</div>
+
+                    <div style="background: #e8f5e9; border: 2px solid #438148; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                        <div style="font-size: 14px; font-weight: bold; color: #438148; margin-bottom: 12px;">✨ Latest Updates (v4.9.0)</div>
+                            <div>✅ <strong>Landing Page Conversion Now Drives Revenue:</strong> Fixed — editing Landing Page Conversion Rate recalculates CPL live (CPL = implied Cost Per Click ÷ Conversion Rate), which flows through to Leads, Revenue, Profit, and ROI. Previously this field only affected the diagnostic Clicks/Impressions display.</div>
+                            <div>✅ <strong>Live Recalculation:</strong> Every field in Scenario Builder now recalculates results as you type — no more clicking "Calculate" to see the effect of a change</div>
+                            <div>✅ <strong>CTR's Real Role Clarified:</strong> CTR drives Estimated Impressions Needed and a benchmark check, not revenue directly — in a cost-per-click model, CPC already captures spend efficiency; CTR is the Quality Score / impression-share signal (see Suggestions panel below the results)</div>
+                            <div>✅ <strong>Suggestions Panel Added:</strong> Scenario Builder now shows live, data-backed suggestions — CTR/CVR vs. territory benchmark, minimum viable test budget for Google's algorithm, margin/budget vs. Murray's targets</div>
+                            <div>✅ <strong>Header Reorganized:</strong> Territory Database and Disclaimer &amp; Updates moved to the top-right header; main tabs reordered to Scenario Builder → Saved Scenarios → Compare Scenarios → Advertising Blueprints</div>
+                            <div>✅ <strong>Acculynx Funnel Retained:</strong> Two-stage 33% approval x 83% close (verified Acculynx data) — this is the source of truth for lead-to-close math</div>
+                            <div>✅ <strong>Whole-Unit Rounding, Rounded Down:</strong> Leads, Approved, and Closed counts now floor to whole numbers (you can't sell a fraction of a roof)</div>
+                            <div>✅ <strong>Max Affordable CPL:</strong> Auto-calculated as Ticket x Margin% x Marketing Budget% x Effective Close Rate (33% x 83%), flags any territory CPL that exceeds it</div>
+                            <div>✅ <strong>Editable Territories:</strong> Every territory (including the 3 built-in ones) can now be edited after being saved, not just re-entered during a scenario run</div>
+                            <div>✅ <strong>Houston & New Orleans CPL Updated:</strong> Replaced flat $275 placeholder with research-based estimates ($230 Houston flat, $185 New Orleans seasonal) — flagged for 30-day verification against real spend</div>
+                            <div>✅ <strong>Verified 3% CVR Benchmark:</strong> Lincoln/Omaha landing page conversion rate is now a VERIFIED benchmark (campaigns launched Aug 20, 2026), no longer a placeholder — CPL recalculated accordingly</div>
+                            <div>✅ <strong>±20% Swing Ranges Shown:</strong> Monthly/Annual Revenue and Profit now display a real dollar range, not just a disclaimer footnote</div>
+                            <div>✅ <strong>30-Day KPI Refresh Tracker:</strong> Info tab shows last pull date and next scheduled refresh for CPL/CVR/funnel data</div>
+                            <div>✅ <strong>Gross Margin Clarified:</strong> Labeled explicitly as after labor &amp; materials</div>
+                            <div>✅ <strong>Manual Override Bug Fixed:</strong> Territory CPL field was locked read-only — every field is now editable from the Scenario Builder, territory selection only sets the starting default</div>
+                            <div>✅ <strong>Houston & New Orleans CVR Added:</strong> No longer show "N/A" for Estimated Clicks/Impressions — CVR set to 3.3% based on national roofing PPC benchmark research (ClicksGeek: 3-12% range), pending real verification</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 13px; color: #2d5d4f;">
+                            <div>✅ <strong>CTR Type Selector:</strong> Choose Flat or Blended annual rates</div>
+                            <div>✅ <strong>Seasonal Blending:</strong> Enter Spring/Summer/Fall/Winter CTR rates</div>
+                            <div>✅ <strong>Auto Blended Avg:</strong> System calculates annual average CTR</div>
+                            <div>✅ <strong>Whole Dollar Display:</strong> All $ amounts show as whole numbers</div>
+                            <div>✅ <strong>Scenario Manager:</strong> Save unlimited ROI plans with timestamps</div>
+                            <div>✅ <strong>Seasonal CPL (Derived):</strong> Lincoln/Omaha CPL = seasonal Google Ads CPC ÷ landing page conversion rate, auto-detected by date</div>
+                            <div>✅ <strong>Territory Database:</strong> Add/manage CPL and CTR type by city/state</div>
+                            <div>✅ <strong>Compare 3 Scenarios:</strong> View side-by-side ROI projections</div>
+                            <div>✅ <strong>Export All:</strong> Download scenarios as JSON backup</div>
+                        </div>
+                    </
