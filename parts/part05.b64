@@ -1,4 +1,4 @@
-      .label>Winter CTR (Dec-Feb)</label>
+      <label>Winter CTR (Dec-Feb)</label>
                                     <div style="display: flex; gap: 8px;">
                                         <input type="number" id="newTerrWinter" value="3.0" min="0" step="0.1" style="flex: 1;" onchange="calculateBlendedCtr()">
                                         <span style="padding: 10px; color: #999;">%</span>
