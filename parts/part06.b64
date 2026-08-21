@@ -18,7 +18,7 @@
                             <div>✅ <strong>Editable Territories:</strong> Every territory (including the 3 built-in ones) can now be edited after being saved, not just re-entered during a scenario run</div>
                             <div>✅ <strong>Houston & New Orleans CPL Updated:</strong> Replaced flat $275 placeholder with research-based estimates ($230 Houston flat, $185 New Orleans seasonal) — flagged for 30-day verification against real spend</div>
                             <div>✅ <strong>Verified 3% CVR Benchmark:</strong> Lincoln/Omaha landing page conversion rate is now a VERIFIED benchmark (campaigns launched Aug 20, 2026), no longer a placeholder — CPL recalculated accordingly</div>
-                            <div>✅ <strong>&plusmn;20% Swing Ranges Shown:</strong> Monthly/Annual Revenue and Profit now display a real dollar range, not just a disclaimer footnote</div>
+                            <div>✅ <strong>±20% Swing Ranges Shown:</strong> Monthly/Annual Revenue and Profit now display a real dollar range, not just a disclaimer footnote</div>
                             <div>✅ <strong>30-Day KPI Refresh Tracker:</strong> Info tab shows last pull date and next scheduled refresh for CPL/CVR/funnel data</div>
                             <div>✅ <strong>Gross Margin Clarified:</strong> Labeled explicitly as after labor &amp; materials</div>
                             <div>✅ <strong>Manual Override Bug Fixed:</strong> Territory CPL field was locked read-only — every field is now editable from the Scenario Builder, territory selection only sets the starting default</div>
