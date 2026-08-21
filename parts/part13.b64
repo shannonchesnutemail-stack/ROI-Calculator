@@ -1,0 +1,112 @@
+     loadScenarios();
+        }
+
+        function deleteScenario(id) {
+            if (!confirm('Delete this scenario? This cannot be undone.')) return;
+            let scenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
+            scenarios = scenarios.filter(s => s.id !== id);
+            localStorage.setItem('murrayScenarios', JSON.stringify(scenarios));
+            loadScenarios();
+            updateComparisonSelects();
+        }
+
+        function loadScenarioToBuilder(id) {
+            const scenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
+            const scenario = scenarios.find(s => s.id === id);
+            if (!scenario) return;
+
+            document.getElementById('scenarioName').value = scenario.name + ' (Copy)';
+            document.getElementById('territory').value = scenario.territory;
+            document.getElementById('cpl').value = scenario.cpl;
+            document.getElementById('adSpend').value = scenario.adSpend;
+            document.getElementById('ctr').value = scenario.ctr;
+            document.getElementById('lpConvRate').value = scenario.lpConvRate;
+            document.getElementById('ticket').value = scenario.ticket;
+            document.getElementById('margin').value = scenario.margin;
+            document.getElementById('marketingBudget').value = scenario.marketingBudget || 15;
+
+            calculateROI();
+            switchTab('builder');
+        }
+
+        function resetTerritoryForm() {
+            document.getElementById('editingTerrId').value = '';
+            document.getElementById('terrFormTitle').textContent = 'Add New Territory';
+            document.getElementById('terrSaveBtn').textContent = '➕ Add Territory';
+            document.getElementById('terrCancelBtn').style.display = 'none';
+            document.getElementById('newTerrName').value = '';
+            document.getElementById('newTerrCpl').value = '';
+            document.getElementById('newTerrCplType').value = 'flat';
+            document.getElementById('newTerrCplSpring').value = '225';
+            document.getElementById('newTerrCplSummer').value = '225';
+            document.getElementById('newTerrCplFall').value = '225';
+            document.getElementById('newTerrCplWinter').value = '225';
+            document.getElementById('newTerrCtrType').value = 'flat';
+            document.getElementById('newTerrCtr').value = '3.0';
+            document.getElementById('newTerrSpring').value = '5.0';
+            document.getElementById('newTerrSummer').value = '4.15';
+            document.getElementById('newTerrFall').value = '3.75';
+            document.getElementById('newTerrWinter').value = '3.0';
+            document.getElementById('newTerrNotes').value = '';
+            document.getElementById('seasonalInputs').style.display = 'none';
+            document.getElementById('seasonalCplInputs').style.display = 'none';
+        }
+
+        function editTerritory(id) {
+            const t = TERRITORIES_DB[id];
+            if (!t) return;
+
+            document.getElementById('editingTerrId').value = id;
+            document.getElementById('terrFormTitle').textContent = 'Edit Territory: ' + t.name;
+            document.getElementById('terrSaveBtn').textContent = '💾 Update Territory';
+            document.getElementById('terrCancelBtn').style.display = 'inline-block';
+
+            document.getElementById('newTerrName').value = t.name;
+            document.getElementById('newTerrCpl').value = t.cpl;
+            document.getElementById('newTerrCplType').value = t.cplType || 'flat';
+            document.getElementById('newTerrCplSpring').value = t.cplSpring ?? t.cpl;
+            document.getElementById('newTerrCplSummer').value = t.cplSummer ?? t.cpl;
+            document.getElementById('newTerrCplFall').value = t.cplFall ?? t.cpl;
+            document.getElementById('newTerrCplWinter').value = t.cplWinter ?? t.cpl;
+            calculateBlendedCpl();
+            document.getElementById('newTerrCtrType').value = t.ctrType || 'flat';
+            document.getElementById('newTerrCtr').value = t.ctr;
+            document.getElementById('newTerrSpring').value = t.spring;
+            document.getElementById('newTerrSummer').value = t.summer;
+            document.getElementById('newTerrFall').value = t.fall;
+            document.getElementById('newTerrWinter').value = t.winter;
+            calculateBlendedCtr();
+            document.getElementById('newTerrNotes').value = t.notes || '';
+
+            toggleSeasonalCplInputs();
+            toggleSeasonalInputs();
+
+            document.getElementById('territories').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEditTerritory() {
+            resetTerritoryForm();
+        }
+
+        function addTerritory() {
+            const editingId = document.getElementById('editingTerrId').value;
+            const name = document.getElementById('newTerrName').value.trim();
+            const cpl = parseFloat(document.getElementById('newTerrCpl').value);
+            const cplType = document.getElementById('newTerrCplType').value;
+            const ctrType = document.getElementById('newTerrCtrType').value;
+            const ctr = parseFloat(document.getElementById('newTerrCtr').value) || 3.0;
+            const notes = document.getElementById('newTerrNotes').value.trim();
+
+            if (!name || !cpl) {
+                alert('Please enter Territory name and CPL');
+                return;
+            }
+
+            const id = editingId || ('custom-' + Date.now());
+            const existing = editingId ? (TERRITORIES_DB[editingId] || {}) : {};
+
+            let cplFields;
+            if (cplType === 'seasonal') {
+                const cplSpring = parseFloat(document.getElementById('newTerrCplSpring').value) || cpl;
+                const cplSummer = parseFloat(document.getElementById('newTerrCplSummer').value) || cpl;
+                const cplFall = parseFloat(document.getElementById('newTerrCplFall').value
