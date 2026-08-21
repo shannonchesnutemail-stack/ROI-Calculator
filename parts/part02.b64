@@ -1,0 +1,89 @@
+a territory)</span> — <strong>you can manually override this and every field below</strong>. Overrides last until you reselect the territory or reload the page.</div>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label>Monthly Ad Spend</label>
+                            <input type="number" id="adSpend" value="1000" min="0" step="100" oninput="calculateROI();">
+                        </div>
+                        <div class="form-group">
+                            <label>Click-Through Rate (CTR)</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="number" id="ctr" value="3.1" min="0" step="0.1" style="flex: 1;" oninput="calculateROI();">
+                                <span style="padding: 10px; color: #999;">%</span>
+                            </div>
+                            <div class="form-note">Using: <span id="ctrDisplay" style="color: #b69d5e; font-weight: bold;">3.1% (flat)</span> — drives Estimated Impressions Needed &amp; the benchmark check below, not revenue directly (see why in Suggestions)</div>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label>Landing Page Conversion Rate</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="number" id="lpConvRate" value="0" min="0" max="100" step="0.5" style="flex: 1;" placeholder="% (optional)" oninput="recalcCplFromConvRate(); calculateROI();">
+                                <span style="padding: 10px; color: #999;">%</span>
+                            </div>
+                            <div class="form-note">Raising this <strong>lowers CPL and raises leads/revenue</strong> — it recalculates Territory CPL live using CPL = Cost Per Click ÷ Conversion Rate</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Average Ticket</label>
+                            <div style="display: flex; gap: 8px;">
+                                <span style="padding: 10px; color: #999;">$</span>
+                                <input type="number" id="ticket" value="15000" min="0" step="500" style="flex: 1;" oninput="calculateROI();">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label>Gross Margin % (after labor &amp; materials)</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="number" id="margin" value="30" min="0" max="100" step="1" style="flex: 1;" oninput="calculateROI();">
+                                <span style="padding: 10px; color: #999;">%</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Marketing Budget % (of margin)</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="number" id="marketingBudget" value="15" min="0" max="100" step="1" style="flex: 1;" oninput="calculateROI();">
+                                <span style="padding: 10px; color: #999;">%</span>
+                            </div>
+                            <div class="form-note">Used to compute Max Affordable CPL below</div>
+                        </div>
+                    </div>
+
+                    <button onclick="calculateROI()" style="margin-top: 20px;">Recalculate Now</button>
+                    <div class="form-note" style="margin-top: 6px;">Results below update live as you type — this button is just a manual refresh if needed</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Monthly ROI Results</div>
+                    <div class="results">
+                        <div class="result-row">
+                            <span class="result-label">Monthly Ad Spend</span>
+                            <span class="result-value">$<span id="resultSpend">0</span></span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Estimated Impressions Needed</span>
+                            <span class="result-value"><span id="resultImpressions">N/A</span></span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Estimated Clicks (via CTR)</span>
+                            <span class="result-value"><span id="resultClicks">N/A</span></span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Leads Generated</span>
+                            <span class="result-value"><span id="resultLeads">0</span></span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Leads Approved (33%)</span>
+                            <span class="result-value"><span id="resultApproved">0</span></span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Deals Closed (83%)</span>
+                            <span class="result-value"><span id="resultClosed">0</span></span>
+                        </div>
+                        <div class="result-row" style="padding-top: 15px; border-top: 2px solid #e0e0e0;">
+                            <span class="result-label"><strong>Monthly Revenue</strong></span>
+                            <span class="result-value highl
