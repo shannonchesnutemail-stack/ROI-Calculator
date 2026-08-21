@@ -1,0 +1,118 @@
+ </div>`;
+        }
+
+        function printReport(titleHtml, subtitleHtml, bodyHtml) {
+            const area = document.getElementById('printArea');
+            area.innerHTML = printDisclaimerHtml() +
+                `<div class="print-title">${titleHtml}</div>` +
+                `<div class="print-subtitle">${subtitleHtml}</div>` +
+                bodyHtml;
+            window.print();
+        }
+
+        function exportScenarioPDF(id) {
+            const scenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
+            const s = scenarios.find(sc => sc.id === id);
+            if (!s) return;
+            printReport(
+                'Murray ROI Calculator — Scenario Report',
+                `Generated ${new Date().toLocaleString()}`,
+                scenarioPrintCardHtml(s)
+            );
+        }
+
+        function saveScenario() {
+            const rawName = document.getElementById('scenarioName').value.trim();
+            if (!rawName) {
+                alert('Please enter a Scenario Name');
+                return;
+            }
+            if (!document.getElementById('territory').value) {
+                alert('Please select a Territory');
+                return;
+            }
+
+            const terrId = document.getElementById('territory').value;
+            const terrData = TERRITORIES_DB[terrId];
+            const ctrType = terrData.ctrType || 'flat';
+
+            const uid = generateUniqueId();
+            const name = `${rawName} — #${uid}`;
+
+            const scenario = {
+                id: Date.now().toString(),
+                uid: uid,
+                name: name,
+                timestamp: new Date().toLocaleString(),
+                territory: terrId,
+                ctrType: ctrType,
+                ctr: parseFloat(document.getElementById('ctr').value),
+                cpl: parseFloat(document.getElementById('cpl').value),
+                adSpend: parseFloat(document.getElementById('adSpend').value),
+                lpConvRate: parseFloat(document.getElementById('lpConvRate').value) || 0,
+                ticket: parseFloat(document.getElementById('ticket').value),
+                margin: parseFloat(document.getElementById('margin').value),
+                marketingBudget: parseFloat(document.getElementById('marketingBudget').value),
+                results: {
+                    leads: document.getElementById('resultLeads').textContent,
+                    approved: document.getElementById('resultApproved').textContent,
+                    closed: document.getElementById('resultClosed').textContent,
+                    revenue: document.getElementById('resultRevenue').textContent,
+                    profit: document.getElementById('resultProfit').textContent,
+                    roi: document.getElementById('resultROI').textContent,
+                    annualRevenue: document.getElementById('resultAnnualRevenue').textContent,
+                    annualProfit: document.getElementById('resultAnnualProfit').textContent,
+                    annualROI: document.getElementById('resultAnnualROI').textContent,
+                    maxCpl: document.getElementById('resultMaxCpl').textContent
+                },
+                active: false
+            };
+
+            let scenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
+            scenarios.push(scenario);
+            scenarios.sort((a, b) => parseInt(b.id) - parseInt(a.id)); // Latest first
+            localStorage.setItem('murrayScenarios', JSON.stringify(scenarios));
+
+            alert(`✅ Scenario saved: "${name}"`);
+            document.getElementById('scenarioName').value = '';
+            loadScenarios();
+            updateComparisonSelects();
+        }
+
+        function loadScenarios() {
+            const scenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
+            const list = document.getElementById('scenarioList');
+
+            if (scenarios.length === 0) {
+                list.innerHTML = '<p style="color: #999; padding: 20px; text-align: center;">No scenarios saved yet.</p>';
+                return;
+            }
+
+            list.innerHTML = scenarios.map(s => `
+                <div class="scenario-item">
+                    <div>
+                        <input type="checkbox" ${s.active ? 'checked' : ''} onchange="toggleActive('${s.id}')">
+                        ${s.active ? '<span class="active-badge">IN USE</span>' : ''}
+                    </div>
+                    <div class="scenario-info">
+                        <div class="scenario-name">${s.name}</div>
+                        <div class="scenario-meta">
+                            ${TERRITORIES_DB[s.territory]?.name || s.territory} | $${s.cpl} CPL | ${s.ctrType === 'blended' ? 'Blended' : 'Flat'} CTR (${s.ctr}%) | $${Math.round(s.adSpend).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}/mo<br>
+                            Monthly ROI: <strong>${s.results.roi}</strong> | Annual ROI: <strong>${s.results.annualROI || '0%'}</strong><br>
+                            <span style="font-size: 11px; color: #bbb;">Saved: ${s.timestamp}</span>
+                        </div>
+                    </div>
+                    <div class="scenario-actions">
+                        <button class="secondary" onclick="loadScenarioToBuilder('${s.id}')">📂 Load</button>
+                        <button onclick="exportScenarioPDF('${s.id}')" style="background: #438148;">📄 Export PDF</button>
+                        <button onclick="deleteScenario('${s.id}')" style="background: #d32f2f;">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleActive(id) {
+            let scenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
+            scenarios.forEach(s => s.active = s.id === id ? !s.active : false);
+            localStorage.setItem('murrayScenarios', JSON.stringify(scenarios));
+       
