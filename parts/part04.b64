@@ -1,0 +1,83 @@
+ rate instead of a blended average.
+                            </div>
+                            <div class="grid three-col">
+                                <div class="form-group">
+                                    <label>Spring CPL (Mar-May)</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="padding: 10px; color: #999;">$</span>
+                                        <input type="number" id="newTerrCplSpring" value="225" min="0" step="5" style="flex: 1;" onchange="calculateBlendedCpl()">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Summer CPL (Jun-Aug)</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="padding: 10px; color: #999;">$</span>
+                                        <input type="number" id="newTerrCplSummer" value="225" min="0" step="5" style="flex: 1;" onchange="calculateBlendedCpl()">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Fall CPL (Sep-Nov)</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="padding: 10px; color: #999;">$</span>
+                                        <input type="number" id="newTerrCplFall" value="225" min="0" step="5" style="flex: 1;" onchange="calculateBlendedCpl()">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Winter CPL (Dec-Feb)</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <span style="padding: 10px; color: #999;">$</span>
+                                        <input type="number" id="newTerrCplWinter" value="225" min="0" step="5" style="flex: 1;" onchange="calculateBlendedCpl()">
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="padding: 12px; background: #f9f9f9; border-radius: 4px; margin-top: 10px;">
+                                <div style="font-size: 12px; font-weight: bold; color: #666;">Blended Annual Average (reference only, not used when Seasonal is active): <span id="blendedCplCalc" style="color: #b69d5e;">$225</span></div>
+                            </div>
+                        </div>
+
+                        <div class="grid">
+                            <div class="form-group">
+                                <label>CTR Type</label>
+                                <select id="newTerrCtrType" onchange="toggleSeasonalInputs()">
+                                    <option value="flat">Flat CTR (single rate year-round)</option>
+                                    <option value="blended">Blended Annual (seasonal average)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Base/Flat CTR</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="number" id="newTerrCtr" value="3.0" min="0" step="0.1" style="flex: 1;">
+                                    <span style="padding: 10px; color: #999;">%</span>
+                                </div>
+                                <div class="form-note">Used when CTR Type is "Flat", or as base for blended calculation</div>
+                            </div>
+                        </div>
+
+                        <div id="seasonalInputs" style="display: none;">
+                            <div class="form-note" style="margin-bottom: 15px; padding: 12px; background: #e8f4f0; border-radius: 4px;">
+                                Enter seasonal CTR rates. System will calculate blended annual average.
+                            </div>
+                            <div class="grid three-col">
+                                <div class="form-group">
+                                    <label>Spring CTR (Mar-May)</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <input type="number" id="newTerrSpring" value="5.0" min="0" step="0.1" style="flex: 1;" onchange="calculateBlendedCtr()">
+                                        <span style="padding: 10px; color: #999;">%</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Summer CTR (Jun-Aug)</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <input type="number" id="newTerrSummer" value="4.15" min="0" step="0.1" style="flex: 1;" onchange="calculateBlendedCtr()">
+                                        <span style="padding: 10px; color: #999;">%</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Fall CTR (Sep-Nov)</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <input type="number" id="newTerrFall" value="3.75" min="0" step="0.1" style="flex: 1;" onchange="calculateBlendedCtr()">
+                                        <span style="padding: 10px; color: #999;">%</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                              
