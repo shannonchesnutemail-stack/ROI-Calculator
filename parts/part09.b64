@@ -1,0 +1,101 @@
+nal CPC / landing page conversion rate (Google Ads-verified), not a manual guess
+                    const cpc = terr['cpc' + season];
+                    effectiveCpl = Math.round((cpc / (terr.convRate / 100)) * 100) / 100;
+                } else if (cplType === 'seasonal') {
+                    effectiveCpl = terr['cpl' + season];
+                }
+                document.getElementById('cpl').value = effectiveCpl;
+
+                if (cplType === 'seasonal' && terr.cplSource === 'derived' && terr.cpcType === 'seasonal' && terr.convRate) {
+                    const cpc = terr['cpc' + season];
+                    document.getElementById('cplDisplay').textContent = `$${effectiveCpl} = $${cpc} CPC ÷ ${terr.convRate}% CVR (${season}, auto-detected) — Spring: $${terr.cplSpring} | Summer: $${terr.cplSummer} | Fall: $${terr.cplFall} | Winter: $${terr.cplWinter}`;
+                } else if (cplType === 'seasonal') {
+                    document.getElementById('cplDisplay').textContent = `$${effectiveCpl} (${season} CPL, auto-detected) — Spring: $${terr.cplSpring} | Summer: $${terr.cplSummer} | Fall: $${terr.cplFall} | Winter: $${terr.cplWinter}`;
+                } else {
+                    document.getElementById('cplDisplay').textContent = `$${terr.cpl} (flat year-round)`;
+                }
+
+                const ctrType = terr.ctrType || 'flat'; // fallback for old territories
+
+                // Use blended CTR if available, otherwise use flat CTR
+                const ctrValue = ctrType === 'blended' ? terr.blendedCtr : terr.ctr;
+                document.getElementById('ctr').value = ctrValue;
+
+                // Update CTR display based on type
+                if (ctrType === 'blended') {
+                    document.getElementById('ctrDisplay').textContent = `${terr.blendedCtr}% (blended annual) - Spring: ${terr.spring}%, Summer: ${terr.summer}%, Fall: ${terr.fall}%, Winter: ${terr.winter}%`;
+                } else {
+                    document.getElementById('ctrDisplay').textContent = `${terr.ctr}% (flat year-round)`;
+                }
+
+                // Auto-populate landing page conversion rate default for this territory.
+                // Lincoln/Omaha: verified real campaign data. Houston/New Orleans: research-based estimate
+                // (national roofing PPC CVR benchmark range 3-12%). All values remain manually editable.
+                document.getElementById('lpConvRate').value = terr.convRate || '';
+
+                // Re-anchor implied CPC so that if the user now edits Landing Page Conversion Rate,
+                // CPL recalculates from THIS territory's cost basis rather than a stale prior one.
+                updateImpliedCpcFromCplAndConvRate();
+                calculateROI();
+            }
+        }
+
+        function toggleSeasonalInputs() {
+            const ctrType = document.getElementById('newTerrCtrType').value;
+            const seasonalDiv = document.getElementById('seasonalInputs');
+            if (ctrType === 'blended') {
+                seasonalDiv.style.display = 'block';
+                calculateBlendedCtr();
+            } else {
+                seasonalDiv.style.display = 'none';
+            }
+        }
+
+        function calculateBlendedCtr() {
+            const spring = parseFloat(document.getElementById('newTerrSpring').value) || 0;
+            const summer = parseFloat(document.getElementById('newTerrSummer').value) || 0;
+            const fall = parseFloat(document.getElementById('newTerrFall').value) || 0;
+            const winter = parseFloat(document.getElementById('newTerrWinter').value) || 0;
+            const blended = (spring + summer + fall + winter) / 4;
+            document.getElementById('blendedCalc').textContent = blended.toFixed(2) + '%';
+        }
+
+        function toggleSeasonalCplInputs() {
+            const cplType = document.getElementById('newTerrCplType').value;
+            const seasonalDiv = document.getElementById('seasonalCplInputs');
+            if (cplType === 'seasonal') {
+                seasonalDiv.style.display = 'block';
+                calculateBlendedCpl();
+            } else {
+                seasonalDiv.style.display = 'none';
+            }
+        }
+
+        function calculateBlendedCpl() {
+            const spring = parseFloat(document.getElementById('newTerrCplSpring').value) || 0;
+            const summer = parseFloat(document.getElementById('newTerrCplSummer').value) || 0;
+            const fall = parseFloat(document.getElementById('newTerrCplFall').value) || 0;
+            const winter = parseFloat(document.getElementById('newTerrCplWinter').value) || 0;
+            const blended = (spring + summer + fall + winter) / 4;
+            document.getElementById('blendedCplCalc').textContent = '$' + blended.toFixed(0);
+        }
+
+        function fmtMoney(n) {
+            return Math.round(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        function calculateROI() {
+            const adSpend = parseFloat(document.getElementById('adSpend').value) || 0;
+            const cpl = parseFloat(document.getElementById('cpl').value) || 0;
+            const ctrPct = parseFloat(document.getElementById('ctr').value) || 0;
+            const lpConvRatePct = parseFloat(document.getElementById('lpConvRate').value) || 0;
+            const ticket = parseFloat(document.getElementById('ticket').value) || 0;
+            const margin = parseFloat(document.getElementById('margin').value) / 100 || 0;
+            const marketingBudgetPct = parseFloat(document.getElementById('marketingBudget').value) / 100 || 0;
+
+            // Effective lead-to-close rate, per Acculynx: 33% lead->approved x 83% approved->closed
+            const effectiveCloseRate = ACCULYNX_DATA.approvalRate * ACCULYNX_DATA.closeRate;
+
+            // Monthly calculations — counts round DOWN to whole units (can't sell a fraction of a lead or a roof)
+            const leadsExact = cpl > 0 ? adSpend / cpl : 0;
+  
