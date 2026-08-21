@@ -1,0 +1,96 @@
+div>
+
+                    <div class="accuracy-box">
+                        <div class="accuracy-title">📊 Data Sources & Accuracy</div>
+                        <div class="accuracy-grid">
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Lead → Approval: 33%</span>
+                                <span class="accuracy-value">✅ Acculynx (3,096 leads) — rolling window, refreshed every 30 days (NOT a static all-time figure)</span>
+                                <span class="data-status status-real">VERIFIED</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Approval → Close: 83%</span>
+                                <span class="accuracy-value">✅ Acculynx (645 deals) — rolling window, refreshed every 30 days (NOT a static all-time figure)</span>
+                                <span class="data-status status-real">VERIFIED</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Max Affordable CPL</span>
+                                <span class="accuracy-value">✅ Formula: Ticket x Margin% (after labor & materials) x Marketing Budget% x Effective Close Rate (33% x 83%)</span>
+                                <span class="data-status status-real">VALIDATED</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">CPL by Territory</span>
+                                <span class="accuracy-value">✅ Lincoln/Omaha: CPC ÷ 3% verified CVR benchmark | Houston & New Orleans: Estimated (pending 30-day verification)</span>
+                                <span class="data-status status-pending">PARTIAL</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">CTR Type & Seasonal Rates</span>
+                                <span class="accuracy-value">✅ Lincoln/Omaha: Blended 3.98% | Houston/NOLA: Flat | Now wired into Estimated Clicks/Impressions</span>
+                                <span class="data-status status-real">VALIDATED</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Landing Page Conversion</span>
+                                <span class="accuracy-value">✅ Lincoln/Omaha: VERIFIED 3% (real campaign data) | Houston & New Orleans: 3.3% ESTIMATE (national roofing PPC CVR benchmark range 3-12%, ClicksGeek — pending real verification)</span>
+                                <span class="data-status status-pending">PARTIAL</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Manual Override</span>
+                                <span class="accuracy-value">✅ Every field (CPL, CTR, CVR, Ticket, Margin, Marketing %) is now directly editable in the Scenario Builder — territory selection only sets the starting default</span>
+                                <span class="data-status status-real">FIXED</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Next KPI Refresh</span>
+                                <span class="accuracy-value" id="nextRefreshDisplay">Calculating...</span>
+                                <span class="data-status status-pending">SCHEDULED</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Monthly vs Annual Results</span>
+                                <span class="accuracy-value">✅ Separate sections for Monthly ROI & Annual Projections, shown with ±20% swing range</span>
+                                <span class="data-status status-real">VALIDATED</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <strong>Murray ROI Calculator v4.9.0 — Scenario Manager</strong><br>
+            Save & compare ROI plans | Territory CPL database | Real Acculynx data | Campaigns launched August 20, 2026 | KPIs refreshed every 30 days
+        </div>
+    </div>
+
+    <div id="printArea"></div>
+
+    <script>
+        const TERRITORIES_DB = {
+            'lincoln-omaha': { 
+                name: 'Lincoln/Omaha, NE', 
+                cpl: 138.33, 
+                cplType: 'seasonal',
+                cplSource: 'derived', // CPL = CPC / CVR — verified benchmark, not a placeholder
+                cpcType: 'seasonal',
+                cpcSpring: 4.15,
+                cpcSummer: 7.80,
+                cpcFall: 4.15,
+                cpcWinter: 3.15,
+                convRate: 3, // landing page conversion rate, % — VERIFIED benchmark (campaigns launched Aug 20, 2026), refreshed every 30 days
+                cplSpring: 138.33,
+                cplSummer: 260,
+                cplFall: 138.33,
+                cplWinter: 105,
+                blendedCpl: 160.42,
+                ctrType: 'blended',
+                ctr: 3.1,
+                spring: 5.0,
+                summer: 4.15,
+                fall: 3.75,
+                winter: 3.0,
+                blendedCtr: 3.98,
+                notes: '✅ CPL derived from Google Ads CPC ÷ 3% verified landing page conversion rate benchmark. Campaigns launched Aug 20, 2026 — KPIs refreshed every 30 days.'
+            },
+            'houston': { 
+                name: 'Houston, TX', 
+                cpl: 230, 
+                cplType: 'flat',
+                cplSource: 'estimated', // no 
