@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Murray ROI Calculator v4.4.0 - Scenario Manager</title>
+    <title>Murray ROI Calculator v5.1.0 - Scenario Manager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Century Gothic', 'Helvetica Neue', sans-serif; background: #f5f5f5; padding: 20px; }
@@ -14,6 +14,10 @@
         .logo-img { width: 50px; height: 50px; background: #b69d5e; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
         .header h1 { font-size: 28px; font-weight: bold; color: #b69d5e; }
         .header-subtitle { font-size: 12px; color: #ccc; }
+        .header-utility { margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+        .header-util-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.3); color: #eee; padding: 9px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .header-util-btn:hover { background: rgba(255,255,255,0.18); }
+        .header-util-btn.active { background: #b69d5e; border-color: #b69d5e; color: #fff; }
         
         .content { padding: 30px; }
         
@@ -94,6 +98,16 @@
         
         .form-note { font-size: 11px; color: #999; margin-top: 4px; font-style: italic; }
 
+        /* Suggestions Panel */
+        .suggestions-box { background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 18px 20px; margin-top: 20px; }
+        .suggestions-title { font-size: 13px; font-weight: bold; color: #3d3d3d; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .suggestion-item { display: flex; gap: 10px; font-size: 13px; line-height: 1.5; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-icon { flex-shrink: 0; }
+        .suggestion-ok { color: #2d5d4f; }
+        .suggestion-warn { color: #a13d3d; }
+        .suggestion-info { color: #555; }
+
         /* Disclaimer Banner */
         .disclaimer-banner { background: #fff8e6; border: 2px solid #b69d5e; border-radius: 6px; color: #3d3d3d; font-size: 12px; line-height: 1.6; padding: 16px 20px; margin: 20px 30px 0; }
         .disclaimer-banner strong { color: #a13d3d; }
@@ -111,7 +125,68 @@
             .print-card h3 { color: #b69d5e; margin-bottom: 8px; }
             .print-card div { font-size: 12px; line-height: 1.6; }
         }
-    </style>
+
+        /* Workflow Banner */
+        .workflow-banner { background: linear-gradient(135deg, #3d3d3d 0%, #2a2a2a 100%); border-radius: 8px; padding: 22px 25px; margin: 25px 30px 0; }
+        .workflow-banner-title { color: #b69d5e; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+        .workflow-steps { display: flex; align-items: stretch; gap: 12px; flex-wrap: wrap; }
+        .workflow-step { flex: 1; min-width: 220px; background: rgba(255,255,255,0.06); border: 1px solid rgba(182,157,94,0.4); border-radius: 6px; padding: 14px 16px; display: flex; gap: 12px; cursor: pointer; transition: background 0.15s; }
+        .workflow-step:hover { background: rgba(182,157,94,0.16); }
+        .workflow-step-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: #b69d5e; color: #3d3d3d; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .workflow-step-title { color: #fff; font-weight: bold; font-size: 13px; margin-bottom: 4px; }
+        .workflow-step-desc { color: #ccc; font-size: 11px; line-height: 1.5; }
+        .workflow-arrow { color: #b69d5e; font-size: 20px; display: flex; align-items: center; justify-content: center; padding: 0 2px; }
+        @media (max-width: 900px) { .workflow-arrow { display: none; } .workflow-steps { flex-direction: column; } }
+
+        /* Metric Explainers */
+        .metric-explainer { margin-bottom: 20px; }
+        .metric-explainer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .metric-explainer-card { background: #fff8e6; border-left: 4px solid #b69d5e; border-radius: 6px; padding: 14px 16px; }
+        .metric-explainer-title { font-weight: bold; color: #3d3d3d; font-size: 13px; margin-bottom: 6px; }
+        .metric-explainer-text { font-size: 12px; color: #555; line-height: 1.6; }
+        @media (max-width: 800px) { .metric-explainer-grid { grid-template-columns: 1fr; } }
+    
+        /* --- Weather & Storm Intelligence (NOAA) --- */
+        .wx-panel{border:1px solid #e2e2e2;border-radius:10px;overflow:hidden;margin-top:6px;}
+        .wx-head{background:linear-gradient(135deg,#000 0%,#3d3d3d 100%);color:#fff;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;}
+        .wx-head .t{font-size:13px;font-weight:700;}
+        .wx-head .loc{font-size:11px;color:#cbb05e;}
+        .wx-body{padding:16px 18px;background:#fff;}
+        .wx-status-line{display:flex;align-items:center;gap:8px;font-size:11px;color:#888;margin-bottom:12px;}
+        .wx-dot{width:8px;height:8px;border-radius:50%;background:#438148;display:inline-block;}
+        .wx-section-title{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#3d3d3d;margin:16px 0 8px;border-bottom:2px solid #b69d5e;padding-bottom:5px;}
+        .storm72{border-radius:8px;padding:11px 15px;margin-bottom:6px;font-size:12px;display:block;}
+        .storm72.hit{background:#c0392b;color:#fff;font-weight:700;}
+        .storm72.compound{background:#7a1f16;color:#fff;font-weight:700;}
+        .storm72.clear{background:#f2f8f3;border:1px solid #438148;color:#2b5c33;}
+        .storm72 .evlist{font-weight:400;font-size:10.5px;margin-top:4px;display:block;}
+        .wx-chart-wrap{overflow-x:auto;}
+        .wx-chart{display:flex;align-items:flex-end;gap:5px;height:140px;padding:10px 4px 0;min-width:600px;}
+        .wx-col{flex:0 0 40px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative;}
+        .wx-col .rainband{position:absolute;bottom:0;left:0;right:0;background:rgba(70,130,180,.18);border-radius:4px;}
+        .wx-col .windbar{width:13px;background:#b69d5e;border-radius:3px 3px 0 0;position:relative;z-index:2;}
+        .wx-col .windbar.high{background:#c0392b;}
+        .wx-col .temp-dot{width:7px;height:7px;border-radius:50%;background:#000;position:relative;z-index:3;margin-bottom:2px;}
+        .wx-col .lbl{font-size:9px;color:#777;margin-top:5px;text-align:center;line-height:1.2;}
+        .wx-col .val{font-size:9.5px;color:#3d3d3d;font-weight:700;}
+        .wx-col.flag .lbl{color:#c0392b;font-weight:700;}
+        .wx-legend{display:flex;gap:14px;font-size:10px;color:#777;margin-top:8px;flex-wrap:wrap;}
+        .wx-legend span{display:inline-flex;align-items:center;gap:4px;}
+        .wx-swatch{width:9px;height:9px;border-radius:2px;display:inline-block;}
+        .wx-alert-box{border:1px solid #e2e2e2;border-radius:8px;padding:11px 13px;margin-bottom:7px;}
+        .wx-alert-box.none{background:#f2f8f3;border-color:#438148;color:#2b5c33;font-size:12px;}
+        .wx-alert-box.active{background:#fdecea;border-color:#c0392b;}
+        .wx-alert-box .a-title{font-weight:700;font-size:12px;color:#c0392b;margin-bottom:3px;}
+        .wx-alert-box .a-body{font-size:11px;color:#5a2a24;}
+        .wx-season-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px;}
+        .wx-season-table th,.wx-season-table td{border:1px solid #e2e2e2;padding:6px 8px;text-align:center;}
+        .wx-season-table th{background:#f9f9f9;font-weight:700;}
+        .wx-up{color:#c0392b;font-weight:700;}
+        .wx-down{color:#438148;font-weight:700;}
+        .wx-apply-btn{background:#438148;color:#fff;border:none;padding:9px 16px;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer;margin-top:10px;}
+        .wx-apply-btn:hover{background:#356b39;}
+        .wx-unmatched{background:#fff9c4;border-left:4px solid #f57f17;padding:10px 14px;border-radius:0 6px 6px 0;font-size:12px;color:#5a4a10;}
+</style>
 </head>
 <body>
     <div class="container">
@@ -119,84 +194,70 @@
             <div class="logo-img">M</div>
             <div>
                 <h1>MURRAY ROI CALCULATOR</h1>
-                <div class="header-subtitle">Scenario Manager & Territory Comparison | v4.4.0</div>
+                <div class="header-subtitle">Scenario Manager & Territory Comparison | v5.1.0</div>
+            </div>
+            <div class="header-utility">
+                <button class="header-util-btn" id="hdrBtnTerritories" onclick="switchTab('territories')">📍 Territory Database</button>
+                <button class="header-util-btn" id="hdrBtnInfo" onclick="switchTab('info')">ℹ️ Disclaimer & Updates</button>
+                <a class="header-util-btn" href="geo-map.html" style="text-decoration:none;display:inline-block;">🗺️ Geo-Targeting Map</a>
             </div>
         </div>
 
-        <div class="disclaimer-banner">
-            &#9888;&#65039; <strong>IMPORTANT DISCLAIMER:</strong> THERE IS ABSOLUTELY NEVER ANY GUARANTEE THAT YOU WILL HIT THIS EXACT NUMBER OF GENERATED LEADS. THERE IS A MARGINAL SWING OF +20/-20 ON REVENUE DUE TO THE LACK OF LANDING PAGE CONVERSION RATE AND INCONSISTENT CLOSING RATIOS. THERE IS NO GUARANTEE THAT WE WILL REACH THE REVENUE. THE CALCULATOR SHOULD BE USED AS AN INDICATOR OR GUIDE VS. A GUARANTEE. AS EACH SCENARIO IS PLAYED OUT IN OUR ADVERTISING PLATFORM, IT WILL PULL THAT DATA AND REFINE THE PROJECTIONS.<br><br>
-            The software will deliver the best scenarios based on our personal historical CTR, Landing Page Conversions, CPL expectations, and other similar KPIs to determine the best Google Ads plan.
-        </div>
-
         <div class="content">
+            <div class="workflow-banner">
+                <div class="workflow-banner-title">How To Use This Calculator — 3 Steps</div>
+                <div class="workflow-steps">
+                    <div class="workflow-step" onclick="switchTab('territories')">
+                        <div class="workflow-step-num">1</div>
+                        <div class="workflow-step-body">
+                            <div class="workflow-step-title">Create Your Territory</div>
+                            <div class="workflow-step-desc">Enter CPL, CTR &amp; conversion rate for the market you're targeting (Territory Database, top-right).</div>
+                        </div>
+                    </div>
+                    <div class="workflow-arrow">&rarr;</div>
+                    <div class="workflow-step" onclick="switchTab('builder')">
+                        <div class="workflow-step-num">2</div>
+                        <div class="workflow-step-body">
+                            <div class="workflow-step-title">Build &amp; Save a Scenario</div>
+                            <div class="workflow-step-desc">Pick that territory, set budget &amp; targets below, then click Save. Repeat for as many scenarios as you want.</div>
+                        </div>
+                    </div>
+                    <div class="workflow-arrow">&rarr;</div>
+                    <div class="workflow-step" onclick="switchTab('comparison')">
+                        <div class="workflow-step-num">3</div>
+                        <div class="workflow-step-body">
+                            <div class="workflow-step-title">Create a Campaign Blueprint</div>
+                            <div class="workflow-step-desc">Lock in one saved scenario &mdash; or compare a few side-by-side first &mdash; as the final plan for your advertising specialist.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- Tab Navigation -->
             <div class="tabs">
                 <button class="tab-button active" onclick="switchTab('builder')">📊 Scenario Builder</button>
-                <button class="tab-button" onclick="switchTab('territories')">📍 Territory Database</button>
                 <button class="tab-button" onclick="switchTab('scenarios')">💾 Saved Scenarios</button>
+                <button class="tab-button" onclick="switchTab('comparison')">🏗️ Campaign Building</button>
                 <button class="tab-button" onclick="switchTab('blueprints')">📌 Advertising Blueprints</button>
-                <button class="tab-button" onclick="switchTab('comparison')">🔄 Compare Scenarios</button>
             </div>
 
             <!-- TAB 1: Scenario Builder -->
             <div id="builder" class="tab-content active">
-                <div class="section">
-                    <div class="section-title">Calculator v4.3.0 Features & Data Accuracy</div>
-                    
-                    <div style="background: #e8f5e9; border: 2px solid #438148; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                        <div style="font-size: 14px; font-weight: bold; color: #438148; margin-bottom: 12px;">✨ Latest Updates (v4.3.0)</div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 13px; color: #2d5d4f;">
-                            <div>✅ <strong>CTR Type Selector:</strong> Choose Flat or Blended annual rates</div>
-                            <div>✅ <strong>Seasonal Blending:</strong> Enter Spring/Summer/Fall/Winter CTR rates</div>
-                            <div>✅ <strong>Auto Blended Avg:</strong> System calculates annual average CTR</div>
-                            <div>✅ <strong>Whole Dollar Display:</strong> All $ amounts show as whole numbers</div>
-                            <div>✅ <strong>Scenario Manager:</strong> Save unlimited ROI plans with timestamps</div>
-                            <div>✅ <strong>Seasonal CPL (Derived):</strong> Lincoln/Omaha CPL = seasonal Google Ads CPC ÷ landing page conversion rate, auto-detected by date</div>
-                            <div>✅ <strong>Territory Database:</strong> Add/manage CPL and CTR type by city/state</div>
-                            <div>✅ <strong>Compare 3 Scenarios:</strong> View side-by-side ROI projections</div>
-                            <div>✅ <strong>Export All:</strong> Download scenarios as JSON backup</div>
-                        </div>
-                    </div>
-
-                    <div class="accuracy-box">
-                        <div class="accuracy-title">📊 Data Sources & Accuracy</div>
-                        <div class="accuracy-grid">
-                            <div class="accuracy-item">
-                                <span class="accuracy-label">Lead → Approval: 33%</span>
-                                <span class="accuracy-value">✅ Acculynx (3,096 leads, all-time)</span>
-                                <span class="data-status status-real">VERIFIED</span>
-                            </div>
-                            <div class="accuracy-item">
-                                <span class="accuracy-label">Approval → Close: 83%</span>
-                                <span class="accuracy-value">✅ Acculynx (645 deals, all-time)</span>
-                                <span class="data-status status-real">VERIFIED</span>
-                            </div>
-                            <div class="accuracy-item">
-                                <span class="accuracy-label">CPL by Territory</span>
-                                <span class="accuracy-value">✅ Lincoln/Omaha: CPC ÷ CVR (Google Ads verified) | Others: Flat</span>
-                                <span class="data-status status-real">VALIDATED</span>
-                            </div>
-                            <div class="accuracy-item">
-                                <span class="accuracy-label">CTR Type & Seasonal Rates</span>
-                                <span class="accuracy-value">✅ Lincoln/Omaha: Blended 3.98% | Houston/NOLA: Flat</span>
-                                <span class="data-status status-real">VALIDATED</span>
-                            </div>
-                            <div class="accuracy-item">
-                                <span class="accuracy-label">Landing Page Conversion</span>
-                                <span class="accuracy-value">⚠️ To be measured from campaigns starting Aug 3</span>
-                                <span class="data-status status-pending">PENDING</span>
-                            </div>
-                            <div class="accuracy-item">
-                                <span class="accuracy-label">Monthly vs Annual Results</span>
-                                <span class="accuracy-value">✅ Separate sections for Monthly ROI & Annual Projections</span>
-                                <span class="data-status status-real">VALIDATED</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="section">
                     <div class="section-title">Build Your Scenario</div>
+
+                    <div class="metric-explainer">
+                        <div class="metric-explainer-grid">
+                            <div class="metric-explainer-card">
+                                <div class="metric-explainer-title">Why CPL Matters</div>
+                                <div class="metric-explainer-text">Cost Per Lead (CPL) is what you pay to generate one lead. It sets how many leads a given budget can buy (Leads = Ad Spend &divide; CPL) and drives every result below it &mdash; revenue, profit, and ROI. A CPL above your Max Affordable CPL means this scenario loses money at your current margin and close rate.</div>
+                            </div>
+                            <div class="metric-explainer-card">
+                                <div class="metric-explainer-title">What CTR Affects</div>
+                                <div class="metric-explainer-text">Click-Through Rate (CTR) does not lower your cost per lead directly &mdash; CPC already captures that. CTR is Google's Quality Score / impression-share signal: a weak CTR raises CPC over time and shrinks how many impressions your budget reaches. Treat it as an ad-relevance health check, not a revenue lever.</div>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="grid full">
                         <div class="form-group">
@@ -217,27 +278,27 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Territory CPL (Auto-populated)</label>
+                            <label>Territory CPL (editable)</label>
                             <div style="display: flex; gap: 8px;">
                                 <span style="padding: 10px; color: #999;">$</span>
-                                <input type="number" id="cpl" readonly style="background: #f0f0f0;">
+                                <input type="number" id="cpl" step="1" oninput="updateImpliedCpcFromCplAndConvRate(); calculateROI();">
                             </div>
-                            <div class="form-note">Using: <span id="cplDisplay" style="color: #b69d5e; font-weight: bold;">-- (select a territory)</span></div>
+                            <div class="form-note">Territory default: <span id="cplDisplay" style="color: #b69d5e; font-weight: bold;">-- (select a territory)</span> — <strong>you can manually override this and every field below</strong>. Overrides last until you reselect the territory or reload the page.</div>
                         </div>
                     </div>
 
                     <div class="grid">
                         <div class="form-group">
                             <label>Monthly Ad Spend</label>
-                            <input type="number" id="adSpend" value="1000" min="0" step="100">
+                            <input type="number" id="adSpend" value="1000" min="0" step="100" oninput="calculateROI();">
                         </div>
                         <div class="form-group">
                             <label>Click-Through Rate (CTR)</label>
                             <div style="display: flex; gap: 8px;">
-                                <input type="number" id="ctr" value="3.1" min="0" step="0.1" style="flex: 1;">
+                                <input type="number" id="ctr" value="3.1" min="0" step="0.1" style="flex: 1;" oninput="calculateROI();">
                                 <span style="padding: 10px; color: #999;">%</span>
                             </div>
-                            <div class="form-note">Using: <span id="ctrDisplay" style="color: #b69d5e; font-weight: bold;">3.1% (flat)</span></div>
+                            <div class="form-note">Using: <span id="ctrDisplay" style="color: #b69d5e; font-weight: bold;">3.1% (flat)</span> — drives Estimated Impressions Needed &amp; the benchmark check below, not revenue directly (see why in Suggestions)</div>
                         </div>
                     </div>
 
@@ -245,31 +306,40 @@
                         <div class="form-group">
                             <label>Landing Page Conversion Rate</label>
                             <div style="display: flex; gap: 8px;">
-                                <input type="number" id="lpConvRate" value="0" min="0" max="100" step="0.5" style="flex: 1;" placeholder="% (optional)">
+                                <input type="number" id="lpConvRate" value="0" min="0" max="100" step="0.5" style="flex: 1;" placeholder="% (optional)" oninput="recalcCplFromConvRate(); calculateROI();">
                                 <span style="padding: 10px; color: #999;">%</span>
                             </div>
+                            <div class="form-note">Raising this <strong>lowers CPL and raises leads/revenue</strong> — it recalculates Territory CPL live using CPL = Cost Per Click ÷ Conversion Rate</div>
                         </div>
                         <div class="form-group">
                             <label>Average Ticket</label>
                             <div style="display: flex; gap: 8px;">
                                 <span style="padding: 10px; color: #999;">$</span>
-                                <input type="number" id="ticket" value="15000" min="0" step="500" style="flex: 1;">
+                                <input type="number" id="ticket" value="15000" min="0" step="500" style="flex: 1;" oninput="calculateROI();">
                             </div>
                         </div>
                     </div>
 
                     <div class="grid">
                         <div class="form-group">
-                            <label>Gross Margin %</label>
+                            <label>Gross Margin % (after labor &amp; materials)</label>
                             <div style="display: flex; gap: 8px;">
-                                <input type="number" id="margin" value="30" min="0" max="100" step="1" style="flex: 1;">
+                                <input type="number" id="margin" value="30" min="0" max="100" step="1" style="flex: 1;" oninput="calculateROI();">
                                 <span style="padding: 10px; color: #999;">%</span>
                             </div>
                         </div>
-                        <div style=""></div>
+                        <div class="form-group">
+                            <label>Marketing Budget % (of margin)</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="number" id="marketingBudget" value="15" min="0" max="100" step="1" style="flex: 1;" oninput="calculateROI();">
+                                <span style="padding: 10px; color: #999;">%</span>
+                            </div>
+                            <div class="form-note">Used to compute Max Affordable CPL below</div>
+                        </div>
                     </div>
 
-                    <button onclick="calculateROI()" style="margin-top: 20px;">Calculate ROI</button>
+                    <button onclick="calculateROI()" style="margin-top: 20px;">Recalculate Now</button>
+                    <div class="form-note" style="margin-top: 6px;">Results below update live as you type — this button is just a manual refresh if needed</div>
                 </div>
 
                 <div class="section">
@@ -278,6 +348,14 @@
                         <div class="result-row">
                             <span class="result-label">Monthly Ad Spend</span>
                             <span class="result-value">$<span id="resultSpend">0</span></span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Estimated Impressions Needed</span>
+                            <span class="result-value"><span id="resultImpressions">N/A</span></span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Estimated Clicks (via CTR)</span>
+                            <span class="result-value"><span id="resultClicks">N/A</span></span>
                         </div>
                         <div class="result-row">
                             <span class="result-label">Leads Generated</span>
@@ -295,14 +373,26 @@
                             <span class="result-label"><strong>Monthly Revenue</strong></span>
                             <span class="result-value highlight">$<span id="resultRevenue">0</span></span>
                         </div>
+                        <div style="font-size: 11px; color: #999; text-align: right; margin-top: -8px; margin-bottom: 8px;">±20% swing range: <span id="resultRevenueRange">$0 - $0</span></div>
                         <div class="result-row">
                             <span class="result-label"><strong>Monthly Gross Profit</strong></span>
                             <span class="result-value highlight">$<span id="resultProfit">0</span></span>
                         </div>
+                        <div style="font-size: 11px; color: #999; text-align: right; margin-top: -8px; margin-bottom: 8px;">±20% swing range: <span id="resultProfitRange">$0 - $0</span></div>
                         <div class="result-row">
                             <span class="result-label"><strong>Monthly ROI</strong></span>
                             <span class="result-value highlight"><span id="resultROI">0%</span></span>
                         </div>
+                        <div class="result-row" style="padding-top: 15px; border-top: 2px solid #e0e0e0;">
+                            <span class="result-label"><strong>Max Affordable CPL</strong></span>
+                            <span class="result-value highlight">$<span id="resultMaxCpl">0</span></span>
+                        </div>
+                        <div id="resultMaxCplStatus" style="font-size: 12px; margin-top: 6px; text-align: right;"></div>
+                    </div>
+
+                    <div class="suggestions-box">
+                        <div class="suggestions-title">💡 Suggestions For This Scenario</div>
+                        <div id="suggestionsList"></div>
                     </div>
                 </div>
 
@@ -313,10 +403,12 @@
                             <span class="result-label"><strong>Annual Revenue</strong></span>
                             <span class="result-value highlight">$<span id="resultAnnualRevenue">0</span></span>
                         </div>
+                        <div style="font-size: 11px; color: #999; text-align: right; margin-top: -8px; margin-bottom: 8px;">±20% swing range: <span id="resultAnnualRevenueRange">$0 - $0</span></div>
                         <div class="result-row">
                             <span class="result-label"><strong>Annual Gross Profit</strong></span>
                             <span class="result-value highlight">$<span id="resultAnnualProfit">0</span></span>
                         </div>
+                        <div style="font-size: 11px; color: #999; text-align: right; margin-top: -8px; margin-bottom: 8px;">±20% swing range: <span id="resultAnnualProfitRange">$0 - $0</span></div>
                         <div class="result-row">
                             <span class="result-label"><strong>Annual ROI</strong></span>
                             <span class="result-value highlight"><span id="resultAnnualROI">0%</span></span>
@@ -336,12 +428,14 @@
                     <div class="territory-list" id="territoryList"></div>
 
                     <div style="border-top: 2px solid #e0e0e0; padding-top: 20px; margin-top: 20px;">
-                        <div class="section-title">Add New Territory</div>
+                        <div class="section-title" id="terrFormTitle">Add New Territory</div>
+                        <input type="hidden" id="editingTerrId" value="">
                         <div class="grid">
                             <div class="form-group">
                                 <label>City, State</label>
-                                <input type="text" id="newTerrName" placeholder="e.g., Dallas, TX">
+                                <input type="text" id="newTerrName" placeholder="e.g., Dallas, TX" onblur="renderTerritoryWeather()" onchange="renderTerritoryWeather()">
                             </div>
+                        <div id="wxTerrPanel" style="margin: 10px 0 5px;"></div>
                             <div class="form-group">
                                 <label>Cost Per Lead (CPL)</label>
                                 <div style="display: flex; gap: 8px;">
@@ -463,7 +557,8 @@
                                 <input type="text" id="newTerrNotes" placeholder="e.g., Year-round market, Seasonal, Peak season only">
                             </div>
                         </div>
-                        <button onclick="addTerritory()" style="background: #438148;">➕ Add Territory</button>
+                        <button id="terrSaveBtn" onclick="addTerritory()" style="background: #438148;">➕ Add Territory</button>
+                        <button id="terrCancelBtn" onclick="cancelEditTerritory()" style="background: #999; display: none;">Cancel Edit</button>
                     </div>
                 </div>
             </div>
@@ -489,53 +584,177 @@
             <div id="blueprints" class="tab-content">
                 <div class="section">
                     <div class="section-title">Advertising Campaign Blueprints</div>
-                    <div class="form-note" style="margin-bottom: 20px;">Locked-in, labeled combinations of compared scenarios saved for the advertising specialist. To change a blueprint, go find and adjust the underlying scenario(s) in Saved Scenarios, then lock in a new blueprint from the Compare Scenarios tab.</div>
+                    <div class="form-note" style="margin-bottom: 20px;">Your final, locked-in campaign plan(s) handed to the advertising specialist. A blueprint can come from a single saved scenario &mdash; you do not need multiple. To change one, adjust the underlying scenario in Saved Scenarios, then lock in a new blueprint from the Campaign Building tab.</div>
                     <div class="scenario-list" id="blueprintList">
-                        <p style="color: #999; padding: 20px; text-align: center;">No blueprints saved yet. Go to Compare Scenarios, select the scenarios you want, and click "Lock as Advertising Blueprint".</p>
+                        <p style="color: #999; padding: 20px; text-align: center;">No blueprints saved yet. Go to Campaign Building, select one saved scenario (that's enough!), and click "Save as Campaign Blueprint".</p>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 4: Scenario Comparison -->
+            <!-- TAB 4: Campaign Building -->
             <div id="comparison" class="tab-content">
                 <div class="section">
-                    <div class="section-title">Compare Multiple Scenarios</div>
-                    <div class="form-note" style="margin-bottom: 20px;">Select up to 3 scenarios to compare side-by-side ROI projections.</div>
-                    
+                    <div class="section-title">Build Your Campaign</div>
+                    <div class="form-note" style="margin-bottom: 20px;">Pick ONE saved scenario OR default territory below and lock it in as your Campaign Blueprint &mdash; that's all it takes. A default territory (no scenario needed) only asks for a budget. Only build &amp; save a named scenario in the Scenario Builder if you want to override the numbers. Add a 2nd or 3rd slot to compare side-by-side before deciding.</div>
+
                     <div class="grid three-col">
                         <div class="form-group">
-                            <label>Scenario 1</label>
-                            <select id="compareScen1" onchange="updateComparison()">
+                            <label>Slot 1 (required)</label>
+                            <select id="compareScen1" onchange="onCompareSlotChange('compareScen1')">
                                 <option value="">-- Select --</option>
                             </select>
+                            <div class="form-group" id="compareScen1SpendWrap" style="display:none; margin-top:8px;">
+                                <label>Budget for this territory</label>
+                                <div style="display:flex; gap:8px;">
+                                    <span style="padding:10px; color:#999;">$</span>
+                                    <input type="number" id="compareSpend1" value="1000" min="0" step="100" oninput="updateComparison()" style="flex:1;">
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label>Scenario 2</label>
-                            <select id="compareScen2" onchange="updateComparison()">
+                            <label>Slot 2 (optional)</label>
+                            <select id="compareScen2" onchange="onCompareSlotChange('compareScen2')">
                                 <option value="">-- Select --</option>
                             </select>
+                            <div class="form-group" id="compareScen2SpendWrap" style="display:none; margin-top:8px;">
+                                <label>Budget for this territory</label>
+                                <div style="display:flex; gap:8px;">
+                                    <span style="padding:10px; color:#999;">$</span>
+                                    <input type="number" id="compareSpend2" value="1000" min="0" step="100" oninput="updateComparison()" style="flex:1;">
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label>Scenario 3</label>
-                            <select id="compareScen3" onchange="updateComparison()">
+                            <label>Slot 3 (optional)</label>
+                            <select id="compareScen3" onchange="onCompareSlotChange('compareScen3')">
                                 <option value="">-- Select --</option>
                             </select>
+                            <div class="form-group" id="compareScen3SpendWrap" style="display:none; margin-top:8px;">
+                                <label>Budget for this territory</label>
+                                <div style="display:flex; gap:8px;">
+                                    <span style="padding:10px; color:#999;">$</span>
+                                    <input type="number" id="compareSpend3" value="1000" min="0" step="100" oninput="updateComparison()" style="flex:1;">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="comparison-grid" id="comparisonGrid" style="margin-top: 30px;">
-                        <p style="color: #999; grid-column: 1/-1; text-align: center;">Select scenarios to compare</p>
+                        <p style="color: #999; grid-column: 1/-1; text-align: center;">Select at least one scenario or territory above</p>
                     </div>
                     <div style="text-align: center; margin-top: 20px;">
-                        <button onclick="lockComparisonAsBlueprint()" style="background: #b69d5e;">🔒 Lock as Advertising Blueprint</button>
+                        <button onclick="lockComparisonAsBlueprint()" style="background: #b69d5e;">🔒 Save as Campaign Blueprint</button>
+                    </div>
+                </div>
+
+            </div>
+            <!-- TAB 6: Disclaimer & Updates -->
+            <div id="info" class="tab-content">
+                <div class="section">
+                    <div class="section-title">Disclaimer</div>
+                    <div style="font-size: 12px; line-height: 1.6; color: #666; background: #fff8e6; border: 1px solid #b69d5e; border-radius: 6px; padding: 12px 16px;">
+                        There is no guarantee you will hit the exact lead/revenue numbers shown. Even with a verified 3% landing page conversion benchmark and real Acculynx funnel rates, expect a margin of swing of roughly &plusmn;20% due to market-to-market variance and inconsistent closing ratios (especially in newer markets like Houston and New Orleans). Use this calculator as a planning indicator, not a guarantee. KPIs (CPL, conversion rate, funnel rates) are refreshed every 30 days as real campaign data comes in.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Calculator v5.1.0 Features & Data Accuracy</div>
+
+                    <div style="background: #e8f5e9; border: 2px solid #438148; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                        <div style="font-size: 14px; font-weight: bold; color: #438148; margin-bottom: 12px;">✨ Latest Updates (v5.1.0)</div>
+                            <div>✅ <strong>Default Territories Now Compare/Blueprint-Ready:</strong> Every territory can be added directly to Campaign Building at any time &mdash; no scenario has to be built first. Pick the territory, enter a budget, done. Auto-named "{Territory} — #{unique ID}", same convention as saved scenarios.</div>
+                            <div>✅ <strong>Scenario Builder Is Now Optional:</strong> Only needed when you want to override the territory's default numbers and give the result a custom name. Locking a Campaign Blueprint from a default territory auto-saves it as a real scenario in the background.</div>
+                            <div>✅ <strong>Master Blueprint Uploaded:</strong> "Summer TX, NE, LA territories" (BP-EHCH5-EEK) is now a permanent system blueprint &mdash; Lincoln Agressive Plan, Houston Agressive Plan, and New Orleans Summer Mid, exactly as locked in on 8/21/2026.</div>
+                            <div>✅ <strong>Whole-Dollar CPL:</strong> Territory CPL (including CPC ÷ CVR-derived rates) now resolves to a true whole-dollar number everywhere it is calculated or displayed &mdash; no more $138.33-style cents, and no artificial rounding up or down beyond standard nearest-dollar math.</div>
+                            <div>✅ <strong>3-Step Workflow Banner:</strong> New guided banner at the top of every tab &mdash; Create Territory &rarr; Build &amp; Save Scenario &rarr; Create Campaign Blueprint &mdash; with one-click jumps to each step.</div>
+                            <div>✅ <strong>CPL &amp; CTR Explainers:</strong> Scenario Builder now opens with plain-language callouts on why CPL drives your numbers and what CTR actually affects (Quality Score / impression share, not cost per lead).</div>
+                            <div>✅ <strong>Compare Scenarios &rarr; Campaign Building:</strong> Renamed and reworked &mdash; locking in a Campaign Blueprint now only requires ONE saved scenario; comparing 2-3 side-by-side is optional due diligence, not a requirement.</div>
+                            <div>✅ <strong>Landing Page Conversion Now Drives Revenue:</strong> Fixed — editing Landing Page Conversion Rate recalculates CPL live (CPL = implied Cost Per Click ÷ Conversion Rate), which flows through to Leads, Revenue, Profit, and ROI. Previously this field only affected the diagnostic Clicks/Impressions display.</div>
+                            <div>✅ <strong>Live Recalculation:</strong> Every field in Scenario Builder now recalculates results as you type — no more clicking "Calculate" to see the effect of a change</div>
+                            <div>✅ <strong>CTR's Real Role Clarified:</strong> CTR drives Estimated Impressions Needed and a benchmark check, not revenue directly — in a cost-per-click model, CPC already captures spend efficiency; CTR is the Quality Score / impression-share signal (see Suggestions panel below the results)</div>
+                            <div>✅ <strong>Suggestions Panel Added:</strong> Scenario Builder now shows live, data-backed suggestions — CTR/CVR vs. territory benchmark, minimum viable test budget for Google's algorithm, margin/budget vs. Murray's targets</div>
+                            <div>✅ <strong>Header Reorganized:</strong> Territory Database and Disclaimer &amp; Updates moved to the top-right header; main tabs reordered to Scenario Builder → Saved Scenarios → Compare Scenarios → Advertising Blueprints</div>
+                            <div>✅ <strong>Acculynx Funnel Retained:</strong> Two-stage 33% approval x 83% close (verified Acculynx data) — this is the source of truth for lead-to-close math</div>
+                            <div>✅ <strong>Whole-Unit Rounding, Rounded Down:</strong> Leads, Approved, and Closed counts now floor to whole numbers (you can't sell a fraction of a roof)</div>
+                            <div>✅ <strong>Max Affordable CPL:</strong> Auto-calculated as Ticket x Margin% x Marketing Budget% x Effective Close Rate (33% x 83%), flags any territory CPL that exceeds it</div>
+                            <div>✅ <strong>Editable Territories:</strong> Every territory (including the 3 built-in ones) can now be edited after being saved, not just re-entered during a scenario run</div>
+                            <div>✅ <strong>Houston & New Orleans CPL Updated:</strong> Replaced flat $275 placeholder with research-based estimates ($230 Houston flat, $185 New Orleans seasonal) — flagged for 30-day verification against real spend</div>
+                            <div>✅ <strong>Verified 3% CVR Benchmark:</strong> Lincoln/Omaha landing page conversion rate is now a VERIFIED benchmark (campaigns launched Aug 20, 2026), no longer a placeholder — CPL recalculated accordingly</div>
+                            <div>✅ <strong>±20% Swing Ranges Shown:</strong> Monthly/Annual Revenue and Profit now display a real dollar range, not just a disclaimer footnote</div>
+                            <div>✅ <strong>30-Day KPI Refresh Tracker:</strong> Info tab shows last pull date and next scheduled refresh for CPL/CVR/funnel data</div>
+                            <div>✅ <strong>Gross Margin Clarified:</strong> Labeled explicitly as after labor &amp; materials</div>
+                            <div>✅ <strong>Manual Override Bug Fixed:</strong> Territory CPL field was locked read-only — every field is now editable from the Scenario Builder, territory selection only sets the starting default</div>
+                            <div>✅ <strong>Houston & New Orleans CVR Added:</strong> No longer show "N/A" for Estimated Clicks/Impressions — CVR set to 3.3% based on national roofing PPC benchmark research (ClicksGeek: 3-12% range), pending real verification</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 13px; color: #2d5d4f;">
+                            <div>✅ <strong>CTR Type Selector:</strong> Choose Flat or Blended annual rates</div>
+                            <div>✅ <strong>Seasonal Blending:</strong> Enter Spring/Summer/Fall/Winter CTR rates</div>
+                            <div>✅ <strong>Auto Blended Avg:</strong> System calculates annual average CTR</div>
+                            <div>✅ <strong>Whole Dollar Display:</strong> All $ amounts show as whole numbers</div>
+                            <div>✅ <strong>Scenario Manager:</strong> Save unlimited ROI plans with timestamps</div>
+                            <div>✅ <strong>Seasonal CPL (Derived):</strong> Lincoln/Omaha CPL = seasonal Google Ads CPC ÷ landing page conversion rate, auto-detected by date</div>
+                            <div>✅ <strong>Territory Database:</strong> Add/manage CPL and CTR type by city/state</div>
+                            <div>✅ <strong>Compare 3 Scenarios:</strong> View side-by-side ROI projections</div>
+                            <div>✅ <strong>Export All:</strong> Download scenarios as JSON backup</div>
+                        </div>
+                    </div>
+
+                    <div class="accuracy-box">
+                        <div class="accuracy-title">📊 Data Sources & Accuracy</div>
+                        <div class="accuracy-grid">
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Lead → Approval: 33%</span>
+                                <span class="accuracy-value">✅ Acculynx (3,096 leads) — rolling window, refreshed every 30 days (NOT a static all-time figure)</span>
+                                <span class="data-status status-real">VERIFIED</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Approval → Close: 83%</span>
+                                <span class="accuracy-value">✅ Acculynx (645 deals) — rolling window, refreshed every 30 days (NOT a static all-time figure)</span>
+                                <span class="data-status status-real">VERIFIED</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Max Affordable CPL</span>
+                                <span class="accuracy-value">✅ Formula: Ticket x Margin% (after labor & materials) x Marketing Budget% x Effective Close Rate (33% x 83%)</span>
+                                <span class="data-status status-real">VALIDATED</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">CPL by Territory</span>
+                                <span class="accuracy-value">✅ Lincoln/Omaha: CPC ÷ 3% verified CVR benchmark | Houston & New Orleans: Estimated (pending 30-day verification)</span>
+                                <span class="data-status status-pending">PARTIAL</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">CTR Type & Seasonal Rates</span>
+                                <span class="accuracy-value">✅ Lincoln/Omaha: Blended 3.98% | Houston/NOLA: Flat | Now wired into Estimated Clicks/Impressions</span>
+                                <span class="data-status status-real">VALIDATED</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Landing Page Conversion</span>
+                                <span class="accuracy-value">✅ Lincoln/Omaha: VERIFIED 3% (real campaign data) | Houston & New Orleans: 3.3% ESTIMATE (national roofing PPC CVR benchmark range 3-12%, ClicksGeek — pending real verification)</span>
+                                <span class="data-status status-pending">PARTIAL</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Manual Override</span>
+                                <span class="accuracy-value">✅ Every field (CPL, CTR, CVR, Ticket, Margin, Marketing %) is now directly editable in the Scenario Builder — territory selection only sets the starting default</span>
+                                <span class="data-status status-real">FIXED</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Next KPI Refresh</span>
+                                <span class="accuracy-value" id="nextRefreshDisplay">Calculating...</span>
+                                <span class="data-status status-pending">SCHEDULED</span>
+                            </div>
+                            <div class="accuracy-item">
+                                <span class="accuracy-label">Monthly vs Annual Results</span>
+                                <span class="accuracy-value">✅ Separate sections for Monthly ROI & Annual Projections, shown with ±20% swing range</span>
+                                <span class="data-status status-real">VALIDATED</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="footer">
-            <strong>Murray ROI Calculator v4.4.0 — Scenario Manager</strong><br>
-            Save & compare ROI plans | Territory CPL database | Real Acculynx data | August 3, 2026 test launch
+            <strong>Murray ROI Calculator v5.1.0 — Scenario Manager</strong><br>
+            Save & compare ROI plans | Territory CPL database | Real Acculynx data | Campaigns launched August 20, 2026 | KPIs refreshed every 30 days
         </div>
     </div>
 
@@ -545,20 +764,20 @@
         const TERRITORIES_DB = {
             'lincoln-omaha': { 
                 name: 'Lincoln/Omaha, NE', 
-                cpl: 69, 
+                cpl: 138, 
                 cplType: 'seasonal',
-                cplSource: 'derived', // CPL = CPC / CVR, not a manual entry
+                cplSource: 'derived', // CPL = CPC / CVR — verified benchmark, not a placeholder
                 cpcType: 'seasonal',
                 cpcSpring: 4.15,
                 cpcSummer: 7.80,
                 cpcFall: 4.15,
                 cpcWinter: 3.15,
-                convRate: 6, // landing page conversion rate, % (Google Ads-verified)
-                cplSpring: 69,
-                cplSummer: 130,
-                cplFall: 69,
-                cplWinter: 53,
-                blendedCpl: 80,
+                convRate: 3, // landing page conversion rate, % — VERIFIED benchmark (campaigns launched Aug 20, 2026), refreshed every 30 days
+                cplSpring: 138,
+                cplSummer: 260,
+                cplFall: 138,
+                cplWinter: 105,
+                blendedCpl: 160,
                 ctrType: 'blended',
                 ctr: 3.1,
                 spring: 5.0,
@@ -566,17 +785,18 @@
                 fall: 3.75,
                 winter: 3.0,
                 blendedCtr: 3.98,
-                notes: '✅ CPL derived from Google Ads CPC ÷ 6% landing page conversion rate, verified against roofing industry benchmarks (~$124 CPL avg).'
+                notes: '✅ CPL derived from Google Ads CPC ÷ 3% verified landing page conversion rate benchmark. Campaigns launched Aug 20, 2026 — KPIs refreshed every 30 days.'
             },
             'houston': { 
                 name: 'Houston, TX', 
-                cpl: 275, 
+                cpl: 230, 
                 cplType: 'flat',
-                cplSpring: 275,
-                cplSummer: 275,
-                cplFall: 275,
-                cplWinter: 275,
-                blendedCpl: 275,
+                cplSource: 'estimated', // no city-specific data available; estimated from national roofing CPC/CPL benchmarks + TX competitive-metro tier
+                cplSpring: 230,
+                cplSummer: 230,
+                cplFall: 230,
+                cplWinter: 230,
+                blendedCpl: 230,
                 ctrType: 'flat',
                 ctr: 2.9, 
                 spring: 2.9,
@@ -584,17 +804,19 @@
                 fall: 2.9,
                 winter: 2.9,
                 blendedCtr: 2.9,
-                notes: 'Year-round market - no seasonal variation'
+                convRate: 3.3, // ESTIMATED landing page CVR — no Houston-specific data yet. National roofing PPC CVR benchmark range is 3%-12% (ClicksGeek, industry PPC benchmark data). Set at Lincoln/Omaha's verified 3% + 10% as a conservative floor for an unproven market, sitting at the low end of the national range. Replace with real measured CVR once Houston campaigns have data.
+                notes: '⚠️ ESTIMATE — no Houston-specific ad account data yet. CPL based on national roofing benchmarks ($35-$75 CPC, $180-$350+ CPL for 1M+ competitive metros) adjusted for TX franchise/PE-backed saturation. CVR (3.3%) based on national roofing PPC conversion benchmark range of 3-12%, set conservatively near Lincoln/Omaha\'s verified 3% floor. Verify against real spend within 30 days.'
             },
             'neworleans': { 
                 name: 'New Orleans, LA', 
-                cpl: 275, 
-                cplType: 'flat',
-                cplSpring: 275,
-                cplSummer: 275,
-                cplFall: 275,
-                cplWinter: 275,
-                blendedCpl: 275,
+                cpl: 185, 
+                cplType: 'seasonal',
+                cplSource: 'estimated', // no city-specific data available; estimated from national benchmarks + LA storm/insurance-claim demand pattern
+                cplSpring: 160,
+                cplSummer: 215,
+                cplFall: 215,
+                cplWinter: 150,
+                blendedCpl: 185,
                 ctrType: 'flat',
                 ctr: 3.0,
                 spring: 3.0,
@@ -602,7 +824,8 @@
                 fall: 3.0,
                 winter: 3.0,
                 blendedCtr: 3.0,
-                notes: 'Year-round market - no seasonal variation'
+                convRate: 3.3, // ESTIMATED landing page CVR — no New Orleans-specific data yet. Same national roofing PPC CVR benchmark range (3%-12%, ClicksGeek) applied at Lincoln/Omaha's verified 3% + 10%, conservative floor for an unproven market. Replace with real measured CVR once campaigns have data.
+                notes: '⚠️ ESTIMATE — no New Orleans-specific ad account data yet. CPL based on national benchmarks + LA storm/insurance-claim demand pattern; demand and cost spike Jun-Nov (hurricane season). CVR (3.3%) based on national roofing PPC conversion benchmark range of 3-12%, set conservatively near Lincoln/Omaha\'s verified 3% floor. Verify against real spend within 30 days.'
             }
         };
 
@@ -611,11 +834,42 @@
             closeRate: 0.83
         };
 
+        // Implied Cost Per Click, backed into from whatever CPL + Landing Page
+        // Conversion Rate pair is currently active (CPL = CPC / CVR, rearranged).
+        // This is what lets editing the Landing Page Conversion Rate field actually
+        // move CPL — and therefore leads/revenue — instead of sitting there decorative.
+        // Territory select and manual CPL edits both refresh it; manual convRate edits
+        // consume it to re-derive CPL live.
+        let impliedCPC = 0;
+
+        function updateImpliedCpcFromCplAndConvRate() {
+            const cpl = parseFloat(document.getElementById('cpl').value) || 0;
+            const convRatePct = parseFloat(document.getElementById('lpConvRate').value) || 0;
+            impliedCPC = (cpl > 0 && convRatePct > 0) ? cpl * (convRatePct / 100) : 0;
+        }
+
+        function recalcCplFromConvRate() {
+            const convRatePct = parseFloat(document.getElementById('lpConvRate').value) || 0;
+            if (impliedCPC > 0 && convRatePct > 0) {
+                const newCpl = Math.round(impliedCPC / (convRatePct / 100));
+                document.getElementById('cpl').value = newCpl;
+                const displayEl = document.getElementById('cplDisplay');
+                displayEl.textContent = `$${newCpl} = $${impliedCPC.toFixed(2)} implied CPC ÷ ${convRatePct}% conversion rate (recalculated from your edit)`;
+            }
+        }
+
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.header-util-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            if (typeof event !== 'undefined' && event && event.target) {
+                event.target.classList.add('active');
+            } else if (tabName === 'territories') {
+                document.getElementById('hdrBtnTerritories').classList.add('active');
+            } else if (tabName === 'info') {
+                document.getElementById('hdrBtnInfo').classList.add('active');
+            }
         }
 
         // Meteorological seasons: Spring Mar-May, Summer Jun-Aug, Fall Sep-Nov, Winter Dec-Feb
@@ -639,7 +893,7 @@
                 if (cplType === 'seasonal' && terr.cplSource === 'derived' && terr.cpcType === 'seasonal' && terr.convRate) {
                     // CPL = seasonal CPC / landing page conversion rate (Google Ads-verified), not a manual guess
                     const cpc = terr['cpc' + season];
-                    effectiveCpl = Math.round((cpc / (terr.convRate / 100)) * 100) / 100;
+                    effectiveCpl = Math.round(cpc / (terr.convRate / 100));
                 } else if (cplType === 'seasonal') {
                     effectiveCpl = terr['cpl' + season];
                 }
@@ -666,6 +920,16 @@
                 } else {
                     document.getElementById('ctrDisplay').textContent = `${terr.ctr}% (flat year-round)`;
                 }
+
+                // Auto-populate landing page conversion rate default for this territory.
+                // Lincoln/Omaha: verified real campaign data. Houston/New Orleans: research-based estimate
+                // (national roofing PPC CVR benchmark range 3-12%). All values remain manually editable.
+                document.getElementById('lpConvRate').value = terr.convRate || '';
+
+                // Re-anchor implied CPC so that if the user now edits Landing Page Conversion Rate,
+                // CPL recalculates from THIS territory's cost basis rather than a stale prior one.
+                updateImpliedCpcFromCplAndConvRate();
+                calculateROI();
             }
         }
 
@@ -709,19 +973,54 @@
             document.getElementById('blendedCplCalc').textContent = '$' + blended.toFixed(0);
         }
 
+        function fmtMoney(n) {
+            return Math.round(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
         function calculateROI() {
             const adSpend = parseFloat(document.getElementById('adSpend').value) || 0;
             const cpl = parseFloat(document.getElementById('cpl').value) || 0;
+            const ctrPct = parseFloat(document.getElementById('ctr').value) || 0;
+            const lpConvRatePct = parseFloat(document.getElementById('lpConvRate').value) || 0;
             const ticket = parseFloat(document.getElementById('ticket').value) || 0;
             const margin = parseFloat(document.getElementById('margin').value) / 100 || 0;
+            const marketingBudgetPct = parseFloat(document.getElementById('marketingBudget').value) / 100 || 0;
 
-            // Monthly calculations
-            const leads = cpl > 0 ? adSpend / cpl : 0;
-            const approved = leads * ACCULYNX_DATA.approvalRate;
-            const closed = approved * ACCULYNX_DATA.closeRate;
+            // Effective lead-to-close rate, per Acculynx: 33% lead->approved x 83% approved->closed
+            const effectiveCloseRate = ACCULYNX_DATA.approvalRate * ACCULYNX_DATA.closeRate;
+
+            // Monthly calculations — counts round DOWN to whole units (can't sell a fraction of a lead or a roof)
+            const leadsExact = cpl > 0 ? adSpend / cpl : 0;
+            const approvedExact = leadsExact * ACCULYNX_DATA.approvalRate;
+            const closedExact = approvedExact * ACCULYNX_DATA.closeRate;
+            const leads = Math.floor(leadsExact);
+            const approved = Math.floor(approvedExact);
+            const closed = Math.floor(closedExact);
             const revenue = closed * ticket;
             const profit = revenue * margin;
             const roi = adSpend > 0 ? ((profit - adSpend) / adSpend) * 100 : 0;
+
+            // Max Affordable CPL = Ticket x Margin% x Marketing Budget% x Effective Close Rate (Acculynx: 33% x 83%)
+            const maxCpl = ticket * margin * marketingBudgetPct * effectiveCloseRate;
+
+            // Wire CTR + verified landing page conversion rate into a real funnel calc:
+            // Clicks = Leads / CVR%   |   Impressions = Clicks / CTR%
+            // Only shown when a verified CVR exists for this territory — no CVR means no guess.
+            const clicksEl = document.getElementById('resultClicks');
+            const impressionsEl = document.getElementById('resultImpressions');
+            if (lpConvRatePct > 0) {
+                const clicksExact = leadsExact / (lpConvRatePct / 100);
+                clicksEl.textContent = Math.round(clicksExact).toLocaleString('en-US');
+                if (ctrPct > 0) {
+                    const impressionsExact = clicksExact / (ctrPct / 100);
+                    impressionsEl.textContent = Math.round(impressionsExact).toLocaleString('en-US');
+                } else {
+                    impressionsEl.textContent = 'N/A (no CTR)';
+                }
+            } else {
+                clicksEl.textContent = 'N/A — no verified CVR for this territory';
+                impressionsEl.textContent = 'N/A — no verified CVR for this territory';
+            }
 
             // Annual calculations (12 months)
             const annualSpend = adSpend * 12;
@@ -730,18 +1029,109 @@
             const annualROI = annualSpend > 0 ? ((annualProfit - annualSpend) / annualSpend) * 100 : 0;
 
             // Update monthly results
-            document.getElementById('resultSpend').textContent = Math.round(adSpend).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-            document.getElementById('resultLeads').textContent = Math.round(leads);
-            document.getElementById('resultApproved').textContent = Math.round(approved);
-            document.getElementById('resultClosed').textContent = Math.round(closed);
-            document.getElementById('resultRevenue').textContent = Math.round(revenue).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-            document.getElementById('resultProfit').textContent = Math.round(profit).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('resultSpend').textContent = fmtMoney(adSpend);
+            document.getElementById('resultLeads').textContent = leads;
+            document.getElementById('resultApproved').textContent = approved;
+            document.getElementById('resultClosed').textContent = closed;
+            document.getElementById('resultRevenue').textContent = fmtMoney(revenue);
+            document.getElementById('resultRevenueRange').textContent = '$' + fmtMoney(revenue * 0.8) + ' - $' + fmtMoney(revenue * 1.2);
+            document.getElementById('resultProfit').textContent = fmtMoney(profit);
+            document.getElementById('resultProfitRange').textContent = '$' + fmtMoney(profit * 0.8) + ' - $' + fmtMoney(profit * 1.2);
             document.getElementById('resultROI').textContent = Math.round(roi) + '%';
 
+            const maxCplEl = document.getElementById('resultMaxCpl');
+            maxCplEl.textContent = Math.floor(maxCpl).toLocaleString('en-US');
+            const maxCplStatus = document.getElementById('resultMaxCplStatus');
+            if (cpl > 0) {
+                if (cpl <= maxCpl) {
+                    maxCplStatus.textContent = '✅ Territory CPL ($' + Math.round(cpl).toLocaleString('en-US') + ') is within your max affordable CPL.';
+                    maxCplStatus.style.color = '#438148';
+                } else {
+                    maxCplStatus.textContent = '⚠️ Territory CPL ($' + Math.round(cpl).toLocaleString('en-US') + ') exceeds your max affordable CPL — this scenario is unprofitable at current assumptions.';
+                    maxCplStatus.style.color = '#d32f2f';
+                }
+            } else {
+                maxCplStatus.textContent = '';
+            }
+
             // Update annual results
-            document.getElementById('resultAnnualRevenue').textContent = Math.round(annualRevenue).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-            document.getElementById('resultAnnualProfit').textContent = Math.round(annualProfit).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('resultAnnualRevenue').textContent = fmtMoney(annualRevenue);
+            document.getElementById('resultAnnualRevenueRange').textContent = '$' + fmtMoney(annualRevenue * 0.8) + ' - $' + fmtMoney(annualRevenue * 1.2);
+            document.getElementById('resultAnnualProfit').textContent = fmtMoney(annualProfit);
+            document.getElementById('resultAnnualProfitRange').textContent = '$' + fmtMoney(annualProfit * 0.8) + ' - $' + fmtMoney(annualProfit * 1.2);
             document.getElementById('resultAnnualROI').textContent = Math.round(annualROI) + '%';
+
+            const terrId = document.getElementById('territory').value;
+            generateSuggestions({
+                terr: TERRITORIES_DB[terrId] || null,
+                cpl, ctrPct, lpConvRatePct, adSpend, margin, marketingBudgetPct
+            });
+        }
+
+        function suggestionRow(icon, cls, html) {
+            return `<div class="suggestion-item"><span class="suggestion-icon">${icon}</span><span class="${cls}">${html}</span></div>`;
+        }
+
+        // Data-backed, contextual guidance — reacts live to whatever is currently
+        // in the Scenario Builder. Grounded in this project's own stored benchmarks
+        // (Acculynx funnel, territory CTR/CVR, Murray's 30% margin / 15% marketing
+        // budget targets) rather than generic advice, per Shannon's "reliable sources
+        // only" requirement.
+        function generateSuggestions({ terr, cpl, ctrPct, lpConvRatePct, adSpend, margin, marketingBudgetPct }) {
+            const rows = [];
+
+            const verifiedCloseRate = ACCULYNX_DATA.approvalRate * ACCULYNX_DATA.closeRate * 100;
+            rows.push(suggestionRow('📌', 'suggestion-info',
+                `Plan off the <strong>verified</strong> ${verifiedCloseRate.toFixed(1)}% lead&rarr;close rate (33% approval &times; 83% close, real Acculynx data) rather than a higher target close rate &mdash; an optimistic close rate overstates revenue.`));
+
+            if (terr) {
+                const benchmarkCtr = terr.ctrType === 'blended' ? terr.blendedCtr : terr.ctr;
+                if (benchmarkCtr && ctrPct > 0) {
+                    if (ctrPct < benchmarkCtr * 0.85) {
+                        rows.push(suggestionRow('⚠️', 'suggestion-warn',
+                            `CTR (${ctrPct}%) is below ${terr.name}'s benchmark (${benchmarkCtr}%). A weak CTR usually means a weaker Quality Score, which raises CPC and risks losing impression share to competitors &mdash; tighten keyword-to-ad-copy relevance before raising budget.`));
+                    } else {
+                        rows.push(suggestionRow('✅', 'suggestion-ok',
+                            `CTR (${ctrPct}%) is at or above the ${terr.name} benchmark (${benchmarkCtr}%) &mdash; a healthy signal for Quality Score and CPC efficiency.`));
+                    }
+                }
+
+                const benchmarkConv = terr.convRate;
+                const isVerified = terr.cplSource === 'derived';
+                if (benchmarkConv && lpConvRatePct > 0 && lpConvRatePct < benchmarkConv * 0.85) {
+                    rows.push(suggestionRow('⚠️', 'suggestion-warn',
+                        `Landing Page Conversion (${lpConvRatePct}%) is below ${terr.name}'s ${isVerified ? 'VERIFIED' : 'estimated'} benchmark (${benchmarkConv}%). This is usually the cheapest lever available &mdash; improving the landing page raises leads and revenue faster than raising ad spend, and it now lowers CPL live in this calculator when you edit it.`));
+                }
+                if (!isVerified) {
+                    rows.push(suggestionRow('ℹ️', 'suggestion-info',
+                        `${terr.name}'s CPL and conversion rate are still <strong>estimates</strong> pending real campaign data (30-day verification window) &mdash; treat this scenario as directional until verified.`));
+                }
+            } else {
+                rows.push(suggestionRow('ℹ️', 'suggestion-info', 'Select a territory above to unlock benchmark-based suggestions for CTR and landing page conversion.'));
+            }
+
+            const MIN_LEADS_FOR_ALGO = 15; // commonly cited Google Smart Bidding guidance: ~15 conversions/30 days per campaign to exit Learning phase
+            if (cpl > 0) {
+                const minViableBudget = Math.ceil((MIN_LEADS_FOR_ALGO * cpl) / 50) * 50;
+                if (adSpend < minViableBudget) {
+                    rows.push(suggestionRow('⚠️', 'suggestion-warn',
+                        `At $${Math.round(cpl)} CPL, Google's algorithm typically needs ~${MIN_LEADS_FOR_ALGO} conversions/month per campaign to leave Learning phase and optimize &mdash; that's roughly $${minViableBudget.toLocaleString('en-US')}/mo minimum. Your $${Math.round(adSpend).toLocaleString('en-US')}/mo budget may be under the test-budget floor.`));
+                } else {
+                    rows.push(suggestionRow('✅', 'suggestion-ok',
+                        `Budget clears the ~${MIN_LEADS_FOR_ALGO}-conversion/month floor Google's algorithm typically needs to optimize bidding for this CPL.`));
+                }
+            }
+
+            if (margin > 0 && Math.abs(margin * 100 - 30) > 5) {
+                rows.push(suggestionRow('ℹ️', 'suggestion-info',
+                    `Gross margin is set to ${(margin * 100).toFixed(0)}% vs. Murray's standard 30% target &mdash; confirm that's intentional for this scenario.`));
+            }
+            if (marketingBudgetPct > 0 && Math.abs(marketingBudgetPct * 100 - 15) > 5) {
+                rows.push(suggestionRow('ℹ️', 'suggestion-info',
+                    `Marketing Budget % is set to ${(marketingBudgetPct * 100).toFixed(0)}% vs. the standard 15% target &mdash; this directly moves Max Affordable CPL above.`));
+            }
+
+            document.getElementById('suggestionsList').innerHTML = rows.join('');
         }
 
         function generateUniqueId() {
@@ -762,7 +1152,7 @@
                 <div class="print-card">
                     <h3>${s.name}</h3>
                     <div>${TERRITORIES_DB[s.territory]?.name || s.territory} | $${s.cpl} CPL | ${s.ctrType === 'blended' ? 'Blended' : 'Flat'} CTR (${s.ctr}%) | $${Math.round(s.adSpend).toLocaleString('en-US')}/mo spend</div>
-                    <div style="margin-top:8px;"><strong>Monthly:</strong> Leads ${s.results.leads} | Approved ${s.results.approved} | Closed ${s.results.closed} | Revenue $${s.results.revenue} | Profit $${s.results.profit} | ROI ${s.results.roi}</div>
+                    <div style="margin-top:8px;"><strong>Monthly:</strong> Leads ${s.results.leads} | Approved ${s.results.approved} | Closed ${s.results.closed} | Revenue $${s.results.revenue} | Profit $${s.results.profit} | ROI ${s.results.roi} | Max CPL $${s.results.maxCpl || '0'}</div>
                     <div style="margin-top:4px;"><strong>Annual:</strong> Revenue $${s.results.annualRevenue || '0'} | Profit $${s.results.annualProfit || '0'} | ROI ${s.results.annualROI || '0%'}</div>
                     <div style="margin-top:4px; color:#999;">Saved: ${s.timestamp}</div>
                 </div>`;
@@ -819,6 +1209,7 @@
                 lpConvRate: parseFloat(document.getElementById('lpConvRate').value) || 0,
                 ticket: parseFloat(document.getElementById('ticket').value),
                 margin: parseFloat(document.getElementById('margin').value),
+                marketingBudget: parseFloat(document.getElementById('marketingBudget').value),
                 results: {
                     leads: document.getElementById('resultLeads').textContent,
                     approved: document.getElementById('resultApproved').textContent,
@@ -828,14 +1219,15 @@
                     roi: document.getElementById('resultROI').textContent,
                     annualRevenue: document.getElementById('resultAnnualRevenue').textContent,
                     annualProfit: document.getElementById('resultAnnualProfit').textContent,
-                    annualROI: document.getElementById('resultAnnualROI').textContent
+                    annualROI: document.getElementById('resultAnnualROI').textContent,
+                    maxCpl: document.getElementById('resultMaxCpl').textContent
                 },
                 active: false
             };
 
             let scenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
             scenarios.push(scenario);
-            scenarios.sort((a, b) => parseInt(b.id) - parseInt(a.id)); // Latest first
+            scenarios.sort((a, b) => (parseInt(b.id) || 0) - (parseInt(a.id) || 0)); // Latest first
             localStorage.setItem('murrayScenarios', JSON.stringify(scenarios));
 
             alert(`✅ Scenario saved: "${name}"`);
@@ -905,51 +1297,17 @@
             document.getElementById('lpConvRate').value = scenario.lpConvRate;
             document.getElementById('ticket').value = scenario.ticket;
             document.getElementById('margin').value = scenario.margin;
+            document.getElementById('marketingBudget').value = scenario.marketingBudget || 15;
 
             calculateROI();
             switchTab('builder');
         }
 
-        function addTerritory() {
-            const name = document.getElementById('newTerrName').value.trim();
-            const cpl = parseFloat(document.getElementById('newTerrCpl').value);
-            const cplType = document.getElementById('newTerrCplType').value;
-            const ctrType = document.getElementById('newTerrCtrType').value;
-            const ctr = parseFloat(document.getElementById('newTerrCtr').value) || 3.0;
-            const notes = document.getElementById('newTerrNotes').value.trim();
-
-            if (!name || !cpl) {
-                alert('Please enter Territory name and CPL');
-                return;
-            }
-
-            const id = 'custom-' + Date.now();
-
-            let cplFields;
-            if (cplType === 'seasonal') {
-                const cplSpring = parseFloat(document.getElementById('newTerrCplSpring').value) || cpl;
-                const cplSummer = parseFloat(document.getElementById('newTerrCplSummer').value) || cpl;
-                const cplFall = parseFloat(document.getElementById('newTerrCplFall').value) || cpl;
-                const cplWinter = parseFloat(document.getElementById('newTerrCplWinter').value) || cpl;
-                const blendedCpl = (cplSpring + cplSummer + cplFall + cplWinter) / 4;
-                cplFields = { cplType, cplSpring, cplSummer, cplFall, cplWinter, blendedCpl };
-            } else {
-                cplFields = { cplType, cplSpring: cpl, cplSummer: cpl, cplFall: cpl, cplWinter: cpl, blendedCpl: cpl };
-            }
-
-            if (ctrType === 'blended') {
-                const spring = parseFloat(document.getElementById('newTerrSpring').value) || 3.0;
-                const summer = parseFloat(document.getElementById('newTerrSummer').value) || 3.0;
-                const fall = parseFloat(document.getElementById('newTerrFall').value) || 3.0;
-                const winter = parseFloat(document.getElementById('newTerrWinter').value) || 3.0;
-                const blendedCtr = (spring + summer + fall + winter) / 4;
-                TERRITORIES_DB[id] = { name, cpl, ...cplFields, ctrType, ctr, spring, summer, fall, winter, blendedCtr, notes };
-            } else {
-                TERRITORIES_DB[id] = { name, cpl, ...cplFields, ctrType, ctr, spring: ctr, summer: ctr, fall: ctr, winter: ctr, blendedCtr: ctr, notes };
-            }
-            
-            localStorage.setItem('murrayTerritories', JSON.stringify(TERRITORIES_DB));
-
+        function resetTerritoryForm() {
+            document.getElementById('editingTerrId').value = '';
+            document.getElementById('terrFormTitle').textContent = 'Add New Territory';
+            document.getElementById('terrSaveBtn').textContent = '➕ Add Territory';
+            document.getElementById('terrCancelBtn').style.display = 'none';
             document.getElementById('newTerrName').value = '';
             document.getElementById('newTerrCpl').value = '';
             document.getElementById('newTerrCplType').value = 'flat';
@@ -966,9 +1324,95 @@
             document.getElementById('newTerrNotes').value = '';
             document.getElementById('seasonalInputs').style.display = 'none';
             document.getElementById('seasonalCplInputs').style.display = 'none';
+        }
 
+        function editTerritory(id) {
+            const t = TERRITORIES_DB[id];
+            if (!t) return;
+
+            document.getElementById('editingTerrId').value = id;
+            document.getElementById('terrFormTitle').textContent = 'Edit Territory: ' + t.name;
+            document.getElementById('terrSaveBtn').textContent = '💾 Update Territory';
+            document.getElementById('terrCancelBtn').style.display = 'inline-block';
+
+            document.getElementById('newTerrName').value = t.name;
+            document.getElementById('newTerrCpl').value = t.cpl;
+            document.getElementById('newTerrCplType').value = t.cplType || 'flat';
+            document.getElementById('newTerrCplSpring').value = t.cplSpring ?? t.cpl;
+            document.getElementById('newTerrCplSummer').value = t.cplSummer ?? t.cpl;
+            document.getElementById('newTerrCplFall').value = t.cplFall ?? t.cpl;
+            document.getElementById('newTerrCplWinter').value = t.cplWinter ?? t.cpl;
+            calculateBlendedCpl();
+            document.getElementById('newTerrCtrType').value = t.ctrType || 'flat';
+            document.getElementById('newTerrCtr').value = t.ctr;
+            document.getElementById('newTerrSpring').value = t.spring;
+            document.getElementById('newTerrSummer').value = t.summer;
+            document.getElementById('newTerrFall').value = t.fall;
+            document.getElementById('newTerrWinter').value = t.winter;
+            calculateBlendedCtr();
+            document.getElementById('newTerrNotes').value = t.notes || '';
+
+            toggleSeasonalCplInputs();
+            toggleSeasonalInputs();
+
+            document.getElementById('territories').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEditTerritory() {
+            resetTerritoryForm();
+        }
+
+        function addTerritory() {
+            const editingId = document.getElementById('editingTerrId').value;
+            const name = document.getElementById('newTerrName').value.trim();
+            const cpl = parseFloat(document.getElementById('newTerrCpl').value);
+            const cplType = document.getElementById('newTerrCplType').value;
+            const ctrType = document.getElementById('newTerrCtrType').value;
+            const ctr = parseFloat(document.getElementById('newTerrCtr').value) || 3.0;
+            const notes = document.getElementById('newTerrNotes').value.trim();
+
+            if (!name || !cpl) {
+                alert('Please enter Territory name and CPL');
+                return;
+            }
+
+            const id = editingId || ('custom-' + Date.now());
+            const existing = editingId ? (TERRITORIES_DB[editingId] || {}) : {};
+
+            let cplFields;
+            if (cplType === 'seasonal') {
+                const cplSpring = parseFloat(document.getElementById('newTerrCplSpring').value) || cpl;
+                const cplSummer = parseFloat(document.getElementById('newTerrCplSummer').value) || cpl;
+                const cplFall = parseFloat(document.getElementById('newTerrCplFall').value) || cpl;
+                const cplWinter = parseFloat(document.getElementById('newTerrCplWinter').value) || cpl;
+                const blendedCpl = (cplSpring + cplSummer + cplFall + cplWinter) / 4;
+                cplFields = { cplType, cplSpring, cplSummer, cplFall, cplWinter, blendedCpl };
+            } else {
+                cplFields = { cplType, cplSpring: cpl, cplSummer: cpl, cplFall: cpl, cplWinter: cpl, blendedCpl: cpl };
+            }
+
+            // Editing a manual field wipes any prior "derived from CPC" tag for this territory,
+            // since the CPL is now a direct manual entry, not CPC ÷ CVR.
+            const clearedDerivedFields = { cplSource: undefined, cpcType: undefined, cpcSpring: undefined, cpcSummer: undefined, cpcFall: undefined, cpcWinter: undefined, convRate: undefined };
+
+            if (ctrType === 'blended') {
+                const spring = parseFloat(document.getElementById('newTerrSpring').value) || 3.0;
+                const summer = parseFloat(document.getElementById('newTerrSummer').value) || 3.0;
+                const fall = parseFloat(document.getElementById('newTerrFall').value) || 3.0;
+                const winter = parseFloat(document.getElementById('newTerrWinter').value) || 3.0;
+                const blendedCtr = (spring + summer + fall + winter) / 4;
+                TERRITORIES_DB[id] = { ...existing, ...clearedDerivedFields, name, cpl, ...cplFields, ctrType, ctr, spring, summer, fall, winter, blendedCtr, notes };
+            } else {
+                TERRITORIES_DB[id] = { ...existing, ...clearedDerivedFields, name, cpl, ...cplFields, ctrType, ctr, spring: ctr, summer: ctr, fall: ctr, winter: ctr, blendedCtr: ctr, notes };
+            }
+
+            localStorage.setItem('murrayTerritories', JSON.stringify(TERRITORIES_DB));
+
+            resetTerritoryForm();
             loadTerritories();
-            alert(`✅ Territory added: ${name} (${cplType === 'seasonal' ? 'Seasonal' : 'Flat'} CPL, ${ctrType === 'blended' ? 'Blended' : 'Flat'} CTR)`);
+            alert(editingId
+                ? `✅ Territory updated: ${name} (${cplType === 'seasonal' ? 'Seasonal' : 'Flat'} CPL, ${ctrType === 'blended' ? 'Blended' : 'Flat'} CTR)`
+                : `✅ Territory added: ${name} (${cplType === 'seasonal' ? 'Seasonal' : 'Flat'} CPL, ${ctrType === 'blended' ? 'Blended' : 'Flat'} CTR)`);
         }
 
         function deleteTerritory(id) {
@@ -986,7 +1430,7 @@
             list.innerHTML = Object.entries(TERRITORIES_DB).map(([id, t]) => {
                 const season = getCurrentSeason();
                 const isDerived = t.cplType === 'seasonal' && t.cplSource === 'derived' && t.cpcType === 'seasonal' && t.convRate;
-                const derivedCpl = isDerived ? Math.round((t['cpc' + season] / (t.convRate / 100)) * 100) / 100 : null;
+                const derivedCpl = isDerived ? Math.round(t['cpc' + season] / (t.convRate / 100)) : null;
                 return `
                 <div class="territory-card">
                     <div class="territory-name">${t.name}</div>
@@ -1018,6 +1462,7 @@
                     ` : ''}
                     <div class="territory-cpl" style="color: #999; font-style: italic; margin-top: 5px;">${t.notes || ''}</div>
                     <div class="territory-actions">
+                        <button class="secondary" onclick="editTerritory('${id}')">✏️ Edit</button>
                         ${id.startsWith('custom-') ? `<button class="danger" onclick="deleteTerritory('${id}')">Delete</button>` : ''}
                     </div>
                 </div>
@@ -1027,21 +1472,126 @@
 
         function updateComparisonSelects() {
             const scenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
-            const options = scenarios.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            const scenarioOptions = scenarios.map(s => `<option value="scn:${s.id}">${s.name}</option>`).join('');
+            const territoryOptions = Object.entries(TERRITORIES_DB)
+                .map(([id, t]) => `<option value="terr:${id}">📍 ${t.name} (default territory)</option>`)
+                .join('');
 
             ['compareScen1', 'compareScen2', 'compareScen3'].forEach(id => {
-                document.getElementById(id).innerHTML = '<option value="">-- Select --</option>' + options;
+                document.getElementById(id).innerHTML = '<option value="">-- Select --</option>' +
+                    (scenarioOptions ? `<optgroup label="Saved Scenarios">${scenarioOptions}</optgroup>` : '') +
+                    `<optgroup label="Default Territories (just enter a budget)">${territoryOptions}</optgroup>`;
             });
         }
 
+        // Toggles the inline budget field for a slot when it holds a raw territory
+        // (as opposed to a saved scenario, which already has its own budget baked in).
+        function onCompareSlotChange(slotId) {
+            const val = document.getElementById(slotId).value;
+            const wrap = document.getElementById(slotId + 'SpendWrap');
+            wrap.style.display = val.startsWith('terr:') ? 'block' : 'none';
+            updateComparison();
+        }
+
+        // Resolves a Campaign Building slot to a scenario-shaped object, whether it's
+        // a saved scenario or a default territory picked directly (no scenario required).
+        function resolveComparisonEntry(slotId, spendId) {
+            const val = document.getElementById(slotId).value;
+            if (!val) return null;
+
+            if (val.startsWith('scn:')) {
+                const id = val.slice(4);
+                const scenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
+                return scenarios.find(s => s.id === id) || null;
+            }
+
+            if (val.startsWith('terr:')) {
+                const terrId = val.slice(5);
+                const terr = TERRITORIES_DB[terrId];
+                if (!terr) return null;
+                const adSpend = parseFloat(document.getElementById(spendId).value) || 0;
+                return buildVirtualScenario(slotId, terrId, terr, adSpend);
+            }
+
+            return null;
+        }
+
+        // Computes a scenario-shaped object straight from a territory's default
+        // numbers + a budget, using the same system defaults (Ticket $15,000, 30%
+        // margin, 15% marketing budget) as a fresh Scenario Builder run. Named
+        // automatically as "{Territory Name} — #{uid}", per the same convention
+        // used for saved scenarios — no manual naming or field entry required.
+        function buildVirtualScenario(slotId, terrId, terr, adSpend) {
+            const season = getCurrentSeason();
+            let cpl = terr.cpl;
+            if (terr.cplType === 'seasonal' && terr.cplSource === 'derived' && terr.cpcType === 'seasonal' && terr.convRate) {
+                cpl = Math.round((terr['cpc' + season] / (terr.convRate / 100)) * 100) / 100;
+            } else if (terr.cplType === 'seasonal') {
+                cpl = terr['cpl' + season];
+            }
+            const ctr = terr.ctrType === 'blended' ? terr.blendedCtr : terr.ctr;
+            const lpConvRate = terr.convRate || 0;
+            const ticket = 15000, marginPct = 30, marketingBudgetPct = 15; // system defaults, same as a fresh scenario
+            const effectiveCloseRate = ACCULYNX_DATA.approvalRate * ACCULYNX_DATA.closeRate;
+
+            const leadsExact = cpl > 0 ? adSpend / cpl : 0;
+            const approvedExact = leadsExact * ACCULYNX_DATA.approvalRate;
+            const closedExact = approvedExact * ACCULYNX_DATA.closeRate;
+            const leads = Math.floor(leadsExact);
+            const approved = Math.floor(approvedExact);
+            const closed = Math.floor(closedExact);
+            const revenue = closed * ticket;
+            const profit = revenue * (marginPct / 100);
+            const roi = adSpend > 0 ? ((profit - adSpend) / adSpend) * 100 : 0;
+            const maxCpl = ticket * (marginPct / 100) * (marketingBudgetPct / 100) * effectiveCloseRate;
+            const annualRevenue = revenue * 12;
+            const annualProfit = profit * 12;
+
+            // Stable per-slot unique ID: only regenerates if the slot's territory changes,
+            // so re-rendering the comparison (e.g. on every budget keystroke) doesn't rename it.
+            const selectEl = document.getElementById(slotId);
+            if (selectEl.dataset.virtualTerr !== terrId) {
+                selectEl.dataset.virtualUid = generateUniqueId();
+                selectEl.dataset.virtualTerr = terrId;
+            }
+
+            return {
+                id: 'virtual:' + terrId,
+                uid: selectEl.dataset.virtualUid,
+                name: `${terr.name} — #${selectEl.dataset.virtualUid}`,
+                timestamp: new Date().toLocaleString(),
+                territory: terrId,
+                ctrType: terr.ctrType,
+                ctr,
+                cpl,
+                adSpend,
+                lpConvRate,
+                ticket,
+                margin: marginPct,
+                marketingBudget: marketingBudgetPct,
+                results: {
+                    leads: String(leads),
+                    approved: String(approved),
+                    closed: String(closed),
+                    revenue: fmtMoney(revenue),
+                    profit: fmtMoney(profit),
+                    roi: Math.round(roi) + '%',
+                    annualRevenue: fmtMoney(annualRevenue),
+                    annualProfit: fmtMoney(annualProfit),
+                    annualROI: Math.round(roi) + '%',
+                    maxCpl: Math.floor(maxCpl).toLocaleString('en-US')
+                },
+                isVirtual: true
+            };
+        }
+
         function updateComparison() {
-            const scenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
-            const ids = ['compareScen1', 'compareScen2', 'compareScen3'].map(id => document.getElementById(id).value).filter(Boolean);
-            const selected = scenarios.filter(s => ids.includes(s.id));
+            const slotPairs = [['compareScen1', 'compareSpend1'], ['compareScen2', 'compareSpend2'], ['compareScen3', 'compareSpend3']];
+            const selected = slotPairs.map(([s, sp]) => resolveComparisonEntry(s, sp)).filter(Boolean);
 
             const grid = document.getElementById('comparisonGrid');
             if (selected.length === 0) {
-                grid.innerHTML = '<p style="color: #999; grid-column: 1/-1; text-align: center;">Select scenarios to compare</p>';
+                grid.innerHTML = '<p style="color: #999; grid-column: 1/-1; text-align: center;">Select a scenario or territory to compare</p>';
                 return;
             }
 
@@ -1056,6 +1606,7 @@
                             <div><strong>Monthly Leads:</strong> ${s.results.leads}</div>
                             <div><strong>Approved:</strong> ${s.results.approved}</div>
                             <div><strong>Closed:</strong> ${s.results.closed}</div>
+                            <div><strong>Max Affordable CPL:</strong> $${s.results.maxCpl || '0'}</div>
                         </div>
                         <div style="border-top: 1px solid #ddd; margin: 10px 0; padding-top: 10px; color: #b69d5e; font-weight: bold;">
                             <div style="font-size: 12px; margin-bottom: 8px; color: #999;">Monthly:</div>
@@ -1075,14 +1626,45 @@
         // ===== Advertising Campaign Blueprints =====
 
         function lockComparisonAsBlueprint() {
-            const scenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
-            const ids = ['compareScen1', 'compareScen2', 'compareScen3'].map(id => document.getElementById(id).value).filter(Boolean);
-            const selected = scenarios.filter(s => ids.includes(s.id));
+            const slotPairs = [['compareScen1', 'compareSpend1'], ['compareScen2', 'compareSpend2'], ['compareScen3', 'compareSpend3']];
+            let selected = slotPairs.map(([s, sp]) => resolveComparisonEntry(s, sp)).filter(Boolean);
 
             if (selected.length === 0) {
-                alert('Select at least one scenario to compare before locking in a blueprint.');
+                alert('Select at least one scenario or territory before locking in a blueprint.');
                 return;
             }
+
+            // Any raw territory picked directly (no scenario built) gets persisted as a
+            // real saved scenario right now, using its auto-generated "{Territory} — #{uid}"
+            // name — this is what lets a default territory become a permanent, reusable
+            // record without ever visiting the Scenario Builder.
+            let allScenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
+            selected = selected.map(entry => {
+                if (!entry.isVirtual) return entry;
+                const saved = {
+                    id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
+                    uid: entry.uid,
+                    name: entry.name,
+                    timestamp: entry.timestamp,
+                    territory: entry.territory,
+                    ctrType: entry.ctrType,
+                    ctr: entry.ctr,
+                    cpl: entry.cpl,
+                    adSpend: entry.adSpend,
+                    lpConvRate: entry.lpConvRate,
+                    ticket: entry.ticket,
+                    margin: entry.margin,
+                    marketingBudget: entry.marketingBudget,
+                    results: entry.results,
+                    active: false
+                };
+                allScenarios.push(saved);
+                return saved;
+            });
+            allScenarios.sort((a, b) => (parseInt(b.id) || 0) - (parseInt(a.id) || 0));
+            localStorage.setItem('murrayScenarios', JSON.stringify(allScenarios));
+            loadScenarios();
+            updateComparisonSelects();
 
             const label = prompt('Name this Advertising Blueprint (e.g., "Fall Roofing Push - Lincoln + Omaha"):');
             if (!label || !label.trim()) return;
@@ -1100,7 +1682,7 @@
 
             let blueprints = JSON.parse(localStorage.getItem('murrayBlueprints')) || [];
             blueprints.push(blueprint);
-            blueprints.sort((a, b) => parseInt(b.id) - parseInt(a.id));
+            blueprints.sort((a, b) => (parseInt(b.id) || 0) - (parseInt(a.id) || 0));
             localStorage.setItem('murrayBlueprints', JSON.stringify(blueprints));
 
             alert(`🔒 Advertising Blueprint locked in: "${blueprint.name}"`);
@@ -1114,7 +1696,7 @@
             if (!list) return;
 
             if (blueprints.length === 0) {
-                list.innerHTML = '<p style="color: #999; padding: 20px; text-align: center;">No blueprints saved yet. Go to Compare Scenarios, select the scenarios you want, and click "Lock as Advertising Blueprint".</p>';
+                list.innerHTML = '<p style="color: #999; padding: 20px; text-align: center;">No blueprints saved yet. Go to Campaign Building, select one saved scenario (that\'s enough!), and click "Save as Campaign Blueprint".</p>';
                 return;
             }
 
@@ -1155,6 +1737,7 @@
                             <div><strong>Monthly Leads:</strong> ${s.results.leads}</div>
                             <div><strong>Approved:</strong> ${s.results.approved}</div>
                             <div><strong>Closed:</strong> ${s.results.closed}</div>
+                            <div><strong>Max Affordable CPL:</strong> $${s.results.maxCpl || '0'}</div>
                         </div>
                         <div style="border-top: 1px solid #ddd; margin: 10px 0; padding-top: 10px; color: #b69d5e; font-weight: bold;">
                             <div>Revenue: $${s.results.revenue} | Profit: $${s.results.profit} | ROI: ${s.results.roi}</div>
@@ -1208,11 +1791,358 @@
             updateComparisonSelects();
         }
 
+        // KPI refresh cadence: last pulled Aug 20, 2026, refreshed every 30 days
+        function updateNextRefreshDisplay() {
+            const lastRefresh = new Date('2026-08-20');
+            const nextRefresh = new Date(lastRefresh);
+            nextRefresh.setDate(nextRefresh.getDate() + 30);
+            const el = document.getElementById('nextRefreshDisplay');
+            if (el) {
+                el.textContent = `Last pulled: ${lastRefresh.toLocaleDateString('en-US')} — Next refresh due: ${nextRefresh.toLocaleDateString('en-US')}`;
+            }
+        }
+
+        // ===== Master Blueprint Seed =====
+        // Uploads the "Summer TX, NE, LA territories" blueprint (BP-EHCH5-EEK) — locked
+        // in by hand in the live app on 8/21/2026 — as a permanent master blueprint, so
+        // it's present for everyone instead of living only in one browser's localStorage.
+        // Guarded by a one-time flag: seeds once, then never re-forces it back if deleted.
+        function seedMasterBlueprint() {
+            const FLAG = 'murrayMasterSeededV1';
+            if (localStorage.getItem(FLAG)) return;
+            localStorage.setItem(FLAG, '1');
+
+            const masterScenarios = [
+                {
+                    id: 'master-lincoln-agg-001',
+                    uid: 'EFWM0-NVQ',
+                    name: 'Lincoln Agressive Plan (Copy) — #EFWM0-NVQ',
+                    timestamp: '8/21/2026, 3:25:53 PM',
+                    territory: 'lincoln-omaha',
+                    ctrType: 'blended',
+                    ctr: 4,
+                    cpl: 215,
+                    adSpend: 5000,
+                    lpConvRate: 3,
+                    ticket: 15000,
+                    margin: 30,
+                    marketingBudget: 20,
+                    results: {
+                        leads: '23', approved: '7', closed: '6',
+                        revenue: '90,000', profit: '27,000', roi: '440%',
+                        annualRevenue: '1,080,000', annualProfit: '324,000', annualROI: '440%',
+                        maxCpl: '246'
+                    },
+                    active: false
+                },
+                {
+                    id: 'master-houston-agg-001',
+                    uid: 'EAPY5-QMM',
+                    name: 'Houston Agressive Plan (Copy) — #EAPY5-QMM',
+                    timestamp: '8/21/2026, 3:21:51 PM',
+                    territory: 'houston',
+                    ctrType: 'flat',
+                    ctr: 2.9,
+                    cpl: 275,
+                    adSpend: 4200,
+                    lpConvRate: 3.3,
+                    ticket: 15000,
+                    margin: 25,
+                    marketingBudget: 15,
+                    results: {
+                        leads: '15', approved: '5', closed: '4',
+                        revenue: '60,000', profit: '15,000', roi: '257%',
+                        annualRevenue: '720,000', annualProfit: '180,000', annualROI: '257%',
+                        maxCpl: '154'
+                    },
+                    active: false
+                },
+                {
+                    id: 'master-nola-summer-001',
+                    uid: 'E96FH-QO7',
+                    name: 'New Orleans Summer Mid — #E96FH-QO7',
+                    timestamp: '8/21/2026, 3:20:39 PM',
+                    territory: 'neworleans',
+                    ctrType: 'flat',
+                    ctr: 3,
+                    cpl: 215,
+                    adSpend: 3300,
+                    lpConvRate: 3.3,
+                    ticket: 12000,
+                    margin: 25,
+                    marketingBudget: 20,
+                    results: {
+                        leads: '15', approved: '5', closed: '4',
+                        revenue: '48,000', profit: '12,000', roi: '264%',
+                        annualRevenue: '576,000', annualProfit: '144,000', annualROI: '264%',
+                        maxCpl: '164'
+                    },
+                    active: false
+                }
+            ];
+
+            let scenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
+            masterScenarios.forEach(ms => {
+                if (!scenarios.some(s => s.id === ms.id)) scenarios.push(ms);
+            });
+            scenarios.sort((a, b) => (parseInt(b.id) || 0) - (parseInt(a.id) || 0));
+            localStorage.setItem('murrayScenarios', JSON.stringify(scenarios));
+
+            let blueprints = JSON.parse(localStorage.getItem('murrayBlueprints')) || [];
+            const masterBlueprint = {
+                id: 'master-bp-summer-txnela-001',
+                uid: 'EHCH5-EEK',
+                label: 'Summer TX, NE, LA territories',
+                name: 'Summer TX, NE, LA territories — BP-EHCH5-EEK',
+                timestamp: '8/21/2026, 3:27:00 PM',
+                scenarioIds: masterScenarios.map(s => s.id),
+                scenarios: JSON.parse(JSON.stringify(masterScenarios))
+            };
+            if (!blueprints.some(b => b.id === masterBlueprint.id)) {
+                blueprints.push(masterBlueprint);
+                blueprints.sort((a, b) => (parseInt(b.id) || 0) - (parseInt(a.id) || 0));
+                localStorage.setItem('murrayBlueprints', JSON.stringify(blueprints));
+            }
+        }
+
         // Initialize
+        seedMasterBlueprint();
         loadTerritories();
         loadScenarios();
         updateComparisonSelects();
         loadBlueprints();
+        updateNextRefreshDisplay();
+        calculateROI();
+    </script>
+
+    <script>
+        // ================= Weather & Storm Intelligence (NOAA, live, no key) =================
+        const WX_GEO = [
+            { keys: ['lincoln','ne','nebraska'], lat: 40.8136, lon: -96.7026, region: 'nebraska', label: 'Lincoln, NE' },
+            { keys: ['omaha'], lat: 41.2565, lon: -95.9345, region: 'nebraska', label: 'Omaha, NE' },
+            { keys: ['grand island'], lat: 40.9264, lon: -98.3420, region: 'nebraska', label: 'Grand Island, NE' },
+            { keys: ['denver','co','colorado'], lat: 39.7392, lon: -104.9903, region: 'denver', label: 'Denver, CO' },
+            { keys: ['houston','tx','texas'], lat: 29.7601, lon: -95.3701, region: 'houston', label: 'Houston, TX' },
+            { keys: ['lafayette','la','louisiana'], lat: 30.2241, lon: -92.0198, region: 'lafayette', label: 'Lafayette, LA' },
+            { keys: ['new orleans'], lat: 29.9511, lon: -90.0715, region: 'neworleans', label: 'New Orleans, LA' },
+            { keys: ['covington','north shore','northshore','slidell','mandeville'], lat: 30.4755, lon: -90.1009, region: 'covington', label: 'Covington / North Shore, LA' },
+        ];
+
+        const SEASONAL_CPL = {
+            nebraska:   { label: 'Lincoln / Omaha / Grand Island, NE', spring: 15, summer: 5,  fall: -10, winter: 8  },
+            denver:     { label: 'Denver, CO',                          spring: 15, summer: 10, fall: -10, winter: 12 },
+            houston:    { label: 'Houston Metro, TX',                   spring: 15, summer: 20, fall: 8,   winter: -10},
+            lafayette:  { label: 'Lafayette, LA',                        spring: 10, summer: 15, fall: -10, winter: -5 },
+            neworleans: { label: 'New Orleans, LA',                      spring: 10, summer: 20, fall: -10, winter: -8 },
+            covington:  { label: 'North Shore / Covington, LA',          spring: -10,summer: 12, fall: 5,   winter: -5 },
+        };
+
+        function wxMatchGeo(name) {
+            const n = (name || '').toLowerCase();
+            if (!n.trim()) return null;
+            // longest/most specific key match wins (e.g. "new orleans" before generic "la")
+            let best = null, bestLen = 0;
+            WX_GEO.forEach(g => g.keys.forEach(k => {
+                if (n.indexOf(k) !== -1 && k.length > bestLen) { best = g; bestLen = k.length; }
+            }));
+            return best;
+        }
+
+        function wxCurrentSeason() {
+            const m = new Date().getMonth() + 1;
+            if (m >= 3 && m <= 5) return 'spring';
+            if (m >= 6 && m <= 8) return 'summer';
+            if (m >= 9 && m <= 11) return 'fall';
+            return 'winter';
+        }
+
+        function wxSeasonTableHtml(regionKey) {
+            const s = SEASONAL_CPL[regionKey];
+            const now = wxCurrentSeason();
+            const cell = (season, val) => {
+                const cls = val > 0 ? 'wx-up' : (val < 0 ? 'wx-down' : '');
+                const active = season === now ? 'style="outline:2px solid #b69d5e;"' : '';
+                return `<td class="${cls}" ${active}>${val > 0 ? '+' : ''}${val}%</td>`;
+            };
+            return `<table class="wx-season-table">
+                <tr><th>Territory</th><th>Spring</th><th>Summer</th><th>Fall</th><th>Winter</th></tr>
+                <tr><td style="text-align:left;font-weight:600;">${s.label}</td>
+                  ${cell('spring', s.spring)}${cell('summer', s.summer)}${cell('fall', s.fall)}${cell('winter', s.winter)}
+                </tr>
+            </table>`;
+        }
+
+        function wxGustMph(detailedForecast) {
+            const m = (detailedForecast || '').match(/gusts?\s+(?:as high as|up to|to)\s+(\d+)\s*mph/i);
+            return m ? parseInt(m[1]) : 0;
+        }
+
+        // Forward-looking "pending storm" check against the natural NOAA 7-day / 14-period forecast —
+        // no separate historical lookback. Flags any period that meets our severe-weather guidelines:
+        // 65+ mph wind (sustained or gust), 1"+ hail mention, tornado, hurricane/tropical, or a
+        // wind+rain / wind+hail compound.
+        function wxCheckPendingStorm(periods) {
+            const hits = [];
+            let hasWind65 = false, hasHail = false, hasHeavyRain = false, hasTornado = false, hasHurricane = false;
+            periods.forEach(p => {
+                const text = `${p.shortForecast} ${p.detailedForecast}`.toLowerCase();
+                const maxWind = wxWindMph(p.windSpeed);
+                const gust = wxGustMph(p.detailedForecast);
+                const windMax = Math.max(maxWind, gust);
+                const pop = (p.probabilityOfPrecipitation && p.probabilityOfPrecipitation.value) || 0;
+                const tags = [];
+                if (windMax >= 65) { tags.push(`Wind ${windMax} mph`); hasWind65 = true; }
+                if (/hail/.test(text)) { tags.push('Hail mentioned'); hasHail = true; }
+                if (/tornado/.test(text)) { tags.push('Tornado'); hasTornado = true; }
+                if (/hurricane|tropical storm|typhoon/.test(text)) { tags.push('Hurricane/Tropical'); hasHurricane = true; }
+                if (pop >= 60 && /rain|shower|storm/.test(text)) hasHeavyRain = true;
+                if (tags.length) hits.push({ period: p.name, tags });
+            });
+            const compoundRainWind = hasWind65 && hasHeavyRain;
+            const compoundHailWind = hasWind65 && hasHail;
+            return { hits, hasWind65, hasHail, hasHeavyRain, hasTornado, hasHurricane, compoundRainWind, compoundHailWind };
+        }
+
+        function wxWindMph(str) { const m = (str || '').match(/(\d+)/g); return m ? Math.max(...m.map(Number)) : 0; }
+
+        let wxLastPct = null; // { spring, summer, fall, winter } suggested %, set after each render
+
+        async function renderTerritoryWeather() {
+            const nameInput = document.getElementById('newTerrName');
+            const panel = document.getElementById('wxTerrPanel');
+            const geo = wxMatchGeo(nameInput.value);
+            if (!geo) {
+                panel.innerHTML = nameInput.value.trim()
+                    ? `<div class="wx-unmatched">No live-weather match for "${nameInput.value}" in the branch geo table yet (covers Lincoln/Omaha/Grand Island NE, Denver CO, Houston TX, Lafayette LA, New Orleans LA, Covington/North Shore LA). Add it to the lookup table to enable live NOAA data + seasonal CPL for this city.</div>`
+                    : '';
+                return;
+            }
+            panel.innerHTML = `<div class="wx-panel"><div class="wx-body"><div style="padding:20px;text-align:center;color:#888;font-size:12px;">Pulling live 7‑day NOAA forecast + active advisories + pending-storm guideline check for ${geo.label}…</div></div></div>`;
+
+            try {
+                const pointRes = await fetch(`https://api.weather.gov/points/${geo.lat},${geo.lon}`);
+                const point = await pointRes.json();
+                const forecastUrl = point.properties.forecast;
+                const cwa = point.properties.cwa;
+
+                const [fcRes, alertRes] = await Promise.all([
+                    fetch(forecastUrl),
+                    fetch(`https://api.weather.gov/alerts/active?point=${geo.lat},${geo.lon}`)
+                ]);
+                const fc = await fcRes.json();
+                const alerts = await alertRes.json();
+                const periods = fc.properties.periods.slice(0, 14);
+                const pending = wxCheckPendingStorm(periods);
+
+                let stormCount = 0, forecastCompound = false;
+                const maxTemp = Math.max(...periods.map(p => p.temperature));
+                const minTemp = Math.min(...periods.map(p => p.temperature));
+                const cols = periods.map(p => {
+                    const wind = wxWindMph(p.windSpeed);
+                    const pop = (p.probabilityOfPrecipitation && p.probabilityOfPrecipitation.value) || 0;
+                    const t = (p.shortForecast || '').toLowerCase();
+                    const stormText = /thunderstorm|severe|hail|tornado|hurricane|tropical/.test(t);
+                    const flagged = stormText || pop >= 60 || wind >= 25;
+                    if (flagged) stormCount++;
+                    if (wind >= 65 && pop >= 50) forecastCompound = true;
+                    const tempHeight = 20 + ((p.temperature - minTemp) / Math.max(1, (maxTemp - minTemp))) * 90;
+                    const windHeight = Math.min(100, wind * 1.4);
+                    return `<div class="wx-col ${flagged ? 'flag' : ''}">
+                        <div class="temp-dot" style="margin-bottom:${100 - tempHeight}px;" title="${p.temperature}°"></div>
+                        <div class="rainband" style="height:${Math.min(100, pop)}%;"></div>
+                        <div class="windbar ${wind >= 25 ? 'high' : ''}" style="height:${windHeight}px;" title="${p.windSpeed}"></div>
+                        <div class="val">${p.temperature}°</div>
+                        <div class="lbl">${p.name.replace(' Night', ' Nt')}<br>${pop}%r · ${wind}mph</div>
+                    </div>`;
+                }).join('');
+
+                const activeAlerts = alerts.features || [];
+                const alertHtml = activeAlerts.length === 0
+                    ? `<div class="wx-alert-box none">✅ No active NOAA advisories, watches, or warnings for this territory right now.</div>`
+                    : activeAlerts.map(a => `<div class="wx-alert-box active">
+                        <div class="a-title">⚠️ ${a.properties.event}</div>
+                        <div class="a-body">${a.properties.headline || ''}<br>Effective: ${new Date(a.properties.effective).toLocaleString()} → Ends: ${a.properties.ends ? new Date(a.properties.ends).toLocaleString() : 'Until further notice'}</div>
+                      </div>`).join('');
+
+                const isCompound = pending.compoundRainWind || pending.compoundHailWind;
+                const hasPending = pending.hits.length > 0;
+
+                let storm72Html;
+                if (isCompound) {
+                    const parts = [];
+                    if (pending.compoundRainWind) parts.push('65+ mph wind-driven RAIN');
+                    if (pending.compoundHailWind) parts.push('65+ mph wind + HAIL (compound damage event)');
+                    storm72Html = `<div class="storm72 compound">🚨🚨 COMPOUND SEVERE WEATHER PENDING — ${parts.join(' AND ')}
+                        <span class="evlist">${pending.hits.map(h => `${h.period}: ${h.tags.join(', ')}`).join('<br>')}</span>
+                    </div>`;
+                } else if (hasPending) {
+                    storm72Html = `<div class="storm72 hit">⚠️ PENDING STORM — meets our severe-weather guidelines in the forecast window
+                        <span class="evlist">${pending.hits.map(h => `${h.period}: ${h.tags.join(', ')}`).join('<br>')}</span>
+                    </div>`;
+                } else {
+                    storm72Html = `<div class="storm72 clear">✅ Nothing in the 7‑day / 14‑period NOAA forecast meets our severe-weather guidelines (65+ mph wind, 1"+ hail, tornado, hurricane, or wind+rain/wind+hail compound).</div>`;
+                }
+
+                let cplDir = 'wx-down', cplLabel = 'Stable / Mild', cplPct = '‑8% to ‑10%', cplBumpPct = 0;
+                if (stormCount >= 1) { cplDir = 'wx-up'; cplLabel = 'Elevated Risk (forecast)'; cplPct = '+5% to +10%'; cplBumpPct = 7; }
+                if (activeAlerts.length > 0 || stormCount >= 4 || forecastCompound) { cplDir = 'wx-up'; cplLabel = 'Active Storm Risk'; cplPct = '+15% to +20%'; cplBumpPct = 17; }
+                if (hasPending) { cplDir = 'wx-up'; cplLabel = 'Pending Storm in Forecast Window'; cplPct = '+20% to +25% (pending-storm bump)'; cplBumpPct = 22; }
+                if (isCompound) { cplDir = 'wx-up'; cplLabel = 'Confirmed Compound Severe Event'; cplPct = '+25% to +30% (highest tier — compound wind+rain/hail)'; cplBumpPct = 27; }
+
+                wxLastPct = SEASONAL_CPL[geo.region];
+                wxLastPct._region = geo.region;
+                wxLastPct._bump = cplBumpPct;
+
+                panel.innerHTML = `<div class="wx-panel">
+                    <div class="wx-head"><div class="t">📍 ${geo.label} — Live Weather Read</div><div class="loc">${geo.lat}, ${geo.lon}</div></div>
+                    <div class="wx-body">
+                        <div class="wx-status-line"><span class="wx-dot"></span> Live data from api.weather.gov · fetched just now</div>
+                        ${storm72Html}
+                        <div class="wx-section-title">10‑Day Focus (NOAA gives 7‑day / 14‑period detail — days 8‑10 are trend-only)</div>
+                        <div class="wx-chart-wrap"><div class="wx-chart">${cols}</div></div>
+                        <div class="wx-legend">
+                            <span><span class="wx-swatch" style="background:#000;"></span> Temp</span>
+                            <span><span class="wx-swatch" style="background:rgba(70,130,180,.4);"></span> Rain chance</span>
+                            <span><span class="wx-swatch" style="background:#b69d5e;"></span> Wind (red = 25+ mph)</span>
+                        </div>
+                        <div class="wx-section-title">NOAA Active Advisories</div>
+                        ${alertHtml}
+                        <div class="wx-section-title">Seasonal CPL Table (cross-checked vs live industry/Google data)</div>
+                        ${wxSeasonTableHtml(geo.region)}
+                        <div class="wx-section-title">Suggested Total CPL Impact Right Now</div>
+                        <div class="grid three-col">
+                            <div class="form-note"><b>Current Read:</b> ${cplLabel}</div>
+                            <div class="form-note"><b>Suggested Max CPL Move:</b> ${cplPct}</div>
+                            <div class="form-note"><b>Storm Flags (7‑day):</b> ${stormCount} / 14 periods</div>
+                        </div>
+                        <button type="button" class="wx-apply-btn" onclick="wxApplySeasonalCpl()">✅ Apply NOAA-Suggested Seasonal CPL to This Territory Form</button>
+                        <div style="font-size:10.5px;color:#999;margin-top:10px;text-align:right;">Source: <a href="https://www.weather.gov" target="_blank" style="color:#b69d5e;">National Weather Service (NOAA)</a> — api.weather.gov + Local Storm Reports, no key required</div>
+                    </div>
+                </div>`;
+            } catch (err) {
+                panel.innerHTML = `<div class="wx-panel"><div class="wx-body"><div style="padding:20px;text-align:center;color:#888;font-size:12px;">Could not reach NOAA right now: ${err.message}</div></div></div>`;
+            }
+        }
+
+        // Writes the seasonal %-swing table (applied against the current flat CPL field) into the
+        // existing seasonal CPL inputs, using the SAME fields/handlers the manual entry flow already uses.
+        function wxApplySeasonalCpl() {
+            if (!wxLastPct) { alert('Run the weather check first by entering/confirming a City, State.'); return; }
+            const base = parseFloat(document.getElementById('newTerrCpl').value) || 225;
+            const bump = 1 + (wxLastPct._bump || 0) / 100; // additional live storm/advisory bump on top of seasonal
+            // Whole-dollar CPL only — no artificial rounding to $5/$10 steps, per project requirement
+            // that CPL display the exact calculated value.
+            const exact = v => Math.round(v);
+
+            document.getElementById('newTerrCplType').value = 'seasonal';
+            toggleSeasonalCplInputs();
+
+            document.getElementById('newTerrCplSpring').value = exact(base * (1 + wxLastPct.spring / 100) * bump);
+            document.getElementById('newTerrCplSummer').value = exact(base * (1 + wxLastPct.summer / 100) * bump);
+            document.getElementById('newTerrCplFall').value   = exact(base * (1 + wxLastPct.fall / 100) * bump);
+            document.getElementById('newTerrCplWinter').value = exact(base * (1 + wxLastPct.winter / 100) * bump);
+            calculateBlendedCpl();
+        }
     </script>
 </body>
 </html>

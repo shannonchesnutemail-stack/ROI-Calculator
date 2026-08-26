@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murray — Geo-Targeting Map & ZIP Export</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+<style>
+  :root{ --gold:#b69d5e; --gold-light:#cbb05e; --black:#000; --dark:#3d3d3d; --green:#438148; --border:#e2e2e2; }
+  *{box-sizing:border-box;}
+  body{font-family:Montserrat,'Segoe UI',Arial,sans-serif;margin:0;background:#f4f3f0;color:var(--dark);}
+  .head{background:linear-gradient(135deg,var(--black) 0%,var(--dark) 100%);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .head h1{font-size:18px;margin:0;}
+  .head .sub{font-size:12px;color:var(--gold-light);}
+  .head a{color:#fff;font-size:12px;text-decoration:none;background:rgba(255,255,255,.15);padding:7px 12px;border-radius:6px;}
+  .wrap{display:flex;gap:16px;padding:16px;flex-wrap:wrap;}
+  #map{flex:1 1 640px;min-width:320px;height:640px;border-radius:8px;border:1px solid var(--border);}
+  .side{flex:0 0 360px;min-width:300px;}
+  .card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:14px;}
+  .card h3{font-size:13px;text-transform:uppercase;letter-spacing:.03em;margin:0 0 10px;border-bottom:2px solid var(--gold);padding-bottom:6px;}
+  select,button{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;margin-bottom:8px;}
+  button.primary{background:var(--gold);color:#fff;border:none;font-weight:600;cursor:pointer;}
+  button.primary:hover{background:var(--gold-light);}
+  button.secondary{background:var(--green);color:#fff;border:none;font-weight:600;cursor:pointer;}
+  button.secondary:hover{background:#356b39;}
+  .helper{font-size:12px;color:#666;line-height:1.4;margin-bottom:10px;}
+  .stat-row{display:flex;gap:8px;margin-bottom:10px;}
+  .stat{flex:1;background:#f9f9f9;border-left:4px solid var(--gold);border-radius:0 6px 6px 0;padding:8px 10px;}
+  .stat .n{font-size:18px;font-weight:700;color:var(--black);}
+  .stat .l{font-size:10px;color:#888;text-transform:uppercase;}
+  table{width:100%;border-collapse:collapse;font-size:11.5px;max-height:280px;display:block;overflow-y:auto;}
+  thead,tbody{display:table;width:100%;table-layout:fixed;}
+  th,td{border:1px solid var(--border);padding:5px 7px;text-align:left;}
+  th{background:#f9f9f9;position:sticky;top:0;}
+  .loading{font-size:12px;color:#888;padding:12px 0;}
+</style>
+</head>
+<body>
+<div class="head">
+  <div>
+    <h1>📍 Territory Geo-Targeting Map</h1>
+    <div class="sub">Zoom / pan / draw a box → capture → export cities + ZIP codes for ad platform geo-targeting</div>
+  </div>
+  <a href="index.html">← Back to ROI Calculator</a>
+</div>
+
+<div class="wrap">
+  <div id="map"></div>
+  <div class="side">
+    <div class="card">
+      <h3>1. Jump to Territory</h3>
+      <select id="jumpSelect" onchange="jumpTo()">
+        <option value="">-- choose a branch territory --</option>
+        <option value="41.09,-96.83,9">Lincoln / Omaha / Grand Island, NE</option>
+        <option value="39.74,-104.99,9">Denver, CO</option>
+        <option value="29.76,-95.37,9">Houston, TX</option>
+        <option value="30.22,-92.02,9">Lafayette, LA</option>
+        <option value="29.95,-90.07,9">New Orleans, LA</option>
+        <option value="30.48,-90.10,9">Covington / North Shore, LA</option>
+      </select>
+      <div class="helper">Or just zoom/pan the map manually anywhere in the US.</div>
+    </div>
+
+    <div class="card">
+      <h3>2. Draw & Capture</h3>
+      <div class="helper">Use the rectangle tool (top-left of the map) to draw the area you want to geo-target. As soon as you finish drawing, it captures automatically.</div>
+      <button class="primary" onclick="clearBox()">🗑 Clear Selection</button>
+      <div id="boxInfo" class="helper"></div>
+    </div>
+
+    <div class="card">
+      <h3>3. Cities + ZIP Codes in Captured Area</h3>
+      <div class="stat-row">
+        <div class="stat"><div class="n" id="zipCount">0</div><div class="l">ZIP Codes</div></div>
+        <div class="stat"><div class="n" id="cityCount">0</div><div class="l">Unique Cities</div></div>
+      </div>
+      <div id="zipTableWrap"><div class="loading">Draw a box on the map to generate the list.</div></div>
+      <button class="secondary" onclick="exportCsv()" id="exportBtn" style="display:none;margin-top:10px;">⬇ Export CSV for Geo-Targeting</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+<script>
+  const map = L.map('map').setView([39.5, -98.35, ], 4);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  const drawnItems = new L.FeatureGroup();
+  map.addLayer(drawnItems);
+  const drawControl = new L.Control.Draw({
+    draw: { polygon: false, polyline: false, circle: false, marker: false, circlemarker: false, rectangle: { shapeOptions: { color: '#b69d5e' } } },
+    edit: { featureGroup: drawnItems, remove: true }
+  });
+  map.addControl(drawControl);
+
+  let ZIP_DATA = null; // [zip, city, state, lat, lon][]
+  fetch('https://galaxy-prod.tlcdn.com/gen/22e4b98de5934cd2b5cb00774ddc2384.json').then(r => r.json()).then(d => { ZIP_DATA = d; });
+
+  let currentRows = [];
+
+  function jumpTo() {
+    const v = document.getElementById('jumpSelect').value;
+    if (!v) return;
+    const [lat, lon, zoom] = v.split(',').map(Number);
+    map.setView([lat, lon], zoom);
+  }
+
+  function clearBox() {
+    drawnItems.clearLayers();
+    document.getElementById('boxInfo').textContent = '';
+    document.getElementById('zipTableWrap').innerHTML = '<div class="loading">Draw a box on the map to generate the list.</div>';
+    document.getElementById('zipCount').textContent = '0';
+    document.getElementById('cityCount').textContent = '0';
+    document.getElementById('exportBtn').style.display = 'none';
+    currentRows = [];
+  }
+
+  map.on(L.Draw.Event.CREATED, function (e) {
+    drawnItems.clearLayers(); // one box at a time
+    const layer = e.layer;
+    drawnItems.addLayer(layer);
+    const b = layer.getBounds();
+    captureBox(b.getSouth(), b.getNorth(), b.getWest(), b.getEast());
+  });
+
+  map.on(L.Draw.Event.EDITED, function (e) {
+    e.layers.eachLayer(layer => {
+      const b = layer.getBounds();
+      captureBox(b.getSouth(), b.getNorth(), b.getWest(), b.getEast());
+    });
+  });
+
+  function captureBox(south, north, west, east) {
+    document.getElementById('boxInfo').innerHTML =
+      `<b>Captured box:</b><br>N ${north.toFixed(3)}, S ${south.toFixed(3)}<br>W ${west.toFixed(3)}, E ${east.toFixed(3)}`;
+
+    if (!ZIP_DATA) {
+      document.getElementById('zipTableWrap').innerHTML = '<div class="loading">ZIP database still loading, try again in a second…</div>';
+      return;
+    }
+
+    const rows = ZIP_DATA.filter(([zip, city, state, lat, lon]) =>
+      lat >= south && lat <= north && lon >= west && lon <= east
+    );
+    rows.sort((a, b) => a[1].localeCompare(b[1]) || a[0].localeCompare(b[0]));
+    currentRows = rows;
+
+    const uniqueCities = new Set(rows.map(r => `${r[1]}, ${r[2]}`)).size;
+    document.getElementById('zipCount').textContent = rows.length;
+    document.getElementById('cityCount').textContent = uniqueCities;
+
+    if (rows.length === 0) {
+      document.getElementById('zipTableWrap').innerHTML = '<div class="loading">No ZIP codes found in this box — try a larger area.</div>';
+      document.getElementById('exportBtn').style.display = 'none';
+      return;
+    }
+
+    const maxShow = 500;
+    const shown = rows.slice(0, maxShow);
+    document.getElementById('zipTableWrap').innerHTML = `
+      <table>
+        <thead><tr><th>ZIP</th><th>City</th><th>State</th></tr></thead>
+        <tbody>${shown.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</tbody>
+      </table>
+      ${rows.length > maxShow ? `<div class="helper">Showing first ${maxShow} of ${rows.length} — full list included in CSV export.</div>` : ''}
+    `;
+    document.getElementById('exportBtn').style.display = 'block';
+  }
+
+  function exportCsv() {
+    if (!currentRows.length) return;
+    let csv = 'zip,city,state,lat,lon\n';
+    currentRows.forEach(r => { csv += r.join(',') + '\n'; });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `murray-geo-targeting-${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>
