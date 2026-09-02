@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Murray ROI Calculator v5.1.0 - Scenario Manager</title>
+    <title>Murray ROI Calculator v5.2.0 - Scenario Manager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Century Gothic', 'Helvetica Neue', sans-serif; background: #f5f5f5; padding: 20px; }
@@ -194,7 +194,7 @@
             <div class="logo-img">M</div>
             <div>
                 <h1>MURRAY ROI CALCULATOR</h1>
-                <div class="header-subtitle">Scenario Manager & Territory Comparison | v5.1.0</div>
+                <div class="header-subtitle">Scenario Manager & Territory Comparison | v5.2.0</div>
             </div>
             <div class="header-utility">
                 <button class="header-util-btn" id="hdrBtnTerritories" onclick="switchTab('territories')">📍 Territory Database</button>
@@ -235,6 +235,7 @@
             <!-- Tab Navigation -->
             <div class="tabs">
                 <button class="tab-button active" onclick="switchTab('builder')">📊 Scenario Builder</button>
+                <button class="tab-button" onclick="switchTab('channelmix')">🧮 Channel Mix</button>
                 <button class="tab-button" onclick="switchTab('scenarios')">💾 Saved Scenarios</button>
                 <button class="tab-button" onclick="switchTab('comparison')">🏗️ Campaign Building</button>
                 <button class="tab-button" onclick="switchTab('blueprints')">📌 Advertising Blueprints</button>
@@ -272,9 +273,6 @@
                             <label>Territory</label>
                             <select id="territory" onchange="updateTerritoryData()">
                                 <option value="">-- Select Territory --</option>
-                                <option value="lincoln-omaha">Lincoln/Omaha, NE</option>
-                                <option value="houston">Houston, TX</option>
-                                <option value="neworleans">New Orleans, LA</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -420,6 +418,72 @@
             </div>
 
             <!-- TAB 2: Territory Database -->
+            <!-- TAB: Channel Mix -->
+            <div id="channelmix" class="tab-content">
+                <div class="section">
+                    <div class="section-title">Multi-Channel Campaign Builder</div>
+                    <div class="form-note" style="margin-bottom: 20px;">Select any combination of channels for a campaign. Channels are listed automatically in order of highest cost-per-lead to lowest, so the most expensive channel is always evaluated first. This model is independent of the Google-only Scenario Builder above &mdash; it is built for campaigns that mix Mail, Referral, Google, Facebook, and Geo-Fencing together, the way the Lafayette older-homeowner campaign was planned.</div>
+
+                    <div class="metric-explainer">
+                        <div class="metric-explainer-grid">
+                            <div class="metric-explainer-card">
+                                <div class="metric-explainer-title">The Funnel Used Below</div>
+                                <div class="metric-explainer-text">Lead &rarr; Prospect (inspection happens) at <strong id="cmLeadToProspectLabel">75%</strong> company-wide, then Prospect &rarr; Closed Job at <strong id="cmCloseColdLabel">30%</strong> for cold-sourced leads (Mail, Google, Facebook, Geo-Fencing) or <strong id="cmCloseWarmLabel">60%</strong> for warm-sourced leads (Referral). Referral visits go straight to Lead status &mdash; they skip the response filter cold channels need.</div>
+                            </div>
+                            <div class="metric-explainer-card">
+                                <div class="metric-explainer-title">Verified vs. Placeholder Data</div>
+                                <div class="metric-explainer-text">Google's $215 CPL is verified (Murray ROI Calculator, New Orleans LA, saved 8/21/2026). Facebook's $42 and Geo-Fencing's $50 CPL are industry-reported placeholders, not yet Murray's own campaign data &mdash; update them below the moment real numbers come in.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid full">
+                        <div class="form-group">
+                            <label>Average Ticket ($)</label>
+                            <input type="number" id="cmTicket" value="15000" min="0" step="500" oninput="calculateChannelMix()">
+                        </div>
+                    </div>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label>Gross Margin (%)</label>
+                            <input type="number" id="cmMargin" value="30" min="0" max="100" step="1" oninput="calculateChannelMix()">
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" id="cmBuffer" checked onchange="calculateChannelMix()" style="width:auto; display:inline; margin-right:6px;">Add 20% safety buffer to budget total (cash reserve only &mdash; does not add leads or closes)</label>
+                        </div>
+                    </div>
+
+                    <div id="channelMixCards"></div>
+
+                    <div class="results" style="margin-top: 20px;">
+                        <div class="section-title" style="font-size: 13px;">Combined Results (Selected Channels, Sorted by Cost-Per-Lead)</div>
+                        <table id="channelMixTable" style="width:100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #b69d5e; text-align:left;">
+                                    <th style="padding:8px 6px;">Channel</th>
+                                    <th style="padding:8px 6px;">Cost / Lead</th>
+                                    <th style="padding:8px 6px;">Leads</th>
+                                    <th style="padding:8px 6px;">Prospects</th>
+                                    <th style="padding:8px 6px;">Closed</th>
+                                    <th style="padding:8px 6px;">Spend</th>
+                                </tr>
+                            </thead>
+                            <tbody id="channelMixTableBody"></tbody>
+                        </table>
+
+                        <div class="result-row"><span class="result-label">Total Leads</span><span class="result-value" id="cmResultLeads">0</span></div>
+                        <div class="result-row"><span class="result-label">Total Prospects (Inspections)</span><span class="result-value" id="cmResultProspects">0</span></div>
+                        <div class="result-row"><span class="result-label">Total Closed Jobs</span><span class="result-value" id="cmResultClosed">0</span></div>
+                        <div class="result-row"><span class="result-label">Base Budget (channels selected)</span><span class="result-value" id="cmResultBaseBudget">$0</span></div>
+                        <div class="result-row"><span class="result-label">Referral Gift Cards (variable, paid on close)</span><span class="result-value" id="cmResultGiftCards">$0</span></div>
+                        <div class="result-row"><span class="result-label">Safety Buffer (20%, reserve only)</span><span class="result-value" id="cmResultBuffer">$0</span></div>
+                        <div class="result-row"><span class="result-label highlight">Total Recommended Budget</span><span class="result-value highlight" id="cmResultTotalBudget">$0</span></div>
+                        <div class="result-row"><span class="result-label">Monthly Revenue (Closed Jobs x Ticket)</span><span class="result-value" id="cmResultRevenue">$0</span></div>
+                        <div class="result-row"><span class="result-label highlight">Monthly ROI</span><span class="result-value highlight" id="cmResultROI">0%</span></div>
+                    </div>
+                </div>
+            </div>
+
             <div id="territories" class="tab-content">
                 <div class="section">
                     <div class="section-title">Territory CPL Database</div>
@@ -644,7 +708,9 @@
                     </div>
                     <div style="text-align: center; margin-top: 20px;">
                         <button onclick="lockComparisonAsBlueprint()" style="background: #b69d5e;">🔒 Save as Campaign Blueprint</button>
+                        <button onclick="lockAllTerritoriesAsBlueprint()" style="background: #3d3d3d; margin-left: 10px;">🌐 Build Blueprint: All Territories in Database</button>
                     </div>
+                    <div class="form-note" style="text-align: center; margin-top: 8px;">The second button ignores the 3 slots above entirely &mdash; it pulls every territory currently in the Territory Database (however many that is) into one blueprint, asking once for a budget to apply to each.</div>
                 </div>
 
             </div>
@@ -658,10 +724,14 @@
                 </div>
 
                 <div class="section">
-                    <div class="section-title">Calculator v5.1.0 Features & Data Accuracy</div>
+                    <div class="section-title">Calculator v5.2.0 Features & Data Accuracy</div>
 
                     <div style="background: #e8f5e9; border: 2px solid #438148; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                        <div style="font-size: 14px; font-weight: bold; color: #438148; margin-bottom: 12px;">✨ Latest Updates (v5.1.0)</div>
+                        <div style="font-size: 14px; font-weight: bold; color: #438148; margin-bottom: 12px;">✨ Latest Updates (v5.2.0)</div>
+                            <div>✅ <strong>Custom Territories Now Selectable Everywhere:</strong> Fixed — the Scenario Builder's Territory dropdown was hardcoded to only the original 3 territories and never rebuilt. Any territory you add (e.g. Denver) is now a real choice in Scenario Builder immediately, no reload required.</div>
+                            <div>✅ <strong>Campaign Building Refreshes Instantly:</strong> Adding, editing, or deleting a territory now immediately updates its availability in Campaign Building — previously required a page reload to show up.</div>
+                            <div>✅ <strong>Full-Database Blueprint:</strong> New "Build Blueprint: All Territories in Database" button — locks in one blueprint covering every territory currently in the Territory Database (not capped at 3), asking once for a shared budget.</div>
+                            <div>ℹ️ <strong>Seasonal CPL Clarified:</strong> A territory's CPL only varies by season if CPL Type is set to "Seasonal" AND the 4 season fields are actually filled in (manually, or via the NOAA "Apply Seasonal CPL" button in Territory Database). Leaving CPL Type as "Flat," or leaving Seasonal fields at their $225 placeholder, is why a territory can show the same CPL year-round — that's working as designed, not a bug.</div>
                             <div>✅ <strong>Default Territories Now Compare/Blueprint-Ready:</strong> Every territory can be added directly to Campaign Building at any time &mdash; no scenario has to be built first. Pick the territory, enter a budget, done. Auto-named "{Territory} — #{unique ID}", same convention as saved scenarios.</div>
                             <div>✅ <strong>Scenario Builder Is Now Optional:</strong> Only needed when you want to override the territory's default numbers and give the result a custom name. Locking a Campaign Blueprint from a default territory auto-saves it as a real scenario in the background.</div>
                             <div>✅ <strong>Master Blueprint Uploaded:</strong> "Summer TX, NE, LA territories" (BP-EHCH5-EEK) is now a permanent system blueprint &mdash; Lincoln Agressive Plan, Houston Agressive Plan, and New Orleans Summer Mid, exactly as locked in on 8/21/2026.</div>
@@ -753,7 +823,7 @@
         </div>
 
         <div class="footer">
-            <strong>Murray ROI Calculator v5.1.0 — Scenario Manager</strong><br>
+            <strong>Murray ROI Calculator v5.2.0 — Scenario Manager</strong><br>
             Save & compare ROI plans | Territory CPL database | Real Acculynx data | Campaigns launched August 20, 2026 | KPIs refreshed every 30 days
         </div>
     </div>
@@ -833,6 +903,208 @@
             approvalRate: 0.33,
             closeRate: 0.83
         };
+
+        // ---------------------------------------------------------------
+        // CHANNEL MIX MODEL — reusable multi-channel campaign formula.
+        // Built for campaigns that combine Mail, Referral, Google, Facebook,
+        // and Geo-Fencing (e.g. the Lafayette older-homeowner campaign).
+        // Independent of ACCULYNX_DATA above, which drives the Google-only
+        // Scenario Builder. Each channel here carries its own verified-or-
+        // placeholder cost basis; update sourceNote + cpl the moment real
+        // campaign data replaces a placeholder.
+        // ---------------------------------------------------------------
+        const CHANNEL_FUNNEL = {
+            leadToProspect: 0.75,   // company-wide: Lead -> Prospect (inspection happens)
+            closeCold: 0.30,        // Prospect -> Closed, cold-sourced (Mail, Google, Facebook, Geo-Fencing)
+            closeWarm: 0.60         // Prospect -> Closed, warm-sourced (Referral)
+        };
+
+        const CHANNEL_DATA = {
+            google: {
+                label: 'Google Advertising', icon: '🔍', mode: 'budget',
+                cpl: 215, closeType: 'cold', defaultBudget: 1000,
+                sourceNote: 'Verified — Murray ROI Calculator, New Orleans, LA (saved 8/21/2026)'
+            },
+            referral: {
+                label: 'Referral Partners', icon: '🤝', mode: 'visits',
+                visitToLeadRate: 0.05, costPerVisit: 4, giftCardPerClose: 250,
+                closeType: 'warm', defaultVisits: 80,
+                sourceNote: '1-in-20 visit-to-lead rate; warm introduction, skips the cold response filter'
+            },
+            geofencing: {
+                label: 'Geo-Fencing (CTV + Facebook)', icon: '📡', mode: 'budget',
+                cpl: 50, closeType: 'cold', defaultBudget: 500,
+                sourceNote: 'Placeholder — no Murray history yet, confirm against Ground Truth reporting'
+            },
+            facebook: {
+                label: 'Facebook Advertising', icon: '📘', mode: 'budget',
+                cpl: 42, closeType: 'cold', defaultBudget: 300,
+                sourceNote: 'Placeholder — industry-reported figure, not yet Murray verified'
+            },
+            mail: {
+                label: 'Direct Mail / Postcards', icon: '📬', mode: 'pieces',
+                responseRate: 0.02, costPerPiece: 0.55, closeType: 'cold', defaultPieces: 600,
+                sourceNote: '2% response rate, $0.55 all-in per piece (list + print + postage)'
+            }
+        };
+
+        // Cost-per-lead used purely for sort order (highest cost first).
+        // Referral's "per-lead" cost is its visit-cultivation cost, not the gift card
+        // (the gift card is a variable, pay-on-close cost, not a lead-acquisition cost).
+        function channelCplForSort(key) {
+            const c = CHANNEL_DATA[key];
+            if (c.mode === 'budget') return c.cpl;
+            if (c.mode === 'visits') return c.costPerVisit / c.visitToLeadRate;
+            if (c.mode === 'pieces') return c.costPerPiece / c.responseRate;
+            return 0;
+        }
+
+        function sortedChannelKeys() {
+            // Highest cost-per-lead first; ties broken by most leads (using each
+            // channel's current input value) descending.
+            return Object.keys(CHANNEL_DATA).sort((a, b) => {
+                const cplDiff = channelCplForSort(b) - channelCplForSort(a);
+                if (Math.abs(cplDiff) > 0.01) return cplDiff;
+                return channelMixLeadsFor(b) - channelMixLeadsFor(a);
+            });
+        }
+
+        function channelMixInputValue(key) {
+            const el = document.getElementById('cmInput_' + key);
+            return el ? (parseFloat(el.value) || 0) : 0;
+        }
+
+        function channelMixLeadsFor(key) {
+            const c = CHANNEL_DATA[key];
+            const val = channelMixInputValue(key);
+            if (c.mode === 'budget') return c.cpl > 0 ? val / c.cpl : 0;
+            if (c.mode === 'visits') return val * c.visitToLeadRate;
+            if (c.mode === 'pieces') return val * c.responseRate;
+            return 0;
+        }
+
+        function channelMixSpendFor(key) {
+            const c = CHANNEL_DATA[key];
+            const val = channelMixInputValue(key);
+            if (c.mode === 'budget') return val;
+            if (c.mode === 'visits') return val * c.costPerVisit;
+            if (c.mode === 'pieces') return val * c.costPerPiece;
+            return 0;
+        }
+
+        function channelMixInputLabel(key) {
+            const c = CHANNEL_DATA[key];
+            if (c.mode === 'budget') return 'Monthly Budget ($)';
+            if (c.mode === 'visits') return 'Referral Visits This Month';
+            if (c.mode === 'pieces') return 'Pieces to Mail';
+            return 'Amount';
+        }
+
+        function channelMixDefaultValue(key) {
+            const c = CHANNEL_DATA[key];
+            if (c.mode === 'budget') return c.defaultBudget;
+            if (c.mode === 'visits') return c.defaultVisits;
+            if (c.mode === 'pieces') return c.defaultPieces;
+            return 0;
+        }
+
+        function renderChannelMixCards() {
+            const container = document.getElementById('channelMixCards');
+            if (!container) return;
+            const order = sortedChannelKeys();
+            container.innerHTML = order.map(key => {
+                const c = CHANNEL_DATA[key];
+                const cpl = Math.round(channelCplForSort(key) * 100) / 100;
+                return `
+                <div class="metric-explainer-card" style="margin-bottom: 12px; display:flex; align-items:flex-start; gap:14px;" data-channel="${key}">
+                    <div style="font-size:26px; line-height:1;">${c.icon}</div>
+                    <div style="flex:1;">
+                        <label style="display:flex; align-items:center; gap:8px; text-transform:none; font-size:14px;">
+                            <input type="checkbox" id="cmEnable_${key}" checked onchange="calculateChannelMix()" style="width:auto; margin:0;">
+                            <strong>${c.label}</strong>
+                            <span style="font-weight:normal; color:#999; font-size:12px;">&mdash; ~$${cpl}/lead</span>
+                        </label>
+                        <div class="form-note" style="margin: 4px 0 8px;">${c.sourceNote}</div>
+                        <div style="display:flex; align-items:center; gap:10px; max-width:320px;">
+                            <span style="font-size:12px; color:#666; white-space:nowrap;">${channelMixInputLabel(key)}</span>
+                            <input type="number" id="cmInput_${key}" value="${channelMixDefaultValue(key)}" min="0" step="10" oninput="calculateChannelMix()">
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function fmtMoneyCm(n) {
+            return '$' + Math.round(n).toLocaleString('en-US');
+        }
+
+        function calculateChannelMix() {
+            const container = document.getElementById('channelMixCards');
+            if (!container) return; // tab not yet rendered
+
+            const ticket = parseFloat(document.getElementById('cmTicket').value) || 0;
+            const margin = (parseFloat(document.getElementById('cmMargin').value) || 0) / 100;
+            const applyBuffer = document.getElementById('cmBuffer').checked;
+
+            const order = sortedChannelKeys();
+            let totalLeads = 0, totalProspects = 0, totalClosed = 0, totalSpend = 0, totalGiftCards = 0;
+            const rows = [];
+
+            order.forEach(key => {
+                const enabled = document.getElementById('cmEnable_' + key);
+                if (!enabled || !enabled.checked) return;
+                const c = CHANNEL_DATA[key];
+                const leads = channelMixLeadsFor(key);
+                const spend = channelMixSpendFor(key);
+                const prospects = leads * CHANNEL_FUNNEL.leadToProspect;
+                const closeRate = c.closeType === 'warm' ? CHANNEL_FUNNEL.closeWarm : CHANNEL_FUNNEL.closeCold;
+                const closed = prospects * closeRate;
+                const giftCards = key === 'referral' ? closed * c.giftCardPerClose : 0;
+
+                totalLeads += leads;
+                totalProspects += prospects;
+                totalClosed += closed;
+                totalSpend += spend;
+                totalGiftCards += giftCards;
+
+                rows.push(`<tr style="border-bottom:1px solid #eee;">
+                    <td style="padding:8px 6px;">${c.icon} ${c.label}</td>
+                    <td style="padding:8px 6px;">$${Math.round(channelCplForSort(key))}</td>
+                    <td style="padding:8px 6px;">${leads.toFixed(1)}</td>
+                    <td style="padding:8px 6px;">${prospects.toFixed(1)}</td>
+                    <td style="padding:8px 6px;">${closed.toFixed(1)}</td>
+                    <td style="padding:8px 6px;">${fmtMoneyCm(spend)}</td>
+                </tr>`);
+            });
+
+            document.getElementById('channelMixTableBody').innerHTML = rows.join('') ||
+                '<tr><td colspan="6" style="padding:12px; color:#999; text-align:center;">Select at least one channel above</td></tr>';
+
+            const buffer = applyBuffer ? totalSpend * 0.20 : 0;
+            const totalBudget = totalSpend + totalGiftCards + buffer;
+            const revenue = totalClosed * ticket;
+            const profit = revenue * margin;
+            const roi = totalBudget > 0 ? ((profit - totalBudget) / totalBudget) * 100 : 0;
+
+            document.getElementById('cmResultLeads').textContent = totalLeads.toFixed(1);
+            document.getElementById('cmResultProspects').textContent = totalProspects.toFixed(1);
+            document.getElementById('cmResultClosed').textContent = totalClosed.toFixed(1);
+            document.getElementById('cmResultBaseBudget').textContent = fmtMoneyCm(totalSpend);
+            document.getElementById('cmResultGiftCards').textContent = fmtMoneyCm(totalGiftCards);
+            document.getElementById('cmResultBuffer').textContent = fmtMoneyCm(buffer);
+            document.getElementById('cmResultTotalBudget').textContent = fmtMoneyCm(totalBudget);
+            document.getElementById('cmResultRevenue').textContent = fmtMoneyCm(revenue);
+            document.getElementById('cmResultROI').textContent = Math.round(roi) + '%';
+
+            document.getElementById('cmLeadToProspectLabel').textContent = Math.round(CHANNEL_FUNNEL.leadToProspect * 100) + '%';
+            document.getElementById('cmCloseColdLabel').textContent = Math.round(CHANNEL_FUNNEL.closeCold * 100) + '%';
+            document.getElementById('cmCloseWarmLabel').textContent = Math.round(CHANNEL_FUNNEL.closeWarm * 100) + '%';
+        }
+
+        function initChannelMix() {
+            renderChannelMixCards();
+            calculateChannelMix();
+        }
 
         // Implied Cost Per Click, backed into from whatever CPL + Landing Page
         // Conversion Rate pair is currently active (CPL = CPC / CVR, rearranged).
@@ -1355,6 +1627,12 @@
             toggleSeasonalCplInputs();
             toggleSeasonalInputs();
 
+            // Re-show the live NOAA weather panel for this territory's city so the
+            // "Apply NOAA-Suggested Seasonal CPL" button is ready to use again —
+            // this is what actually varies CPL by season; typing a name alone
+            // (or leaving Flat CPL Type) will not.
+            renderTerritoryWeather();
+
             document.getElementById('territories').scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -1410,6 +1688,7 @@
 
             resetTerritoryForm();
             loadTerritories();
+            updateComparisonSelects(); // so a brand-new territory is immediately pickable in Campaign Building — no reload needed
             alert(editingId
                 ? `✅ Territory updated: ${name} (${cplType === 'seasonal' ? 'Seasonal' : 'Flat'} CPL, ${ctrType === 'blended' ? 'Blended' : 'Flat'} CTR)`
                 : `✅ Territory added: ${name} (${cplType === 'seasonal' ? 'Seasonal' : 'Flat'} CPL, ${ctrType === 'blended' ? 'Blended' : 'Flat'} CTR)`);
@@ -1420,12 +1699,28 @@
             delete TERRITORIES_DB[id];
             localStorage.setItem('murrayTerritories', JSON.stringify(TERRITORIES_DB));
             loadTerritories();
+            updateComparisonSelects();
+        }
+
+        // Rebuilds the Scenario Builder's Territory dropdown from TERRITORIES_DB.
+        // Previously this select had 3 hardcoded <option> tags and never refreshed,
+        // so any custom territory added via the Territory Database (e.g. Denver)
+        // never showed up as a choice here. Preserves the current selection if it
+        // still exists after the rebuild.
+        function updateTerritorySelect() {
+            const sel = document.getElementById('territory');
+            if (!sel) return;
+            const current = sel.value;
+            sel.innerHTML = '<option value="">-- Select Territory --</option>' +
+                Object.entries(TERRITORIES_DB).map(([id, t]) => `<option value="${id}">${t.name}</option>`).join('');
+            if (current && TERRITORIES_DB[current]) sel.value = current;
         }
 
         function loadTerritories() {
             const list = document.getElementById('territoryList');
             const saved = JSON.parse(localStorage.getItem('murrayTerritories')) || {};
             Object.assign(TERRITORIES_DB, saved);
+            updateTerritorySelect();
 
             list.innerHTML = Object.entries(TERRITORIES_DB).map(([id, t]) => {
                 const season = getCurrentSeason();
@@ -1690,6 +1985,111 @@
             switchTab('blueprints');
         }
 
+        // Builds one blueprint from EVERY territory currently in the Territory
+        // Database — no 3-slot cap, works with however many territories exist
+        // (3 today, more as they're added, e.g. Denver). Ignores whatever is
+        // picked in the Campaign Building slots above; this is a separate,
+        // whole-database action.
+        function lockAllTerritoriesAsBlueprint() {
+            const territoryIds = Object.keys(TERRITORIES_DB);
+            if (territoryIds.length === 0) {
+                alert('No territories exist in the Territory Database yet.');
+                return;
+            }
+
+            const spendInput = prompt(`Budget to apply to EACH of the ${territoryIds.length} territories (${territoryIds.map(id => TERRITORIES_DB[id].name).join(', ')}):`, '1000');
+            if (spendInput === null) return;
+            const adSpend = parseFloat(spendInput) || 0;
+
+            const season = getCurrentSeason();
+            const effectiveCloseRate = ACCULYNX_DATA.approvalRate * ACCULYNX_DATA.closeRate;
+            const ticket = 15000, marginPct = 30, marketingBudgetPct = 15; // same system defaults as a fresh scenario
+
+            let allScenarios = JSON.parse(localStorage.getItem('murrayScenarios')) || [];
+            const newScenarios = territoryIds.map(terrId => {
+                const terr = TERRITORIES_DB[terrId];
+                let cpl = terr.cpl;
+                if (terr.cplType === 'seasonal' && terr.cplSource === 'derived' && terr.cpcType === 'seasonal' && terr.convRate) {
+                    cpl = Math.round(terr['cpc' + season] / (terr.convRate / 100));
+                } else if (terr.cplType === 'seasonal') {
+                    cpl = terr['cpl' + season];
+                }
+                const ctr = terr.ctrType === 'blended' ? terr.blendedCtr : terr.ctr;
+                const lpConvRate = terr.convRate || 0;
+
+                const leadsExact = cpl > 0 ? adSpend / cpl : 0;
+                const approvedExact = leadsExact * ACCULYNX_DATA.approvalRate;
+                const closedExact = approvedExact * ACCULYNX_DATA.closeRate;
+                const leads = Math.floor(leadsExact);
+                const approved = Math.floor(approvedExact);
+                const closed = Math.floor(closedExact);
+                const revenue = closed * ticket;
+                const profit = revenue * (marginPct / 100);
+                const roi = adSpend > 0 ? ((profit - adSpend) / adSpend) * 100 : 0;
+                const maxCpl = ticket * (marginPct / 100) * (marketingBudgetPct / 100) * effectiveCloseRate;
+                const uid = generateUniqueId();
+
+                const scenario = {
+                    id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
+                    uid: uid,
+                    name: `${terr.name} — #${uid}`,
+                    timestamp: new Date().toLocaleString(),
+                    territory: terrId,
+                    ctrType: terr.ctrType,
+                    ctr,
+                    cpl,
+                    adSpend,
+                    lpConvRate,
+                    ticket,
+                    margin: marginPct,
+                    marketingBudget: marketingBudgetPct,
+                    results: {
+                        leads: String(leads),
+                        approved: String(approved),
+                        closed: String(closed),
+                        revenue: fmtMoney(revenue),
+                        profit: fmtMoney(profit),
+                        roi: Math.round(roi) + '%',
+                        annualRevenue: fmtMoney(revenue * 12),
+                        annualProfit: fmtMoney(profit * 12),
+                        annualROI: Math.round(roi) + '%',
+                        maxCpl: Math.floor(maxCpl).toLocaleString('en-US')
+                    },
+                    active: false
+                };
+                allScenarios.push(scenario);
+                return scenario;
+            });
+
+            allScenarios.sort((a, b) => (parseInt(b.id) || 0) - (parseInt(a.id) || 0));
+            localStorage.setItem('murrayScenarios', JSON.stringify(allScenarios));
+            loadScenarios();
+            updateComparisonSelects();
+
+            const label = prompt('Name this "all territories" Advertising Blueprint (e.g., "All Markets — Q4 Push"):');
+            if (!label || !label.trim()) return;
+
+            const uid = generateUniqueId();
+            const blueprint = {
+                id: Date.now().toString(),
+                uid: uid,
+                label: label.trim(),
+                name: `${label.trim()} — BP-${uid}`,
+                timestamp: new Date().toLocaleString(),
+                scenarioIds: newScenarios.map(s => s.id),
+                scenarios: JSON.parse(JSON.stringify(newScenarios))
+            };
+
+            let blueprints = JSON.parse(localStorage.getItem('murrayBlueprints')) || [];
+            blueprints.push(blueprint);
+            blueprints.sort((a, b) => (parseInt(b.id) || 0) - (parseInt(a.id) || 0));
+            localStorage.setItem('murrayBlueprints', JSON.stringify(blueprints));
+
+            alert(`🔒 Advertising Blueprint locked in: "${blueprint.name}" (${newScenarios.length} territories)`);
+            loadBlueprints();
+            switchTab('blueprints');
+        }
+
         function loadBlueprints() {
             const blueprints = JSON.parse(localStorage.getItem('murrayBlueprints')) || [];
             const list = document.getElementById('blueprintList');
@@ -1913,6 +2313,7 @@
         loadBlueprints();
         updateNextRefreshDisplay();
         calculateROI();
+        initChannelMix();
     </script>
 
     <script>
