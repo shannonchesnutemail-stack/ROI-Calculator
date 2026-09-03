@@ -186,6 +186,33 @@
         .wx-apply-btn{background:#438148;color:#fff;border:none;padding:9px 16px;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer;margin-top:10px;}
         .wx-apply-btn:hover{background:#356b39;}
         .wx-unmatched{background:#fff9c4;border-left:4px solid #f57f17;padding:10px 14px;border-radius:0 6px 6px 0;font-size:12px;color:#5a4a10;}
+
+        /* ---------------- Mobile responsiveness ---------------- */
+        @media (max-width: 720px) {
+            body { padding: 8px; }
+            .container { border-radius: 4px; }
+            .content { padding: 14px; }
+            .header { padding: 16px; flex-wrap: wrap; }
+            .header h1 { font-size: 20px; }
+            .header-utility { margin-left: 0; width: 100%; justify-content: flex-start; }
+            .grid, .grid.three-col { grid-template-columns: 1fr; }
+            .workflow-steps { flex-direction: column; }
+            .tabs { flex-wrap: wrap; }
+            .tab-button { flex: 1 1 45%; padding: 10px 8px; font-size: 12px; }
+            .metric-explainer-grid { grid-template-columns: 1fr; }
+            .accuracy-grid { grid-template-columns: 1fr; }
+            label { word-break: break-word; }
+            .result-row { flex-wrap: wrap; font-size: 13px; }
+            input, select, textarea { font-size: 16px; } /* avoids iOS zoom-on-focus */
+            table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; }
+            .channel-card-row { flex-direction: column; }
+            .channel-card-input-row { max-width: 100% !important; flex-wrap: wrap; }
+        }
+        @media (max-width: 480px) {
+            .header h1 { font-size: 17px; }
+            .header-subtitle { font-size: 10px; }
+            .tab-button { flex: 1 1 100%; }
+        }
 </style>
 </head>
 <body>
@@ -235,7 +262,6 @@
             <!-- Tab Navigation -->
             <div class="tabs">
                 <button class="tab-button active" onclick="switchTab('builder')">📊 Scenario Builder</button>
-                <button class="tab-button" onclick="switchTab('channelmix')">🧮 Channel Mix</button>
                 <button class="tab-button" onclick="switchTab('scenarios')">💾 Saved Scenarios</button>
                 <button class="tab-button" onclick="switchTab('comparison')">🏗️ Campaign Building</button>
                 <button class="tab-button" onclick="switchTab('blueprints')">📌 Advertising Blueprints</button>
@@ -395,6 +421,68 @@
                 </div>
 
                 <div class="section">
+                    <div class="section-title">Additional Channels (Included In This Scenario)</div>
+                    <div class="form-note" style="margin-bottom: 20px;">Turn on any combination of Mail, Referral, Facebook, and Geo-Fencing to see them blended with the Google Ads numbers above &mdash; one combined lead, close, and ROI total per scenario, so you can compare direction across territories with every channel accounted for instead of Google alone. Channels are always listed highest cost-per-lead to lowest, including Google.</div>
+
+                    <div class="metric-explainer">
+                        <div class="metric-explainer-grid">
+                            <div class="metric-explainer-card">
+                                <div class="metric-explainer-title">The Funnel Used for Mail, Referral, Facebook &amp; Geo-Fencing</div>
+                                <div class="metric-explainer-text">Lead &rarr; Prospect (inspection happens) at <strong id="cmLeadToProspectLabel">75%</strong>, then Prospect &rarr; Closed Job at <strong id="cmCloseColdLabel">30%</strong> for cold-sourced leads (Mail, Facebook, Geo-Fencing) or <strong id="cmCloseWarmLabel">60%</strong> for warm-sourced leads (Referral). Google above keeps its own verified Acculynx funnel (33% approval &times; 83% close) rather than this one.</div>
+                            </div>
+                            <div class="metric-explainer-card">
+                                <div class="metric-explainer-title">Verified vs. Placeholder Data</div>
+                                <div class="metric-explainer-text">Mail's 0.33% response rate is Murray's own campaign history (1 call from 300 landlord letters). Facebook's $42 and Geo-Fencing's $50 CPL are industry-reported placeholders, not yet Murray's own data &mdash; see numbered sources below.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="channelMixCards"></div>
+
+                    <div class="metric-explainer-card" style="margin: 16px 0; border-left-color: #438148;">
+                        <div class="metric-explainer-title">Data Sources for This Model</div>
+                        <div class="metric-explainer-text" style="line-height:1.8;">
+                            <strong>[1]</strong> Murray Enterprises internal campaign data &mdash; landlord-specific direct mail letter, 1 phone call returned from 300 letters mailed (~0.33% response). Reported by Murray Marketing, September 2026. Used directly in this calculator's Mail response rate.<br>
+                            <strong>[2]</strong> Murray ROI Calculator &mdash; Google Ads scenario, New Orleans, LA, saved 8/21/2026. Reflected live above via the Territory CPL field.<br>
+                            <strong>[3]</strong> Postalytics, "Direct Mail Trends &amp; Statistics for 2026" (postalytics.com) &mdash; national average direct mail response rate of 4.4%. Cited for comparison only; NOT used in this calculator's math, since Murray's own 0.33% landlord-letter result [1] is more relevant to this audience.<br>
+                            <strong>[4]</strong> GroundTruth, "How Much Does Geofencing Cost?" pricing FAQ (groundtruth.com/faq/how-much-does-geofencing-cost), retrieved September 2026 &mdash; published CPM range of $3.50&ndash;$50 (mobile/desktop) and $25+ (CTV), informing the Geo-Fencing placeholder.<br>
+                            <strong>[5]</strong> Roofing industry operator discussion (private Facebook group post, undated, no formal publication) &mdash; informal $42 CPL figure for Facebook Ads. Low confidence; replace with Murray's own data as soon as it exists.<br>
+                            <strong>[6]</strong> Referral partner conversion estimate (1-in-20 visits become a lead) &mdash; a Murray Marketing planning assumption based on sales team experience, not yet benchmarked against tracked referral data. Update once referral outcomes are logged consistently.<br><br>
+                            <em>As real Murray campaign data replaces a placeholder, update the corresponding value in CHANNEL_DATA in the code and cite it here with the date it was verified.</em>
+                        </div>
+                    </div>
+
+                    <div class="results" style="margin-top: 20px;">
+                        <div class="section-title" style="font-size: 13px;">Combined Results &mdash; Google + Selected Channels (Sorted by Cost-Per-Lead)</div>
+                        <div style="overflow-x:auto;">
+                        <table id="channelMixTable" style="width:100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; min-width: 480px;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #b69d5e; text-align:left;">
+                                    <th style="padding:8px 6px;">Channel</th>
+                                    <th style="padding:8px 6px;">Cost / Lead</th>
+                                    <th style="padding:8px 6px;">Leads</th>
+                                    <th style="padding:8px 6px;">Prospects / Approved</th>
+                                    <th style="padding:8px 6px;">Closed</th>
+                                    <th style="padding:8px 6px;">Spend</th>
+                                </tr>
+                            </thead>
+                            <tbody id="channelMixTableBody"></tbody>
+                        </table>
+                        </div>
+
+                        <div class="result-row"><span class="result-label">Combined Total Leads</span><span class="result-value" id="cmResultLeads">0</span></div>
+                        <div class="result-row"><span class="result-label">Combined Total Prospects/Approved</span><span class="result-value" id="cmResultProspects">0</span></div>
+                        <div class="result-row"><span class="result-label">Combined Total Closed Jobs</span><span class="result-value" id="cmResultClosed">0</span></div>
+                        <div class="result-row"><span class="result-label">Combined Spend (Google + additional channels)</span><span class="result-value" id="cmResultBaseBudget">$0</span></div>
+                        <div class="result-row"><span class="result-label">Referral Gift Cards (variable, paid on close)</span><span class="result-value" id="cmResultGiftCards">$0</span></div>
+                        <div class="result-row"><span class="result-label">Safety Buffer <label style="display:inline; text-transform:none; font-weight:normal; font-size:11px; margin-left:6px;"><input type="checkbox" id="cmBuffer" checked onchange="calculateChannelMix()" style="width:auto; display:inline; margin:0 4px 0 0;">20% (reserve only, not extra leads)</label></span><span class="result-value" id="cmResultBuffer">$0</span></div>
+                        <div class="result-row"><span class="result-label highlight">Combined Total Budget</span><span class="result-value highlight" id="cmResultTotalBudget">$0</span></div>
+                        <div class="result-row"><span class="result-label">Combined Monthly Revenue</span><span class="result-value" id="cmResultRevenue">$0</span></div>
+                        <div class="result-row"><span class="result-label highlight">Combined Monthly ROI</span><span class="result-value highlight" id="cmResultROI">0%</span></div>
+                    </div>
+                </div>
+
+                <div class="section">
                     <div class="section-title">Annual Projections (12 Months)</div>
                     <div class="results">
                         <div class="result-row">
@@ -418,84 +506,6 @@
             </div>
 
             <!-- TAB 2: Territory Database -->
-            <!-- TAB: Channel Mix -->
-            <div id="channelmix" class="tab-content">
-                <div class="section">
-                    <div class="section-title">Multi-Channel Campaign Builder</div>
-                    <div class="form-note" style="margin-bottom: 20px;">Select any combination of channels for a campaign. Channels are listed automatically in order of highest cost-per-lead to lowest, so the most expensive channel is always evaluated first. This model is independent of the Google-only Scenario Builder above &mdash; it is built for campaigns that mix Mail, Referral, Google, Facebook, and Geo-Fencing together, the way the Lafayette older-homeowner campaign was planned.</div>
-
-                    <div class="metric-explainer">
-                        <div class="metric-explainer-grid">
-                            <div class="metric-explainer-card">
-                                <div class="metric-explainer-title">The Funnel Used Below</div>
-                                <div class="metric-explainer-text">Lead &rarr; Prospect (inspection happens) at <strong id="cmLeadToProspectLabel">75%</strong> company-wide, then Prospect &rarr; Closed Job at <strong id="cmCloseColdLabel">30%</strong> for cold-sourced leads (Mail, Google, Facebook, Geo-Fencing) or <strong id="cmCloseWarmLabel">60%</strong> for warm-sourced leads (Referral). Referral visits go straight to Lead status &mdash; they skip the response filter cold channels need.</div>
-                            </div>
-                            <div class="metric-explainer-card">
-                                <div class="metric-explainer-title">Verified vs. Placeholder Data</div>
-                                <div class="metric-explainer-text">Google's $215 CPL is verified (Murray ROI Calculator, New Orleans LA, saved 8/21/2026). Facebook's $42 and Geo-Fencing's $50 CPL are industry-reported placeholders, not yet Murray's own campaign data &mdash; update them below the moment real numbers come in.</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid full">
-                        <div class="form-group">
-                            <label>Average Ticket ($)</label>
-                            <input type="number" id="cmTicket" value="15000" min="0" step="500" oninput="calculateChannelMix()">
-                        </div>
-                    </div>
-                    <div class="grid">
-                        <div class="form-group">
-                            <label>Gross Margin (%)</label>
-                            <input type="number" id="cmMargin" value="30" min="0" max="100" step="1" oninput="calculateChannelMix()">
-                        </div>
-                        <div class="form-group">
-                            <label><input type="checkbox" id="cmBuffer" checked onchange="calculateChannelMix()" style="width:auto; display:inline; margin-right:6px;">Add 20% safety buffer to budget total (cash reserve only &mdash; does not add leads or closes)</label>
-                        </div>
-                    </div>
-
-                    <div id="channelMixCards"></div>
-
-                    <div class="metric-explainer-card" style="margin: 16px 0; border-left-color: #438148;">
-                        <div class="metric-explainer-title">Data Sources for This Model</div>
-                        <div class="metric-explainer-text" style="line-height:1.8;">
-                            <strong>[1]</strong> Murray Enterprises internal campaign data &mdash; landlord-specific direct mail letter, 1 phone call returned from 300 letters mailed (~0.33% response). Reported by Murray Marketing, September 2026. Used directly in this calculator's Mail response rate.<br>
-                            <strong>[2]</strong> Murray ROI Calculator &mdash; Google Ads scenario, New Orleans, LA, saved 8/21/2026. Used directly for the $215 Google CPL.<br>
-                            <strong>[3]</strong> Postalytics, "Direct Mail Trends &amp; Statistics for 2026" (postalytics.com) &mdash; national average direct mail response rate of 4.4%. Cited for comparison only; NOT used in this calculator's math, since Murray's own 0.33% landlord-letter result [1] is more relevant to this audience.<br>
-                            <strong>[4]</strong> GroundTruth, "How Much Does Geofencing Cost?" pricing FAQ (groundtruth.com/faq/how-much-does-geofencing-cost), retrieved September 2026 &mdash; published CPM range of $3.50&ndash;$50 (mobile/desktop) and $25+ (CTV), informing the Geo-Fencing placeholder.<br>
-                            <strong>[5]</strong> Roofing industry operator discussion (private Facebook group post, undated, no formal publication) &mdash; informal $42 CPL figure for Facebook Ads. Low confidence; replace with Murray's own data as soon as it exists.<br>
-                            <strong>[6]</strong> Referral partner conversion estimate (1-in-20 visits become a lead) &mdash; a Murray Marketing planning assumption based on sales team experience, not yet benchmarked against tracked referral data. Update once referral outcomes are logged consistently.<br><br>
-                            <em>Every placeholder above is labeled as such directly on its channel card. As real Murray campaign data replaces a placeholder, update the corresponding value in CHANNEL_DATA in the code and cite it here with the date it was verified.</em>
-                        </div>
-                    </div>
-
-                    <div class="results" style="margin-top: 20px;">
-                        <div class="section-title" style="font-size: 13px;">Combined Results (Selected Channels, Sorted by Cost-Per-Lead)</div>
-                        <table id="channelMixTable" style="width:100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px;">
-                            <thead>
-                                <tr style="border-bottom: 2px solid #b69d5e; text-align:left;">
-                                    <th style="padding:8px 6px;">Channel</th>
-                                    <th style="padding:8px 6px;">Cost / Lead</th>
-                                    <th style="padding:8px 6px;">Leads</th>
-                                    <th style="padding:8px 6px;">Prospects</th>
-                                    <th style="padding:8px 6px;">Closed</th>
-                                    <th style="padding:8px 6px;">Spend</th>
-                                </tr>
-                            </thead>
-                            <tbody id="channelMixTableBody"></tbody>
-                        </table>
-
-                        <div class="result-row"><span class="result-label">Total Leads</span><span class="result-value" id="cmResultLeads">0</span></div>
-                        <div class="result-row"><span class="result-label">Total Prospects (Inspections)</span><span class="result-value" id="cmResultProspects">0</span></div>
-                        <div class="result-row"><span class="result-label">Total Closed Jobs</span><span class="result-value" id="cmResultClosed">0</span></div>
-                        <div class="result-row"><span class="result-label">Base Budget (channels selected)</span><span class="result-value" id="cmResultBaseBudget">$0</span></div>
-                        <div class="result-row"><span class="result-label">Referral Gift Cards (variable, paid on close)</span><span class="result-value" id="cmResultGiftCards">$0</span></div>
-                        <div class="result-row"><span class="result-label">Safety Buffer (20%, reserve only)</span><span class="result-value" id="cmResultBuffer">$0</span></div>
-                        <div class="result-row"><span class="result-label highlight">Total Recommended Budget</span><span class="result-value highlight" id="cmResultTotalBudget">$0</span></div>
-                        <div class="result-row"><span class="result-label">Monthly Revenue (Closed Jobs x Ticket)</span><span class="result-value" id="cmResultRevenue">$0</span></div>
-                        <div class="result-row"><span class="result-label highlight">Monthly ROI</span><span class="result-value highlight" id="cmResultROI">0%</span></div>
-                    </div>
-                </div>
-            </div>
 
             <div id="territories" class="tab-content">
                 <div class="section">
@@ -918,25 +928,28 @@
         };
 
         // ---------------------------------------------------------------
-        // CHANNEL MIX MODEL — reusable multi-channel campaign formula.
-        // Built for campaigns that combine Mail, Referral, Google, Facebook,
-        // and Geo-Fencing (e.g. the Lafayette older-homeowner campaign).
-        // Independent of ACCULYNX_DATA above, which drives the Google-only
-        // Scenario Builder. Each channel here carries its own verified-or-
+        // CHANNEL MIX MODEL — reusable multi-channel campaign formula,
+        // folded directly into every scenario (not a separate tab), so
+        // Google + Mail + Referral + Facebook + Geo-Fencing all roll up
+        // into one combined lead/close/ROI total per scenario.
+        // Google keeps its own verified Acculynx funnel (33% approval x
+        // 83% close) rather than the CHANNEL_FUNNEL below, since that is
+        // real historical data already trusted elsewhere in this tool.
+        // Each of the other four channels carries its own verified-or-
         // placeholder cost basis; update sourceNote + cpl the moment real
         // campaign data replaces a placeholder.
         // ---------------------------------------------------------------
         const CHANNEL_FUNNEL = {
-            leadToProspect: 0.75,   // company-wide: Lead -> Prospect (inspection happens)
-            closeCold: 0.30,        // Prospect -> Closed, cold-sourced (Mail, Google, Facebook, Geo-Fencing)
+            leadToProspect: 0.75,   // Lead -> Prospect (inspection happens): Mail, Referral, Facebook, Geo-Fencing
+            closeCold: 0.30,        // Prospect -> Closed, cold-sourced (Mail, Facebook, Geo-Fencing)
             closeWarm: 0.60         // Prospect -> Closed, warm-sourced (Referral)
         };
 
         const CHANNEL_DATA = {
             google: {
-                label: 'Google Advertising', icon: '🔍', mode: 'budget',
-                cpl: 215, closeType: 'cold', defaultBudget: 1000,
-                sourceNote: 'Verified — Murray ROI Calculator, New Orleans, LA, saved 8/21/2026 [Source 2]'
+                label: 'Google Advertising', icon: '🔍', mode: 'google-linked',
+                closeType: 'acculynx',
+                sourceNote: 'Uses the Territory CPL, Monthly Ad Spend, and Acculynx funnel set above — not a separate input. [Source 2]'
             },
             referral: {
                 label: 'Referral Partners', icon: '🤝', mode: 'visits',
@@ -961,11 +974,17 @@
             }
         };
 
-        // Cost-per-lead used purely for sort order (highest cost first).
-        // Referral's "per-lead" cost is its visit-cultivation cost, not the gift card
-        // (the gift card is a variable, pay-on-close cost, not a lead-acquisition cost).
+        function currentGoogleCpl() {
+            return parseFloat((document.getElementById('cpl') || {}).value) || 0;
+        }
+
+        // Cost-per-lead used for sort order (highest cost first). Google reads
+        // its LIVE Territory CPL field so the sort stays correct as it's edited.
+        // Referral's "per-lead" cost is its visit-cultivation cost, not the gift
+        // card (a variable, pay-on-close cost, not a lead-acquisition cost).
         function channelCplForSort(key) {
             const c = CHANNEL_DATA[key];
+            if (c.mode === 'google-linked') return currentGoogleCpl();
             if (c.mode === 'budget') return c.cpl;
             if (c.mode === 'visits') return c.costPerVisit / c.visitToLeadRate;
             if (c.mode === 'pieces') return c.costPerPiece / c.responseRate;
@@ -973,8 +992,8 @@
         }
 
         function sortedChannelKeys() {
-            // Highest cost-per-lead first; ties broken by most leads (using each
-            // channel's current input value) descending.
+            // Highest cost-per-lead first (Google included); ties broken by
+            // most leads (using each channel's current input value) descending.
             return Object.keys(CHANNEL_DATA).sort((a, b) => {
                 const cplDiff = channelCplForSort(b) - channelCplForSort(a);
                 if (Math.abs(cplDiff) > 0.01) return cplDiff;
@@ -983,6 +1002,9 @@
         }
 
         function channelMixInputValue(key) {
+            if (CHANNEL_DATA[key].mode === 'google-linked') {
+                return parseFloat((document.getElementById('adSpend') || {}).value) || 0;
+            }
             const el = document.getElementById('cmInput_' + key);
             return el ? (parseFloat(el.value) || 0) : 0;
         }
@@ -990,6 +1012,7 @@
         function channelMixLeadsFor(key) {
             const c = CHANNEL_DATA[key];
             const val = channelMixInputValue(key);
+            if (c.mode === 'google-linked') { const cpl = currentGoogleCpl(); return cpl > 0 ? val / cpl : 0; }
             if (c.mode === 'budget') return c.cpl > 0 ? val / c.cpl : 0;
             if (c.mode === 'visits') return val * c.visitToLeadRate;
             if (c.mode === 'pieces') return val * c.responseRate;
@@ -999,7 +1022,7 @@
         function channelMixSpendFor(key) {
             const c = CHANNEL_DATA[key];
             const val = channelMixInputValue(key);
-            if (c.mode === 'budget') return val;
+            if (c.mode === 'google-linked' || c.mode === 'budget') return val;
             if (c.mode === 'visits') return val * c.costPerVisit;
             if (c.mode === 'pieces') return val * c.costPerPiece;
             return 0;
@@ -1021,24 +1044,26 @@
             return 0;
         }
 
+        // Google has no card/checkbox here — it's always included, driven by the
+        // Territory / CPL / Ad Spend fields already in the Scenario Builder above.
         function renderChannelMixCards() {
             const container = document.getElementById('channelMixCards');
             if (!container) return;
-            const order = sortedChannelKeys();
+            const order = sortedChannelKeys().filter(key => CHANNEL_DATA[key].mode !== 'google-linked');
             container.innerHTML = order.map(key => {
                 const c = CHANNEL_DATA[key];
                 const cpl = Math.round(channelCplForSort(key) * 100) / 100;
                 return `
-                <div class="metric-explainer-card" style="margin-bottom: 12px; display:flex; align-items:flex-start; gap:14px;" data-channel="${key}">
+                <div class="metric-explainer-card channel-card-row" style="margin-bottom: 12px; display:flex; align-items:flex-start; gap:14px;" data-channel="${key}">
                     <div style="font-size:26px; line-height:1;">${c.icon}</div>
-                    <div style="flex:1;">
-                        <label style="display:flex; align-items:center; gap:8px; text-transform:none; font-size:14px;">
+                    <div style="flex:1; min-width:0;">
+                        <label style="display:flex; align-items:center; gap:8px; text-transform:none; font-size:14px; flex-wrap:wrap;">
                             <input type="checkbox" id="cmEnable_${key}" checked onchange="calculateChannelMix()" style="width:auto; margin:0;">
                             <strong>${c.label}</strong>
                             <span style="font-weight:normal; color:#999; font-size:12px;">&mdash; ~$${cpl}/lead</span>
                         </label>
                         <div class="form-note" style="margin: 4px 0 8px;">${c.sourceNote}</div>
-                        <div style="display:flex; align-items:center; gap:10px; max-width:320px;">
+                        <div class="channel-card-input-row" style="display:flex; align-items:center; gap:10px; max-width:320px;">
                             <span style="font-size:12px; color:#666; white-space:nowrap;">${channelMixInputLabel(key)}</span>
                             <input type="number" id="cmInput_${key}" value="${channelMixDefaultValue(key)}" min="0" step="10" oninput="calculateChannelMix()">
                         </div>
@@ -1053,25 +1078,35 @@
 
         function calculateChannelMix() {
             const container = document.getElementById('channelMixCards');
-            if (!container) return; // tab not yet rendered
+            if (!container) return; // builder tab not yet rendered
 
-            const ticket = parseFloat(document.getElementById('cmTicket').value) || 0;
-            const margin = (parseFloat(document.getElementById('cmMargin').value) || 0) / 100;
-            const applyBuffer = document.getElementById('cmBuffer').checked;
+            const ticket = parseFloat((document.getElementById('ticket') || {}).value) || 0;
+            const margin = (parseFloat((document.getElementById('margin') || {}).value) || 0) / 100;
+            const bufferEl = document.getElementById('cmBuffer');
+            const applyBuffer = bufferEl ? bufferEl.checked : true;
 
             const order = sortedChannelKeys();
             let totalLeads = 0, totalProspects = 0, totalClosed = 0, totalSpend = 0, totalGiftCards = 0;
             const rows = [];
 
             order.forEach(key => {
-                const enabled = document.getElementById('cmEnable_' + key);
-                if (!enabled || !enabled.checked) return;
                 const c = CHANNEL_DATA[key];
+                const isGoogle = c.mode === 'google-linked';
+                if (!isGoogle) {
+                    const enabled = document.getElementById('cmEnable_' + key);
+                    if (!enabled || !enabled.checked) return;
+                }
                 const leads = channelMixLeadsFor(key);
                 const spend = channelMixSpendFor(key);
-                const prospects = leads * CHANNEL_FUNNEL.leadToProspect;
-                const closeRate = c.closeType === 'warm' ? CHANNEL_FUNNEL.closeWarm : CHANNEL_FUNNEL.closeCold;
-                const closed = prospects * closeRate;
+                let prospects, closed;
+                if (isGoogle) {
+                    prospects = leads * ACCULYNX_DATA.approvalRate; // "Approved"
+                    closed = prospects * ACCULYNX_DATA.closeRate;
+                } else {
+                    prospects = leads * CHANNEL_FUNNEL.leadToProspect;
+                    const closeRate = c.closeType === 'warm' ? CHANNEL_FUNNEL.closeWarm : CHANNEL_FUNNEL.closeCold;
+                    closed = prospects * closeRate;
+                }
                 const giftCards = key === 'referral' ? closed * c.giftCardPerClose : 0;
 
                 totalLeads += leads;
@@ -1081,7 +1116,7 @@
                 totalGiftCards += giftCards;
 
                 rows.push(`<tr style="border-bottom:1px solid #eee;">
-                    <td style="padding:8px 6px;">${c.icon} ${c.label}</td>
+                    <td style="padding:8px 6px;">${c.icon} ${c.label}${isGoogle ? ' <span style="color:#999; font-size:11px;">(from Scenario Builder above)</span>' : ''}</td>
                     <td style="padding:8px 6px;">$${Math.round(channelCplForSort(key))}</td>
                     <td style="padding:8px 6px;">${leads.toFixed(1)}</td>
                     <td style="padding:8px 6px;">${prospects.toFixed(1)}</td>
@@ -1090,8 +1125,11 @@
                 </tr>`);
             });
 
-            document.getElementById('channelMixTableBody').innerHTML = rows.join('') ||
-                '<tr><td colspan="6" style="padding:12px; color:#999; text-align:center;">Select at least one channel above</td></tr>';
+            const tbody = document.getElementById('channelMixTableBody');
+            if (tbody) {
+                tbody.innerHTML = rows.join('') ||
+                    '<tr><td colspan="6" style="padding:12px; color:#999; text-align:center;">No channels selected</td></tr>';
+            }
 
             const buffer = applyBuffer ? totalSpend * 0.20 : 0;
             const totalBudget = totalSpend + totalGiftCards + buffer;
@@ -1099,19 +1137,52 @@
             const profit = revenue * margin;
             const roi = totalBudget > 0 ? ((profit - totalBudget) / totalBudget) * 100 : 0;
 
-            document.getElementById('cmResultLeads').textContent = totalLeads.toFixed(1);
-            document.getElementById('cmResultProspects').textContent = totalProspects.toFixed(1);
-            document.getElementById('cmResultClosed').textContent = totalClosed.toFixed(1);
-            document.getElementById('cmResultBaseBudget').textContent = fmtMoneyCm(totalSpend);
-            document.getElementById('cmResultGiftCards').textContent = fmtMoneyCm(totalGiftCards);
-            document.getElementById('cmResultBuffer').textContent = fmtMoneyCm(buffer);
-            document.getElementById('cmResultTotalBudget').textContent = fmtMoneyCm(totalBudget);
-            document.getElementById('cmResultRevenue').textContent = fmtMoneyCm(revenue);
-            document.getElementById('cmResultROI').textContent = Math.round(roi) + '%';
+            const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+            setText('cmResultLeads', totalLeads.toFixed(1));
+            setText('cmResultProspects', totalProspects.toFixed(1));
+            setText('cmResultClosed', totalClosed.toFixed(1));
+            setText('cmResultBaseBudget', fmtMoneyCm(totalSpend));
+            setText('cmResultGiftCards', fmtMoneyCm(totalGiftCards));
+            setText('cmResultBuffer', fmtMoneyCm(buffer));
+            setText('cmResultTotalBudget', fmtMoneyCm(totalBudget));
+            setText('cmResultRevenue', fmtMoneyCm(revenue));
+            setText('cmResultROI', Math.round(roi) + '%');
+            setText('cmLeadToProspectLabel', Math.round(CHANNEL_FUNNEL.leadToProspect * 100) + '%');
+            setText('cmCloseColdLabel', Math.round(CHANNEL_FUNNEL.closeCold * 100) + '%');
+            setText('cmCloseWarmLabel', Math.round(CHANNEL_FUNNEL.closeWarm * 100) + '%');
 
-            document.getElementById('cmLeadToProspectLabel').textContent = Math.round(CHANNEL_FUNNEL.leadToProspect * 100) + '%';
-            document.getElementById('cmCloseColdLabel').textContent = Math.round(CHANNEL_FUNNEL.closeCold * 100) + '%';
-            document.getElementById('cmCloseWarmLabel').textContent = Math.round(CHANNEL_FUNNEL.closeWarm * 100) + '%';
+            return { totalLeads, totalProspects, totalClosed, totalSpend, totalGiftCards, buffer, totalBudget, revenue, roi };
+        }
+
+        // Persist/restore the additional-channel selections as part of a saved scenario.
+        function getChannelMixState() {
+            const state = {};
+            Object.keys(CHANNEL_DATA).forEach(key => {
+                if (CHANNEL_DATA[key].mode === 'google-linked') return;
+                const enabled = document.getElementById('cmEnable_' + key);
+                const input = document.getElementById('cmInput_' + key);
+                state[key] = {
+                    enabled: enabled ? enabled.checked : true,
+                    value: input ? parseFloat(input.value) || 0 : 0
+                };
+            });
+            const bufferEl = document.getElementById('cmBuffer');
+            state._buffer = bufferEl ? bufferEl.checked : true;
+            return state;
+        }
+
+        function applyChannelMixState(state) {
+            if (!state) return;
+            Object.keys(state).forEach(key => {
+                if (key === '_buffer') return;
+                const enabled = document.getElementById('cmEnable_' + key);
+                const input = document.getElementById('cmInput_' + key);
+                if (enabled) enabled.checked = !!state[key].enabled;
+                if (input) input.value = state[key].value;
+            });
+            const bufferEl = document.getElementById('cmBuffer');
+            if (bufferEl && typeof state._buffer === 'boolean') bufferEl.checked = state._buffer;
+            calculateChannelMix();
         }
 
         function initChannelMix() {
@@ -1351,6 +1422,8 @@
                 terr: TERRITORIES_DB[terrId] || null,
                 cpl, ctrPct, lpConvRatePct, adSpend, margin, marketingBudgetPct
             });
+
+            if (typeof calculateChannelMix === 'function') calculateChannelMix();
         }
 
         function suggestionRow(icon, cls, html) {
@@ -1439,6 +1512,7 @@
                     <div>${TERRITORIES_DB[s.territory]?.name || s.territory} | $${s.cpl} CPL | ${s.ctrType === 'blended' ? 'Blended' : 'Flat'} CTR (${s.ctr}%) | $${Math.round(s.adSpend).toLocaleString('en-US')}/mo spend</div>
                     <div style="margin-top:8px;"><strong>Monthly:</strong> Leads ${s.results.leads} | Approved ${s.results.approved} | Closed ${s.results.closed} | Revenue $${s.results.revenue} | Profit $${s.results.profit} | ROI ${s.results.roi} | Max CPL $${s.results.maxCpl || '0'}</div>
                     <div style="margin-top:4px;"><strong>Annual:</strong> Revenue $${s.results.annualRevenue || '0'} | Profit $${s.results.annualProfit || '0'} | ROI ${s.results.annualROI || '0%'}</div>
+                    ${s.combined ? `<div style="margin-top:4px;"><strong>Combined (Google + additional channels):</strong> Leads ${s.combined.leads} | Closed ${s.combined.closed} | Budget ${s.combined.totalBudget} | Revenue ${s.combined.revenue} | ROI ${s.combined.roi}</div>` : ''}
                     <div style="margin-top:4px; color:#999;">Saved: ${s.timestamp}</div>
                 </div>`;
         }
@@ -1507,6 +1581,14 @@
                     annualROI: document.getElementById('resultAnnualROI').textContent,
                     maxCpl: document.getElementById('resultMaxCpl').textContent
                 },
+                channelMix: getChannelMixState(),
+                combined: {
+                    leads: document.getElementById('cmResultLeads') ? document.getElementById('cmResultLeads').textContent : '0',
+                    closed: document.getElementById('cmResultClosed') ? document.getElementById('cmResultClosed').textContent : '0',
+                    totalBudget: document.getElementById('cmResultTotalBudget') ? document.getElementById('cmResultTotalBudget').textContent : '$0',
+                    revenue: document.getElementById('cmResultRevenue') ? document.getElementById('cmResultRevenue').textContent : '$0',
+                    roi: document.getElementById('cmResultROI') ? document.getElementById('cmResultROI').textContent : '0%'
+                },
                 active: false
             };
 
@@ -1541,6 +1623,7 @@
                         <div class="scenario-meta">
                             ${TERRITORIES_DB[s.territory]?.name || s.territory} | $${s.cpl} CPL | ${s.ctrType === 'blended' ? 'Blended' : 'Flat'} CTR (${s.ctr}%) | $${Math.round(s.adSpend).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}/mo<br>
                             Monthly ROI: <strong>${s.results.roi}</strong> | Annual ROI: <strong>${s.results.annualROI || '0%'}</strong><br>
+                            ${s.combined ? `Combined (all channels): <strong>${s.combined.closed}</strong> closed | <strong>${s.combined.roi}</strong> ROI | ${s.combined.totalBudget} budget<br>` : ''}
                             <span style="font-size: 11px; color: #bbb;">Saved: ${s.timestamp}</span>
                         </div>
                     </div>
@@ -1585,6 +1668,7 @@
             document.getElementById('marketingBudget').value = scenario.marketingBudget || 15;
 
             calculateROI();
+            if (scenario.channelMix) applyChannelMixState(scenario.channelMix);
             switchTab('builder');
         }
 
