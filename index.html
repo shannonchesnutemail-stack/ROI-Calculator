@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Murray ROI Calculator v5.2.0 - Scenario Manager</title>
+    <title>Murray ROI Calculator v5.3.0 - Scenario Manager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Century Gothic', 'Helvetica Neue', sans-serif; background: #f5f5f5; padding: 20px; }
@@ -221,7 +221,7 @@
             <div class="logo-img">M</div>
             <div>
                 <h1>MURRAY ROI CALCULATOR</h1>
-                <div class="header-subtitle">Scenario Manager & Territory Comparison | v5.2.0</div>
+                <div class="header-subtitle">Scenario Manager & Territory Comparison | v5.3.0</div>
             </div>
             <div class="header-utility">
                 <button class="header-util-btn" id="hdrBtnTerritories" onclick="switchTab('territories')">📍 Territory Database</button>
@@ -428,11 +428,11 @@
                         <div class="metric-explainer-grid">
                             <div class="metric-explainer-card">
                                 <div class="metric-explainer-title">The Funnel Used for Mail, Referral, Facebook &amp; Geo-Fencing</div>
-                                <div class="metric-explainer-text">Lead &rarr; Prospect (inspection happens) at <strong id="cmLeadToProspectLabel">75%</strong>, then Prospect &rarr; Closed Job at <strong id="cmCloseColdLabel">30%</strong> for cold-sourced leads (Mail, Facebook, Geo-Fencing) or <strong id="cmCloseWarmLabel">60%</strong> for warm-sourced leads (Referral). Google above keeps its own verified Acculynx funnel (33% approval &times; 83% close) rather than this one.</div>
+                                <div class="metric-explainer-text">Lead &rarr; Prospect (inspection happens) at <strong id="cmLeadToProspectLabel">75%</strong>, then Prospect &rarr; Closed Job at <strong id="cmCloseColdLabel">30%</strong> for cold-sourced leads (Mail, Facebook) or <strong id="cmCloseWarmLabel">60%</strong> for warm-sourced leads (Referral). Google above keeps its own verified Acculynx funnel (33% approval &times; 83% close) rather than this one. Geo-Fencing uses its own lead-to-close rate by scenario (50% Low / 45% Average / 45% High) &mdash; see its card below.</div>
                             </div>
                             <div class="metric-explainer-card">
                                 <div class="metric-explainer-title">Verified vs. Placeholder Data</div>
-                                <div class="metric-explainer-text">Mail's 0.33% response rate is Murray's own campaign history (1 call from 300 landlord letters). Facebook's $42 and Geo-Fencing's $50 CPL are industry-reported placeholders, not yet Murray's own data &mdash; see numbered sources below.</div>
+                                <div class="metric-explainer-text">Mail's 0.33% response rate is Murray's own campaign history (1 call from 300 landlord letters). Facebook's $122 CPL is Murray's own storm-campaign data (Meta-reported leads). Geo-Fencing's cost basis (CPM, CTR) is Murray's own GroundTruth campaign data; its leads-per-$1,000 and close rates are planning assumptions until Acculynx matchback validates them &mdash; see numbered sources below.</div>
                             </div>
                         </div>
                     </div>
@@ -445,9 +445,11 @@
                             <strong>[1]</strong> Murray Enterprises internal campaign data &mdash; landlord-specific direct mail letter, 1 phone call returned from 300 letters mailed (~0.33% response). Reported by Murray Marketing, September 2026. Used directly in this calculator's Mail response rate.<br>
                             <strong>[2]</strong> Murray ROI Calculator &mdash; Google Ads scenario, New Orleans, LA, saved 8/21/2026. Reflected live above via the Territory CPL field.<br>
                             <strong>[3]</strong> Postalytics, "Direct Mail Trends &amp; Statistics for 2026" (postalytics.com) &mdash; national average direct mail response rate of 4.4%. Cited for comparison only; NOT used in this calculator's math, since Murray's own 0.33% landlord-letter result [1] is more relevant to this audience.<br>
-                            <strong>[4]</strong> GroundTruth, "How Much Does Geofencing Cost?" pricing FAQ (groundtruth.com/faq/how-much-does-geofencing-cost), retrieved September 2026 &mdash; published CPM range of $3.50&ndash;$50 (mobile/desktop) and $25+ (CTV), informing the Geo-Fencing placeholder.<br>
-                            <strong>[5]</strong> Roofing industry operator discussion (private Facebook group post, undated, no formal publication) &mdash; originally cited a $42 CPL for Facebook Ads. That figure was inconsistent with Murray's own verified $215 Google CPL for the same region, so it has been corrected to a $120 placeholder (still unverified). Replace with Murray's own Facebook data as soon as it exists.<br>
-                            <strong>[6]</strong> Referral partner conversion estimate (1-in-20 visits become a lead) &mdash; a Murray Marketing planning assumption based on sales team experience, not yet benchmarked against tracked referral data. Update once referral outcomes are logged consistently.<br><br>
+                            <strong>[4]</strong> GroundTruth, "How Much Does Geofencing Cost?" pricing FAQ (groundtruth.com/faq/how-much-does-geofencing-cost), retrieved September 2026 &mdash; published CPM range of $3.50&ndash;$50 (mobile/desktop) and $25+ (CTV), pricing reference only; superseded by Murray's own GroundTruth data [7].<br>
+                            <strong>[5]</strong> Roofing industry operator discussion (private Facebook group post, undated, no formal publication) &mdash; originally cited a $42 CPL for Facebook Ads. That figure was inconsistent with Murray's own verified $215 Google CPL for the same region, so it has been corrected to a $120 placeholder (still unverified). Superseded 10/23/2026 by Murray's own Facebook data [8].<br>
+                            <strong>[6]</strong> Referral partner conversion estimate (1-in-20 visits become a lead) &mdash; a Murray Marketing planning assumption based on sales team experience, not yet benchmarked against tracked referral data. Update once referral outcomes are logged consistently.<br>
+                            <strong>[7]</strong> Murray GroundTruth Ads Manager account, campaign reports read 10/23/2026 &mdash; mobile/display storm campaigns billed $3.50 CPM in Denver, Houston/Texas and Lincoln/Omaha; CTR 0.56% (Denver 7/1/2024: 143,288 impressions, 44,573 reach, 800 clicks) to 0.88% (Texas 12/24/2024). GroundTruth reported 0 visits / 0 web conversions, so Geo-Fencing leads per $1,000 (2 / 6 / 11.68) and lead-to-close (50% / 45% / 45%) are Murray Marketing planning assumptions, cross-checked against Murray's Facebook storm campaigns ($122 CPL, 2024&ndash;2026) and LocaliQ roofing display benchmarks. Capped at 10 leads per storm event.<br>
+                            <strong>[8]</strong> Murray Facebook Ads account (Meta Ads, read via Ryze 10/23/2026) &mdash; all campaigns tagged [Storm Campaign], 1/1/2024&ndash;10/23/2026: $12,936.64 spend, 844,319 impressions, 8,252 link clicks, 106 Meta-reported leads = $122 CPL. By market: Houston area $99, Nebraska $113, Denver $182. Leads are Meta-reported and not yet matched to Acculynx.<br><br>
                             <em>As real Murray campaign data replaces a placeholder, update the corresponding value in CHANNEL_DATA in the code and cite it here with the date it was verified.</em>
                         </div>
                     </div>
@@ -747,10 +749,12 @@
                 </div>
 
                 <div class="section">
-                    <div class="section-title">Calculator v5.2.0 Features & Data Accuracy</div>
+                    <div class="section-title">Calculator v5.3.0 Features & Data Accuracy</div>
 
                     <div style="background: #e8f5e9; border: 2px solid #438148; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                        <div style="font-size: 14px; font-weight: bold; color: #438148; margin-bottom: 12px;">✨ Latest Updates (v5.2.0)</div>
+                        <div style="font-size: 14px; font-weight: bold; color: #438148; margin-bottom: 12px;">✨ Latest Updates (v5.3.0)</div>
+                            <div>✅ <strong>Geo-Fencing Rebuilt on Murray's GroundTruth Data (10/23/2026):</strong> Geo-Fencing now uses Murray's own GroundTruth storm campaigns ($3.50 CPM, 0.56%&ndash;0.88% CTR) with a Low / Average / High selector: $500 / $167 / $86 per lead (2 / 6 / 11.68 leads per $1,000), lead-to-close 50% / 45% / 45%, and a cap of 10 leads per storm event. Click-to-lead and close rates are assumptions until validated against Acculynx.</div>
+                            <div>✅ <strong>Facebook CPL Now Murray's Own Data (10/23/2026):</strong> Facebook moved from a $120 placeholder to $122, Murray's actual storm-campaign cost per lead across 2024&ndash;2026 (Meta-reported leads).</div>
                             <div>✅ <strong>Custom Territories Now Selectable Everywhere:</strong> Fixed — the Scenario Builder's Territory dropdown was hardcoded to only the original 3 territories and never rebuilt. Any territory you add (e.g. Denver) is now a real choice in Scenario Builder immediately, no reload required.</div>
                             <div>✅ <strong>Campaign Building Refreshes Instantly:</strong> Adding, editing, or deleting a territory now immediately updates its availability in Campaign Building — previously required a page reload to show up.</div>
                             <div>✅ <strong>Full-Database Blueprint:</strong> New "Build Blueprint: All Territories in Database" button — locks in one blueprint covering every territory currently in the Territory Database (not capped at 3), asking once for a shared budget.</div>
@@ -846,7 +850,7 @@
         </div>
 
         <div class="footer">
-            <strong>Murray ROI Calculator v5.2.0 — Scenario Manager</strong><br>
+            <strong>Murray ROI Calculator v5.3.0 — Scenario Manager</strong><br>
             Save & compare ROI plans | Territory CPL database | Real Acculynx data | Campaigns launched August 20, 2026 | KPIs refreshed every 30 days
         </div>
     </div>
@@ -958,14 +962,22 @@
                 sourceNote: '1-in-20 visit-to-lead rate; warm introduction, skips the cold response filter [Source 6]'
             },
             geofencing: {
-                label: 'Geo-Fencing (CTV + Facebook)', icon: '📡', mode: 'budget',
-                cpl: 50, closeType: 'cold', defaultBudget: 500,
-                sourceNote: 'Placeholder — no Murray history yet. Range informed by Ground Truth\'s own published rate card [Source 4]'
+                label: 'Geo-Fencing (GroundTruth)', icon: '📡', mode: 'budget',
+                closeType: 'scenario', defaultBudget: 1000, defaultScenario: 'average', defaultStorms: 1,
+                capPerStorm: 10, cpm: 3.50,
+                // Per $1,000: impressions fixed at $3.50 CPM (285,714). Leads per $1,000
+                // and lead-to-close are planning assumptions (Murray Marketing, 10/23/2026).
+                scenarios: {
+                    low:     { label: 'Low',     ctr: 0.0056,  leadsPer1k: 2,     closeRate: 0.50 },
+                    average: { label: 'Average', ctr: 0.00616, leadsPer1k: 6,     closeRate: 0.45 },
+                    high:    { label: 'High',    ctr: 0.0088,  leadsPer1k: 11.68, closeRate: 0.45 }
+                },
+                sourceNote: 'Murray GroundTruth data: $3.50 CPM, CTR 0.56% / 0.616% / 0.88%. Leads per $1,000 (2 / 6 / 11.68) and lead-to-close (50% / 45% / 45%) are assumptions until validated with Acculynx. Max 10 leads per storm event. [Source 7]'
             },
             facebook: {
                 label: 'Facebook Advertising', icon: '📘', mode: 'budget',
-                cpl: 120, closeType: 'cold', defaultBudget: 300,
-                sourceNote: 'Corrected estimate — the original $42 figure (an informal roofing-group post) was inconsistent with Murray\'s own verified $215 Google CPL for this region; $120 is a more defensible placeholder until Murray has its own Facebook data [Source 5]'
+                cpl: 122, closeType: 'cold', defaultBudget: 300,
+                sourceNote: 'Murray\'s own Facebook storm campaigns, Jan 2024 – Oct 2026: $12,937 spend, 106 Meta-reported leads = $122 CPL (Houston ~$99, Nebraska ~$113, Denver ~$182). Meta-reported leads, not yet matched to Acculynx. [Source 8]'
             },
             mail: {
                 label: 'Direct Mail / Postcards', icon: '📬', mode: 'pieces',
@@ -973,6 +985,27 @@
                 sourceNote: 'Murray\'s own campaign history: 1 call from 300 landlord-specific letters mailed (~0.33% response) [Source 1]. $0.55/piece all-in (list + print + postage) is a cost estimate, not yet verified against a Murray invoice.'
             }
         };
+
+        function geoScenarioKey() {
+            const el = document.getElementById('cmGeoScenario');
+            return (el && el.value) || CHANNEL_DATA.geofencing.defaultScenario;
+        }
+        function geoScenario() { return CHANNEL_DATA.geofencing.scenarios[geoScenarioKey()]; }
+        function geoStorms() {
+            const el = document.getElementById('cmGeoStorms');
+            const v = el ? parseFloat(el.value) : CHANNEL_DATA.geofencing.defaultStorms;
+            return isNaN(v) ? CHANNEL_DATA.geofencing.defaultStorms : Math.max(0, v);
+        }
+        function geoDetailText() {
+            const g = CHANNEL_DATA.geofencing, s = geoScenario();
+            const imp = 1000 / g.cpm * 1000, clicks = imp * s.ctr;
+            const c2l = clicks > 0 ? s.leadsPer1k / clicks * 100 : 0;
+            return 'Per $1,000: ' + Math.round(imp).toLocaleString('en-US') + ' impressions &times; ' +
+                (s.ctr * 100).toFixed(3).replace(/0+$/, '') + '% CTR = ' + Math.round(clicks).toLocaleString('en-US') +
+                ' clicks &times; ' + c2l.toFixed(3) + '% click-to-lead = ' + s.leadsPer1k + ' leads ($' +
+                Math.round(1000 / s.leadsPer1k) + '/lead), ' + Math.round(s.closeRate * 100) + '% lead-to-close. Cap: ' +
+                g.capPerStorm + ' leads per storm.';
+        }
 
         function currentGoogleCpl() {
             return parseFloat((document.getElementById('cpl') || {}).value) || 0;
@@ -985,6 +1018,7 @@
         function channelCplForSort(key) {
             const c = CHANNEL_DATA[key];
             if (c.mode === 'google-linked') return currentGoogleCpl();
+            if (key === 'geofencing') return 1000 / geoScenario().leadsPer1k;
             if (c.mode === 'budget') return c.cpl;
             if (c.mode === 'visits') return c.costPerVisit / c.visitToLeadRate;
             if (c.mode === 'pieces') return c.costPerPiece / c.responseRate;
@@ -1013,6 +1047,10 @@
             const c = CHANNEL_DATA[key];
             const val = channelMixInputValue(key);
             if (c.mode === 'google-linked') { const cpl = currentGoogleCpl(); return cpl > 0 ? val / cpl : 0; }
+            if (key === 'geofencing') {
+                const raw = val / 1000 * geoScenario().leadsPer1k;
+                return Math.min(raw, c.capPerStorm * geoStorms());
+            }
             if (c.mode === 'budget') return c.cpl > 0 ? val / c.cpl : 0;
             if (c.mode === 'visits') return val * c.visitToLeadRate;
             if (c.mode === 'pieces') return val * c.responseRate;
@@ -1066,7 +1104,17 @@
                         <div class="channel-card-input-row" style="display:flex; align-items:center; gap:10px; max-width:320px;">
                             <span style="font-size:12px; color:#666; white-space:nowrap;">${channelMixInputLabel(key)}</span>
                             <input type="number" id="cmInput_${key}" value="${channelMixDefaultValue(key)}" min="0" step="10" oninput="calculateChannelMix()">
+                        </div>${key === 'geofencing' ? `
+                        <div class="channel-card-input-row" style="display:flex; align-items:center; gap:10px; max-width:420px; margin-top:8px; flex-wrap:wrap;">
+                            <span style="font-size:12px; color:#666; white-space:nowrap;">Scenario</span>
+                            <select id="cmGeoScenario" onchange="calculateChannelMix()" style="width:auto;">
+                                ${Object.keys(c.scenarios).map(k => `<option value="${k}"${k === c.defaultScenario ? ' selected' : ''}>${c.scenarios[k].label} — $${Math.round(1000 / c.scenarios[k].leadsPer1k)}/lead</option>`).join('')}
+                            </select>
+                            <span style="font-size:12px; color:#666; white-space:nowrap;">Storm events</span>
+                            <input type="number" id="cmGeoStorms" value="${c.defaultStorms}" min="0" step="1" oninput="calculateChannelMix()" style="width:70px;">
                         </div>
+                        <div class="form-note" id="cmGeoDetail" style="margin-top:6px;"></div>
+                        <div class="form-note" id="cmGeoCapNote" style="margin-top:4px; color:#b3402f;"></div>` : ''}
                     </div>
                 </div>`;
             }).join('');
@@ -1104,8 +1152,12 @@
                     closed = prospects * ACCULYNX_DATA.closeRate;
                 } else {
                     prospects = leads * CHANNEL_FUNNEL.leadToProspect;
-                    const closeRate = c.closeType === 'warm' ? CHANNEL_FUNNEL.closeWarm : CHANNEL_FUNNEL.closeCold;
-                    closed = prospects * closeRate;
+                    if (c.closeType === 'scenario') {
+                        closed = leads * geoScenario().closeRate; // overall lead-to-close for this scenario
+                    } else {
+                        const closeRate = c.closeType === 'warm' ? CHANNEL_FUNNEL.closeWarm : CHANNEL_FUNNEL.closeCold;
+                        closed = prospects * closeRate;
+                    }
                 }
                 const giftCards = key === 'referral' ? closed * c.giftCardPerClose : 0;
 
@@ -1130,6 +1182,20 @@
                 tbody.innerHTML = rows.join('') ||
                     '<tr><td colspan="6" style="padding:12px; color:#999; text-align:center;">No channels selected</td></tr>';
             }
+
+            const geoDetail = document.getElementById('cmGeoDetail');
+            if (geoDetail) geoDetail.innerHTML = geoDetailText();
+            const geoCap = document.getElementById('cmGeoCapNote');
+            if (geoCap) {
+                const g = CHANNEL_DATA.geofencing;
+                const raw = channelMixInputValue('geofencing') / 1000 * geoScenario().leadsPer1k;
+                const cap = g.capPerStorm * geoStorms();
+                geoCap.textContent = raw > cap
+                    ? 'Capped: budget would project ' + raw.toFixed(1) + ' leads, limited to ' + cap + ' (' + g.capPerStorm + ' per storm × ' + geoStorms() + ' storm' + (geoStorms() === 1 ? '' : 's') + '). Extra spend in the same storm area mostly buys repeat impressions.'
+                    : '';
+            }
+            const geoCardCpl = document.querySelector('[data-channel="geofencing"] label span');
+            if (geoCardCpl) geoCardCpl.innerHTML = '&mdash; ~$' + Math.round(channelCplForSort('geofencing')) + '/lead';
 
             const buffer = applyBuffer ? totalSpend * 0.20 : 0;
             const totalBudget = totalSpend + totalGiftCards + buffer;
@@ -1168,13 +1234,15 @@
             });
             const bufferEl = document.getElementById('cmBuffer');
             state._buffer = bufferEl ? bufferEl.checked : true;
+            state._geoScenario = geoScenarioKey();
+            state._geoStorms = geoStorms();
             return state;
         }
 
         function applyChannelMixState(state) {
             if (!state) return;
             Object.keys(state).forEach(key => {
-                if (key === '_buffer') return;
+                if (key.charAt(0) === '_') return;
                 const enabled = document.getElementById('cmEnable_' + key);
                 const input = document.getElementById('cmInput_' + key);
                 if (enabled) enabled.checked = !!state[key].enabled;
@@ -1182,6 +1250,10 @@
             });
             const bufferEl = document.getElementById('cmBuffer');
             if (bufferEl && typeof state._buffer === 'boolean') bufferEl.checked = state._buffer;
+            const geoSel = document.getElementById('cmGeoScenario');
+            if (geoSel && state._geoScenario && CHANNEL_DATA.geofencing.scenarios[state._geoScenario]) geoSel.value = state._geoScenario;
+            const geoSt = document.getElementById('cmGeoStorms');
+            if (geoSt && typeof state._geoStorms === 'number') geoSt.value = state._geoStorms;
             calculateChannelMix();
         }
 
